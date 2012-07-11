@@ -96,13 +96,25 @@ class QuestionScraper
             {
                 db withSession
                 {
-                    val existing = for ( u <- DatabaseTables.Questions if u.question_id === q.question_id ) yield u.score ~ u.answer_count
-                    
-                    existing.firstOption match
+                    val existingUser = for ( u <- DatabaseTables.Users if u.user_id === q.owner.user_id ) yield u.reputation
+                    existingUser.firstOption match
                     {
                         case Some(row) =>
                         {
-                            existing.update( q.score, q.answer_count )
+                            existingUser.update( q.owner.reputation )
+                        }
+                        case None =>
+                        {
+                            DatabaseTables.Users insert ( q.owner.user_id, q.owner.display_name, q.owner.reputation )
+                        }
+                    }
+                
+                    val existingQuestion = for ( u <- DatabaseTables.Questions if u.question_id === q.question_id ) yield u.score ~ u.answer_count
+                    existingQuestion.firstOption match
+                    {
+                        case Some(row) =>
+                        {
+                            existingQuestion.update( q.score, q.answer_count )
                             println( "Update: %d %d %d: %s".format( q.question_id, q.score, q.answer_count, q.title ) )
                         }
                         case None =>
@@ -115,7 +127,7 @@ class QuestionScraper
                                 q.answer_count,
                                 q.tags.mkString(";"),
                                 q.link,
-                                0L )
+                                q.owner.user_id )
  
                             println( "New:    %d %d %d: %s".format( q.question_id, q.score, q.answer_count, q.title ) )
                         }
