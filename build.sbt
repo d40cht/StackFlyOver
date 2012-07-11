@@ -7,16 +7,12 @@ organization := "org.seacourt"
 
 scalaVersion := "2.9.1"
 
-//resolvers ++= Seq(
-//    "Java Maven2 Repo" at "http://download.java.net/maven/2",
-//    "Jerkson repo" at "http://repo.codahale.com",
-//    "Jackson repo" at "http://repository.codehaus.org/org/codehaus"
-//)
-
-//libraryDependencies += "com.codahale" % "jerkson_2.9.1" % "0.5.0"
-
 libraryDependencies += "net.databinder" %% "dispatch-http" % "0.8.5"
 
 libraryDependencies += "net.liftweb" % "lift-json_2.9.1" % "2.4"
+
+libraryDependencies += "com.h2database" % "h2" % "1.3.167"
+
+libraryDependencies += "org.scalaquery" % "scalaquery_2.9.1" % "0.10.0-M1"
 
 
