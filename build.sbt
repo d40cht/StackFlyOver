@@ -15,4 +15,6 @@ libraryDependencies += "com.h2database" % "h2" % "1.3.167"
 
 libraryDependencies += "org.scalaquery" % "scalaquery_2.9.1" % "0.10.0-M1"
 
+libraryDependencies += "org.scala-lang" % "scala-swing" % "2.9.1"
+
 
