@@ -39,7 +39,7 @@ object DatabaseTables
         def * = user_id ~ display_name ~ reputation
     }
     
-    object Questions extends BasicTable[(Long, String, Long, Int, Int, String, String, Long)]("Questions")
+    object Questions extends BasicTable[(Long, String, Long, Int, Int, Int, String, String, Long)]("Questions")
     {
         def question_id     = column[Long]("question_id", O PrimaryKey)
         def title           = column[String]("title")
@@ -72,9 +72,59 @@ case class Question(
     val link : String,
     val owner : User )
 
+
+//JObject(List(JField(user_id,JInt(988)), JField(user_type,JString(registered)), JField(creation_date,JInt(1218456875)), JField(display_name,JString(staffan)), JField(profile_image,JString(http://www.gravatar.com/avatar/1bc901d89082a6481d8611d79ff8b33f?d=identicon&r=PG)), JField(reputation,JInt(1875)), JField(reputation_change_day,JInt(0)), JField(reputation_change_week,JInt(10)), JField(reputation_change_month,JInt(35)), JField(reputation_change_quarter,JInt(35)), JField(reputation_change_year,JInt(257)), JField(age,JInt(38)), JField(last_access_date,JInt(1341852024)), JField(last_modified_date,JInt(1332302157)), JField(is_employee,JBool(false)), JField(link,JString(http://stackoverflow.com/users/988/staffan)), JField(website_url,JString(http://none)), JField(location,JString(Sweden)), JField(account_id,JInt(758)), JField(badge_counts,JObject(List(JField(gold,JInt(1)), JField(silver,JInt(9)), JField(bronze,JInt(22))))), JField(accept_rate,JInt(86))))
+
+case class Badges(
+    val gold : Int,
+    val silver : Int,
+    val bronze : Int )
+
+case class FullUser(
+    val user_id : Long,
+    val display_name : String,
+    val creation_date : Long,
+    val last_access_date : Long,
+    val reputation : Long,
+    val age : Option[Int],
+    val accept_rate : Option[Int],
+    val link : String,
+    val website_url : Option[String],
+    val location : Option[String],
+    val badge_counts : Badges )
+    
+
+class UserScraper
+{
+    val key = "b*DdyNcsAlQOQak6IvFH*w(("
+    
+    def run()
+    {
+        for ( i <- 0 until 1000 by 100 )
+        {
+            val j = (i until i+100)
+            implicit val formats = DefaultFormats
+            
+            val json = Dispatch.pullJSON( "http://api.stackexchange.com/2.0/users/%s?site=stackoverflow&key=%s".format( j.mkString(";"), key) )
+            val items = (json \ "items").children.map( _.extract[FullUser] )
+            
+            for ( i <- items )
+            {
+                println( i )
+            }
+            
+            // Look locations up with google geocoder API, then check viewport area to validate the size
+            // of the area described
+        }
+    }
+}
+
+
 class QuestionScraper( db : Database )
 {
     //private var questionMap = Map[Long, Database.Question]()
+    
+    val key = "b*DdyNcsAlQOQak6IvFH*w(("
     
     def run()
     {
@@ -86,7 +136,7 @@ class QuestionScraper( db : Database )
         {
             implicit val formats = DefaultFormats
             
-            val json = Dispatch.pullJSON( "http://api.stackexchange.com/2.0/questions?site=stackoverflow&pagesize=100" )
+            val json = Dispatch.pullJSON( "http://api.stackexchange.com/2.0/questions?site=stackoverflow&pagesize=100&key=%s".format(key) )
             val items = (json \ "items").children
             
             val questions = items.map( _.extract[Question] )
@@ -125,6 +175,7 @@ class QuestionScraper( db : Database )
                                 q.creation_date,
                                 q.score,
                                 q.answer_count,
+                                q.view_count,
                                 q.tags.mkString(";"),
                                 q.link,
                                 q.owner.user_id )
@@ -146,29 +197,28 @@ class QuestionView( db : Database ) extends SimpleSwingApplication
 {
     setSystemLookAndFeel()
 
+    var rows = mutable.ArrayBuffer[Array[Any]]()
+    
     def top = new MainFrame
     {
         title = "StackOverflow Questions"
+        
+        db withSession
+        {
+            val qupdate = for ( q <- DatabaseTables.Questions ) yield q.score ~ q.answer_count ~ q.view_count ~ q.title ~ q.tags
+            for ( (s, a, v, t, tags) <- qupdate.list )
+            {
+                rows.append( Array[Any](s, a, v, t, tags) )
+            }
+        }
+        
         contents = ui
     }
     
-    val headers = List( "Score", "Answers", "Views", "Title", "Tags" )
-    
-    var rows = mutable.ArrayBuffer[Array[Any]]()
-    db withSession
-    {
-        for ( q <- DatabaseTables.Questions ) yield q.score ~ q.answer_count ~ q.view_count ~ q.title ~ q.tags
-        
-        for ( (s, a, v, t, tags) <- q )
-        {
-            rows.append( Array(s.toString, a.toString, v.toString, t, tags) )
-        }
-    }
-    val rowData = rows.toArray
-    
     lazy val ui = new BoxPanel(Orientation.Vertical)
     {
-        val table = new swing.Table(rowData, headers)
+        val headers = List( "Score", "Answers", "Views", "Title", "Tags" )
+        val table = new swing.Table(rows.toArray, headers)
         
         contents += new ScrollPane(table)
     }
@@ -195,7 +245,10 @@ object Main extends App
             }
         }
         
-        if ( true )
+        val qs = new UserScraper()
+        qs.run()
+        
+        /*if ( false )
         {
             val qs = new QuestionScraper(db)    
             qs.run()
@@ -204,7 +257,7 @@ object Main extends App
         {
             val qv = new QuestionView(db)
             qv.main( args )
-        }
+        }*/
     }
 }
 
