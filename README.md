@@ -1,4 +1,4 @@
 CriticalMass
 ============
 
-SO users overlaid on a map
+All SO users overlaid on a map
