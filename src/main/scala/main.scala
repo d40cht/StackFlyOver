@@ -1,3 +1,5 @@
+package org.seacourt.criticalmass
+
 import dispatch._
 import net.liftweb.json.{JsonParser, DefaultFormats}
 
@@ -16,11 +18,41 @@ object Dispatch
 {
     lazy val h = new Http
     
-    def pullJSON( urlStr : String ) =
+    def pullJSON( baseUrl : String, params : List[(String, String)] ) =
     {
-        val u = url( urlStr )
+        import java.net.URLEncoder.encode
+        
+        val fullUrl = baseUrl + "?" + params.map( x => encode(x._1) + "=" + encode(x._2) ).mkString("&")
+        val u = url( fullUrl     )
         val res = h(u as_str)   
-        JsonParser.parse(res)
+        val j = JsonParser.parse(res)
+        
+        
+        
+        j
+    }
+}
+
+object SODispatch
+{
+    implicit val formats = DefaultFormats
+    
+    def pullJSON( baseUrl : String, params : List[(String, String)] ) =
+    {
+        val j = Dispatch.pullJSON( baseUrl, params )
+        
+        val backoff = (j \ "backoff").extract[Option[Int]]
+        val quota_remaining = j \ "quota_remaining"
+        println( "Backoff: ", backoff, quota_remaining )
+        
+        backoff match
+        {
+            case Some( time ) => Thread.sleep( time * 1000 )
+            case None =>
+        }
+        
+        assert( quota_remaining.extract[Int] > 1 )
+        j
     }
 }
 
@@ -73,52 +105,6 @@ case class Question(
     val owner : User )
 
 
-//JObject(List(JField(user_id,JInt(988)), JField(user_type,JString(registered)), JField(creation_date,JInt(1218456875)), JField(display_name,JString(staffan)), JField(profile_image,JString(http://www.gravatar.com/avatar/1bc901d89082a6481d8611d79ff8b33f?d=identicon&r=PG)), JField(reputation,JInt(1875)), JField(reputation_change_day,JInt(0)), JField(reputation_change_week,JInt(10)), JField(reputation_change_month,JInt(35)), JField(reputation_change_quarter,JInt(35)), JField(reputation_change_year,JInt(257)), JField(age,JInt(38)), JField(last_access_date,JInt(1341852024)), JField(last_modified_date,JInt(1332302157)), JField(is_employee,JBool(false)), JField(link,JString(http://stackoverflow.com/users/988/staffan)), JField(website_url,JString(http://none)), JField(location,JString(Sweden)), JField(account_id,JInt(758)), JField(badge_counts,JObject(List(JField(gold,JInt(1)), JField(silver,JInt(9)), JField(bronze,JInt(22))))), JField(accept_rate,JInt(86))))
-
-case class Badges(
-    val gold : Int,
-    val silver : Int,
-    val bronze : Int )
-
-case class FullUser(
-    val user_id : Long,
-    val display_name : String,
-    val creation_date : Long,
-    val last_access_date : Long,
-    val reputation : Long,
-    val age : Option[Int],
-    val accept_rate : Option[Int],
-    val link : String,
-    val website_url : Option[String],
-    val location : Option[String],
-    val badge_counts : Badges )
-    
-
-class UserScraper
-{
-    val key = "b*DdyNcsAlQOQak6IvFH*w(("
-    
-    def run()
-    {
-        for ( i <- 0 until 1000 by 100 )
-        {
-            val j = (i until i+100)
-            implicit val formats = DefaultFormats
-            
-            val json = Dispatch.pullJSON( "http://api.stackexchange.com/2.0/users/%s?site=stackoverflow&key=%s".format( j.mkString(";"), key) )
-            val items = (json \ "items").children.map( _.extract[FullUser] )
-            
-            for ( i <- items )
-            {
-                println( i )
-            }
-            
-            // Look locations up with google geocoder API, then check viewport area to validate the size
-            // of the area described
-        }
-    }
-}
-
 
 class QuestionScraper( db : Database )
 {
@@ -136,7 +122,9 @@ class QuestionScraper( db : Database )
         {
             implicit val formats = DefaultFormats
             
-            val json = Dispatch.pullJSON( "http://api.stackexchange.com/2.0/questions?site=stackoverflow&pagesize=100&key=%s".format(key) )
+            val json = Dispatch.pullJSON( "http://api.stackexchange.com/2.0/questions",
+                List( ("site", "stackoverflow"), ("pagesize", "100"), ("key", key) ) )
+                
             val items = (json \ "items").children
             
             val questions = items.map( _.extract[Question] )
@@ -230,25 +218,11 @@ class QuestionView( db : Database ) extends SimpleSwingApplication
     }
 }
 
-object Main extends App
+/*object Main extends App
 {
     override def main( args : Array[String] ) =
     {
-        val dbName = "stack_questions"
-        val db = Database.forURL("jdbc:h2:file:%s;DB_CLOSE_DELAY=-1".format(dbName), driver = "org.h2.Driver")
-        
-        if ( !new java.io.File("%s.h2.db".format(dbName)).exists() )
-        {
-            db withSession
-            {
-                (DatabaseTables.Users.ddl ++ DatabaseTables.Questions.ddl) create
-            }
-        }
-        
-        val qs = new UserScraper()
-        qs.run()
-        
-        /*if ( false )
+       if ( false )
         {
             val qs = new QuestionScraper(db)    
             qs.run()
@@ -257,7 +231,7 @@ object Main extends App
         {
             val qv = new QuestionView(db)
             qv.main( args )
-        }*/
+        }
     }
-}
+}*/
 
