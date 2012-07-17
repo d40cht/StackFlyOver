@@ -124,7 +124,7 @@ class MarkerClusterer( val db : Database )
         class UserData( val uid : Long, val reputation : Long, val lon : Double, val lat : Double, val tags : List[UserTag] )
         
         // Pull all the user data out into Scala
-        println( "Pulling in all users with location data" )
+        println( "Pulling in all users with location data and tag data" )
         val allUsers = db withSession
         {
             val allUsers = (for ( Join(user, loc) <- 
@@ -133,14 +133,15 @@ class MarkerClusterer( val db : Database )
                     if  loc.longitude >= -12.5 && loc.longitude <= 2.7 &&
                         loc.latitude >= 49.9 && loc.latitude <= 59.7 &&
                         loc.radius < 100000.0 )
-                yield user.user_id ~ user.reputation ~ loc.longitude ~ loc.latitude ).list
+                yield user.display_name ~ user.user_id ~ user.reputation ~ loc.longitude ~ loc.latitude ).list
             
             val userData = mutable.ArrayBuffer[UserData]()
-            val allUserData = for ( (uid, rep, lon, lat) <- allUsers ) yield
+            val allUserData = for ( (name, uid, rep, lon, lat) <- allUsers ) yield
             {
                 val userTagData = (for ( Join(userTag, tagData) <-
                     CriticalMassTables.UserTags innerJoin
-                    CriticalMassTables.Tags on (_.tag_id is _.id ) )
+                    CriticalMassTables.Tags on (_.tag_id is _.id )
+                    if userTag.user_id === uid )
                     yield tagData.name ~ userTag.count ).list
                     
                 new UserData( uid, rep, lon, lat, userTagData.map( t => new UserTag( t._1, t._2 ) ) )
@@ -177,12 +178,12 @@ class MarkerClusterer( val db : Database )
             println( "Merge distance: %f %d".format( maxMergeDistance, startClusters.size ) ) 
             
             var clusterCopy = startClusters
-            var minDist : Option[(Double, UserCluster, UserCluster)] = None
             var finished = false
             
             while ( !finished )
             {
                 // Choose a min distance cluster to merge
+                var minDist : Option[(Double, UserCluster, UserCluster)] = None
                 for ( c1 <- clusterCopy; c2 <- clusterCopy if c1 != c2 )
                 {
                     val d = c1.dist(c2)
