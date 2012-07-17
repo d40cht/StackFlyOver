@@ -8,6 +8,8 @@ import org.scalaquery.ql.{Join, SimpleFunction, Query}
 
 import net.liftweb.json.{JsonParser, DefaultFormats}
 
+import scala.collection.{mutable, immutable}
+
 object CriticalMassTables
 {
     import org.scalaquery.ql.extended.{ExtendedTable => Table}
@@ -94,6 +96,70 @@ case class YahooLocation(
     longitude   : String,
     radius      : String )
     
+
+class MarkerClusterer( val db : Database )
+{
+    // http://www.movable-type.co.uk/scripts/latlong.html
+    private def distfn( lon1 : Double, lat1 : Double, lon2 : Double, lat2 : Double ) : Double =
+    {
+        def toRad( v : Double ) : Double = 2.0 * math.Pi * (v / 360.0)
+        
+        val R = 6371.0; // Radius of the Earth in km
+        val dLat = toRad(lat2-lat1)
+        val dLon = toRad(lon2-lon1)
+        val dlat1 = toRad(lat1)
+        val dlat2 = toRad(lat2)
+
+        var a = math.sin(dLat/2.0) * math.sin(dLat/2.0) +
+                math.sin(dLon/2.0) * math.sin(dLon/2.0) * math.cos(dlat1) * math.cos(dlat2)
+        var c = 2.0 * math.atan2(math.sqrt(a), math.sqrt(1.0-a))
+        var d = R * c;
+        
+        d
+    }
+    
+    def run() =
+    {
+        class UserTag( val name : String, val count : Long )        
+        class UserData( val uid : Long, val reputation : Long, val lon : Double, val lat : Double, val tags : List[UserTag] )
+        
+        // Pull all the user data out into Scala
+        val allUsers = db withSession
+        {
+            val allUsers = (for ( Join(user, loc) <- CriticalMassTables.Users innerJoin CriticalMassTables.Locations on(_.location is _.name) ) yield user.user_id ~ user.reputation ~ loc.longitude ~ loc.latitude ).list
+            
+            val userData = mutable.ArrayBuffer[UserData]()
+            val allUserData = for ( (uid, rep, lon, lat) <- allUsers ) yield
+            {
+                val userTagData = (for ( Join(userTag, tagData) <-
+                    CriticalMassTables.UserTags innerJoin
+                    CriticalMassTables.Tags on (_.tag_id is _.id ) )
+                    yield tagData.name ~ userTag.count ).list
+                    
+                new UserData( uid, rep, lon, lat, userTagData.map( t => new UserTag( t._1, t._2 ) ) )
+            }
+            
+            allUserData.toArray
+        }
+        
+        // Run through the google map scales, merging as appropriate
+        class UserCluster( val lon : Double, val lat : Double, val users : List[UserData] )
+        {
+            def this( ud : UserData ) = this( ud.lon, ud.lat, List(ud) )
+            def dist( other : UserCluster ) = distfn( lon, lat, other.lon, other.lat )
+            def merged( other : UserCluster) : UserCluster =
+            {
+                val size = users.size.toDouble
+                val sizeOther = other.users.size.toDouble
+                val total = size + sizeOther
+                val newLon = (size/total) * lon + (sizeOther/total) * other.lon
+                val newLat = (size/total) * lat + (sizeOther/total) * other.lat
+                
+                new UserCluster( newLon, newLat, users ++ other.users ) 
+            }
+        }
+    }
+}
 
 class UserScraper( val db : Database )
 {
@@ -285,27 +351,10 @@ class UserScraper( val db : Database )
                 }
                 println( "                       ", count )
                 Thread.sleep(500)
-
-                // Show locations using the Google MarkerManager (https://developers.google.com/maps/articles/toomanymarkers)
-
-                
             }
         }
     }
 }
-
-// Tags and synonyms: /tags, /tags/synonyms 
-
-// Then user tags: /2.0/users/{1,2,3}/tags?order=desc&sort=popular&site=stackoverflow
-            /*
-            {
-      "name": "windows",
-      "count": 20,
-      "is_required": false,
-      "is_moderator_only": false,
-      "user_id": 123,
-      "has_synonyms": true
-    }*/
 
 
 object Main extends App
@@ -323,95 +372,8 @@ object Main extends App
             }
         }
         
-        val qs = new UserScraper(db)
-        qs.run()
+        //val qs = new UserScraper(db)
+        //qs.run()
     }
 }
-
-/*
-{
-            val items = Dispatch.pullJSON( "http://api.stackexchange.com/2.0/users/1;2;3;4;5;6;7;8;9;10?order=desc&sort=reputation&site=stackoverflow" )
-            
-            val items = (json \ "items").children
-            
-            for ( user <- items )
-            {
-                println( user \ "display_name" )
-                println( "  " + user \ "reputation" )
-                println( "  " + user \ "location" )
-            }
-            
-            // Geocode using the google api (max 15000 a day): https://developers.google.com/maps/documentation/geocoding/
-            // http://maps.googleapis.com/maps/api/geocode/json?address=San+Diego,CA&sensor=false
-            //
-            // and p
-            
-            //println( res )
-            //println( json.toString )
-        }
-        
-         
-            // Geocode using the google api (max 15000 a day): https://developers.google.com/maps/documentation/geocoding/
-            // http://maps.googleapis.com/maps/api/geocode/json?address=San+Diego,CA&sensor=false
-            
-
-
-{
-   "results" : [
-      {
-         "address_components" : [
-            {
-               "long_name" : "San Diego",
-               "short_name" : "San Diego",
-               "types" : [ "locality", "political" ]
-            },
-            {
-               "long_name" : "San Diego",
-               "short_name" : "San Diego",
-               "types" : [ "administrative_area_level_2", "political" ]
-            },
-            {
-               "long_name" : "California",
-               "short_name" : "CA",
-               "types" : [ "administrative_area_level_1", "political" ]
-            },
-            {
-               "long_name" : "United States",
-               "short_name" : "US",
-               "types" : [ "country", "political" ]
-            }
-         ],
-         "formatted_address" : "San Diego, CA, USA",
-         "geometry" : {
-            "bounds" : {
-               "northeast" : {
-                  "lat" : 33.1142490,
-                  "lng" : -116.908160
-               },
-               "southwest" : {
-                  "lat" : 32.5348560,
-                  "lng" : -117.28216650
-               }
-            },
-            "location" : {
-               "lat" : 32.71532920,
-               "lng" : -117.15725510
-            },
-            "location_type" : "APPROXIMATE",
-            "viewport" : {
-               "northeast" : {
-                  "lat" : 32.86540990,
-                  "lng" : -116.90113630
-               },
-               "southwest" : {
-                  "lat" : 32.56499550,
-                  "lng" : -117.41337390
-               }
-            }
-         },
-         "types" : [ "locality", "political" ]
-      }
-   ],
-   "status" : "OK"
-*/
        
