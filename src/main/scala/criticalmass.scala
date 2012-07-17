@@ -124,9 +124,16 @@ class MarkerClusterer( val db : Database )
         class UserData( val uid : Long, val reputation : Long, val lon : Double, val lat : Double, val tags : List[UserTag] )
         
         // Pull all the user data out into Scala
+        println( "Pulling in all users with location data" )
         val allUsers = db withSession
         {
-            val allUsers = (for ( Join(user, loc) <- CriticalMassTables.Users innerJoin CriticalMassTables.Locations on(_.location is _.name) ) yield user.user_id ~ user.reputation ~ loc.longitude ~ loc.latitude ).list
+            val allUsers = (for ( Join(user, loc) <- 
+                CriticalMassTables.Users innerJoin
+                CriticalMassTables.Locations on(_.location is _.name)
+                    if  loc.longitude >= -12.5 && loc.longitude <= 2.7 &&
+                        loc.latitude >= 49.9 && loc.latitude <= 59.7 &&
+                        loc.radius < 100000.0 )
+                yield user.user_id ~ user.reputation ~ loc.longitude ~ loc.latitude ).list
             
             val userData = mutable.ArrayBuffer[UserData]()
             val allUserData = for ( (uid, rep, lon, lat) <- allUsers ) yield
@@ -139,15 +146,17 @@ class MarkerClusterer( val db : Database )
                 new UserData( uid, rep, lon, lat, userTagData.map( t => new UserTag( t._1, t._2 ) ) )
             }
             
-            allUserData.toArray
+            allUserData.toList
         }
+        
+        println( "   pulled in %d".format( allUsers.size ) )
         
         // Run through the google map scales, merging as appropriate
         class UserCluster( val lon : Double, val lat : Double, val users : List[UserData] )
         {
             def this( ud : UserData ) = this( ud.lon, ud.lat, List(ud) )
             def dist( other : UserCluster ) = distfn( lon, lat, other.lon, other.lat )
-            def merged( other : UserCluster) : UserCluster =
+            def merge( other : UserCluster) : UserCluster =
             {
                 val size = users.size.toDouble
                 val sizeOther = other.users.size.toDouble
@@ -157,6 +166,54 @@ class MarkerClusterer( val db : Database )
                 
                 new UserCluster( newLon, newLat, users ++ other.users ) 
             }
+        }
+        
+        val startClusters = allUsers.map( ud => new UserCluster(ud) )
+        
+        // In metres
+        var maxMergeDistance = 400.0
+        for ( i <- 0 until 10 )
+        {
+            println( "Merge distance: %f %d".format( maxMergeDistance, startClusters.size ) ) 
+            
+            var clusterCopy = startClusters
+            var minDist : Option[(Double, UserCluster, UserCluster)] = None
+            var finished = false
+            
+            while ( !finished )
+            {
+                // Choose a min distance cluster to merge
+                for ( c1 <- clusterCopy; c2 <- clusterCopy if c1 != c2 )
+                {
+                    val d = c1.dist(c2)
+                    minDist match
+                    {
+                        case None =>
+                        {
+                            minDist = Some( (d, c1, c2) )
+                        }
+                        case Some( (dother, _, _) ) =>
+                        {
+                            if ( d < dother ) minDist = Some( (d, c1, c2) )
+                        }
+                    }
+                }
+                
+                minDist match
+                {
+                    case Some( (d, c1, c2) ) =>
+                    {
+                        val merged = c1.merge(c2)
+                        clusterCopy = merged :: clusterCopy.filter( x => x != c1 && x != c2 )
+                        println( "      %f (%d)".format( d, clusterCopy.size ) )
+                    }
+                    case None => finished = true
+                }
+            }
+            
+            println( "  after merge: %d".format( clusterCopy.size ) )
+            
+            maxMergeDistance *= 2.0
         }
     }
 }
@@ -371,7 +428,8 @@ object Main extends App
                 (CriticalMassTables.Users.ddl ++ CriticalMassTables.Locations.ddl ++ CriticalMassTables.Tags.ddl ++ CriticalMassTables.UserTags.ddl) create
             }
         }
-        
+        val mc = new MarkerClusterer(db)
+        mc.run()
         //val qs = new UserScraper(db)
         //qs.run()
     }
