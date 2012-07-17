@@ -152,6 +152,14 @@ class MarkerClusterer( val db : Database )
         
         println( "   pulled in %d".format( allUsers.size ) )
         
+        println( "Building kd tree" )
+        val kdTree = new com.vividsolutions.jts.index.kdtree.KdTree()
+        allUsers.foreach( u => kdTree.insert( new com.vividsolutions.jts.geom.Coordinate( u.lon, u.lat ), u ) )
+        
+        // Then run kdTree.query( new com.vividsolutions.jts.geom.Envelope( lon1, lat1, lon2, lat2 ) ) to get list
+        // of points in range
+        println( "  done" )
+        
         // Run through the google map scales, merging as appropriate
         class UserCluster( val lon : Double, val lat : Double, val users : List[UserData] )
         {
@@ -170,6 +178,8 @@ class MarkerClusterer( val db : Database )
         }
         
         val startClusters = allUsers.map( ud => new UserCluster(ud) )
+        
+        
         
         // In metres
         var maxMergeDistance = 400.0
