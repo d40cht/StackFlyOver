@@ -17,4 +17,7 @@ libraryDependencies += "org.scalaquery" % "scalaquery_2.9.1" % "0.10.0-M1"
 
 libraryDependencies += "org.scala-lang" % "scala-swing" % "2.9.1"
 
+scalacOptions += "-deprecation"
+
+scalacOptions += "-optimize"
 

@@ -11,6 +11,7 @@ import org.scalaquery.ql.basic.BasicDriver.Implicit._
 
 object Application extends Controller
 {
+    //val path = "/home/alex.wilson/Dropbox/stack_questions"
     val googleMapsKey = "AIzaSyA_F10Lcod9fDputQVMZOtM4cMMaFbJybU"
     def index = Action
     {

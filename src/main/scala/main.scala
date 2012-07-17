@@ -22,7 +22,7 @@ object Dispatch
     {
         import java.net.URLEncoder.encode
         
-        val fullUrl = baseUrl + "?" + params.map( x => encode(x._1) + "=" + encode(x._2) ).mkString("&")
+        val fullUrl = baseUrl + "?" + params.map( x => encode(x._1, "utf-8") + "=" + encode(x._2, "utf-8") ).mkString("&")
         val u = url( fullUrl     )
         val res = h(u as_str)   
         val j = JsonParser.parse(res)
