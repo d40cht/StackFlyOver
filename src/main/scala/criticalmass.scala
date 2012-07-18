@@ -478,12 +478,11 @@ object Main extends App
         val dbName = "stack_users"
         val db = Database.forURL("jdbc:h2:file:%s;DB_CLOSE_DELAY=-1".format(dbName), driver = "org.h2.Driver")
         
-        //if ( !new java.io.File("%s.h2.db".format(dbName)).exists() )
+        if ( !new java.io.File("%s.h2.db".format(dbName)).exists() )
         {
             db withSession
             {
-                //(CriticalMassTables.Users.ddl ++ CriticalMassTables.Locations.ddl ++ CriticalMassTables.Tags.ddl ++ CriticalMassTables.UserTags.ddl + CriticalMassTables.DataHierarchy.ddl) create
-                (CriticalMassTables.DataHierarchy.ddl) create
+                (CriticalMassTables.Users.ddl ++ CriticalMassTables.Locations.ddl ++ CriticalMassTables.Tags.ddl ++ CriticalMassTables.UserTags.ddl + CriticalMassTables.DataHierarchy.ddl) create
             }
         }
         val mc = new MarkerClusterer(db)
