@@ -53,6 +53,9 @@ object Application extends Controller
     
     def mapData( loc : String ) = Action
     {
+        // http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/images/m4.png
+        // Then ClusterIcon from here: http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/src/markerclusterer.js
+        // which manages text over the top of the icon
         val Array( swlat, swlon, nelat, nelon, zoom ) = loc.split(",").map(_.toDouble)
         println( swlat, swlon, nelat, nelon, zoom )
         val json = render(data.map( x => ("name" -> x.name) ~ ("lon" -> x.lon.toString) ~ ("lat" -> x.lat.toString) ))
