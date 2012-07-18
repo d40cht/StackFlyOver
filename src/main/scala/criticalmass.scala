@@ -110,10 +110,10 @@ class MarkerClusterer( val db : Database )
         val dlat1 = toRad(lat1)
         val dlat2 = toRad(lat2)
 
-        var a = math.sin(dLat/2.0) * math.sin(dLat/2.0) +
+        val a = math.sin(dLat/2.0) * math.sin(dLat/2.0) +
                 math.sin(dLon/2.0) * math.sin(dLon/2.0) * math.cos(dlat1) * math.cos(dlat2)
-        var c = 2.0 * math.atan2(math.sqrt(a), math.sqrt(1.0-a))
-        var d = R * c;
+        val c = 2.0 * math.atan2(math.sqrt(a), math.sqrt(1.0-a))
+        val d = R * c;
         
         d
     }
@@ -152,10 +152,6 @@ class MarkerClusterer( val db : Database )
         
         println( "   pulled in %d".format( allUsers.size ) )
         
-        println( "Building kd tree" )
-        val kdTree = new com.vividsolutions.jts.index.kdtree.KdTree()
-        allUsers.foreach( u => kdTree.insert( new com.vividsolutions.jts.geom.Coordinate( u.lon, u.lat ), u ) )
-        
         // Then run kdTree.query( new com.vividsolutions.jts.geom.Envelope( lon1, lat1, lon2, lat2 ) ) to get list
         // of points in range
         println( "  done" )
@@ -175,37 +171,62 @@ class MarkerClusterer( val db : Database )
                 
                 new UserCluster( newLon, newLat, users ++ other.users ) 
             }
+            
+            def coords = Array( lon, lat )
+            def tupleCoords = (lon, lat)
         }
         
-        val startClusters = allUsers.map( ud => new UserCluster(ud) )
+        println( "Building merge tree" )
+        var mergeSet = immutable.HashMap[(Double, Double), UserCluster]()
+        for ( ud <- allUsers )
+        {
+            val u = new UserCluster(ud)
+            val nu = if ( mergeSet contains u.tupleCoords )
+            {
+                val original = mergeSet(u.tupleCoords)
+                mergeSet -= u.tupleCoords
+                new UserCluster( u.lon, u.lat, ud :: original.users )
+            }
+            else u
+            
+            mergeSet += (nu.tupleCoords -> nu)
+        }
         
-        
+        val mergeTree = new edu.wlu.cs.levy.CG.KDTree[UserCluster](2)
+        for ( (c, u) <- mergeSet ) mergeTree.insert( u.coords, u )
         
         // In metres
-        var maxMergeDistance = 400.0
+        var maxMergeDistance = 0.4
         for ( i <- 0 until 10 )
         {
-            println( "Merge distance: %f %d".format( maxMergeDistance, startClusters.size ) ) 
+            println( "Merge distance: %f %d".format( maxMergeDistance, mergeSet.size ) ) 
             
-            var clusterCopy = startClusters
             var finished = false
             
             while ( !finished )
             {
                 // Choose a min distance cluster to merge
                 var minDist : Option[(Double, UserCluster, UserCluster)] = None
-                for ( c1 <- clusterCopy; c2 <- clusterCopy if c1 != c2 )
+                for ( (coords, c) <- mergeSet )
                 {
-                    val d = c1.dist(c2)
-                    minDist match
+                    import scala.collection.JavaConversions._
+                    
+                    val nearest = mergeTree.nearest( c.coords, 2 ).filter( _.tupleCoords != c.tupleCoords ).head
+                    assert( nearest.tupleCoords != c.tupleCoords )
+                    val d = c.dist(nearest)
+                    
+                    if ( d <= maxMergeDistance )
                     {
-                        case None =>
+                        minDist match
                         {
-                            minDist = Some( (d, c1, c2) )
-                        }
-                        case Some( (dother, _, _) ) =>
-                        {
-                            if ( d < dother ) minDist = Some( (d, c1, c2) )
+                            case None =>
+                            {
+                                minDist = Some( (d, c, nearest) )
+                            }
+                            case Some( (dother, _, _) ) =>
+                            {
+                                if ( d < dother ) minDist = Some( (d, c, nearest) )
+                            }
                         }
                     }
                 }
@@ -215,14 +236,19 @@ class MarkerClusterer( val db : Database )
                     case Some( (d, c1, c2) ) =>
                     {
                         val merged = c1.merge(c2)
-                        clusterCopy = merged :: clusterCopy.filter( x => x != c1 && x != c2 )
-                        println( "      %f (%d)".format( d, clusterCopy.size ) )
+                        mergeSet -= c1.tupleCoords
+                        mergeSet -= c2.tupleCoords
+                        mergeTree.delete( c1.coords )
+                        mergeTree.delete( c2.coords )
+                        mergeSet += (merged.tupleCoords -> merged)
+                        mergeTree.insert( merged.coords, merged )
+                        println( "      %s (%d) (%s, %s, %s, %s)".format( d.toString, mergeSet.size, c1.lon.toString, c1.lat.toString, c2.lon.toString, c2.lat.toString ) )
                     }
                     case None => finished = true
                 }
             }
             
-            println( "  after merge: %d".format( clusterCopy.size ) )
+            println( "  after merge: %d".format( mergeSet.size ) )
             
             maxMergeDistance *= 2.0
         }
