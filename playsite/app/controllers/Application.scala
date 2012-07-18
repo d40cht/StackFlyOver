@@ -11,6 +11,8 @@ import org.scalaquery.ql.basic.BasicDriver.Implicit._
 import net.liftweb.json._
 import net.liftweb.json.JsonDSL._
 
+
+
 object Application extends Controller
 {
     case class Pos( val name : String, val lon : Double, val lat : Double )

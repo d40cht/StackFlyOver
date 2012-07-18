@@ -33,6 +33,17 @@ object CriticalMassTables
         def * = tag_id ~ user_id ~ count
     }
     
+    object DataHierarchy extends Table[(Long, Int, Double, Double, Int)]("DataHierarchy")
+    {
+        def id                  = column[Long]("id", O PrimaryKey, O AutoInc)
+        def level               = column[Int]("level")
+        def longitude           = column[Double]("longitude")
+        def latitude            = column[Double]("latitude")
+        def count               = column[Int]("count")
+        
+        def * = id ~ level ~ longitude ~ latitude ~ count
+    }
+    
     
     // A sensible radius threshold seems to be 40km (40,000)
     object Locations extends Table[(String, Double, Double, Double)]("Locations")
@@ -197,7 +208,7 @@ class MarkerClusterer( val db : Database )
         
         // In metres
         var maxMergeDistance = 0.4
-        for ( i <- 0 until 10 )
+        for ( level <- 16 to 5 by -1 )
         {
             println( "Merge distance: %f %d".format( maxMergeDistance, mergeSet.size ) ) 
             
@@ -249,6 +260,15 @@ class MarkerClusterer( val db : Database )
             }
             
             println( "  after merge: %d".format( mergeSet.size ) )
+            
+            db withSession
+            {
+                for ( (c, u) <- mergeSet )
+                {
+                    val dh = CriticalMassTables.DataHierarchy
+                    (dh.level ~ dh.longitude ~ dh.latitude ~ dh.count) insert ( (level, u.lon, u.lat, u.users.size) )
+                }
+            }
             
             maxMergeDistance *= 2.0
         }
@@ -458,11 +478,12 @@ object Main extends App
         val dbName = "stack_users"
         val db = Database.forURL("jdbc:h2:file:%s;DB_CLOSE_DELAY=-1".format(dbName), driver = "org.h2.Driver")
         
-        if ( !new java.io.File("%s.h2.db".format(dbName)).exists() )
+        //if ( !new java.io.File("%s.h2.db".format(dbName)).exists() )
         {
             db withSession
             {
-                (CriticalMassTables.Users.ddl ++ CriticalMassTables.Locations.ddl ++ CriticalMassTables.Tags.ddl ++ CriticalMassTables.UserTags.ddl) create
+                //(CriticalMassTables.Users.ddl ++ CriticalMassTables.Locations.ddl ++ CriticalMassTables.Tags.ddl ++ CriticalMassTables.UserTags.ddl + CriticalMassTables.DataHierarchy.ddl) create
+                (CriticalMassTables.DataHierarchy.ddl) create
             }
         }
         val mc = new MarkerClusterer(db)
