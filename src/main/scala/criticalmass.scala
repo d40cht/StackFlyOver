@@ -33,15 +33,26 @@ object CriticalMassTables
         def * = tag_id ~ user_id ~ count
     }
     
-    object DataHierarchy extends Table[(Long, Int, Double, Double, Int)]("DataHierarchy")
+    object UserMap extends Table[(Long, Long)]("UserMap")
+    {
+        def dh_id               = column[Long]("dh_id")
+        def user_id             = column[Long]("user_id")
+        
+        def * = dh_id ~ user_id
+    }
+    
+    object DataHierarchy extends Table[(Long, Int, Double, Double, Int, Int, Long, String)]("DataHierarchy")
     {
         def id                  = column[Long]("id", O PrimaryKey, O AutoInc)
         def level               = column[Int]("level")
         def longitude           = column[Double]("longitude")
         def latitude            = column[Double]("latitude")
         def count               = column[Int]("count")
+        def maxRep              = column[Int]("maxRep")
+        def maxRepUid           = column[Long]("maxRepUid")
+        def label               = column[String]("label")
         
-        def * = id ~ level ~ longitude ~ latitude ~ count
+        def * = id ~ level ~ longitude ~ latitude ~ count ~ maxRep ~ maxRepUid ~ label
     }
     
     
@@ -143,7 +154,7 @@ class MarkerClusterer( val db : Database )
                 CriticalMassTables.Locations on(_.location is _.name)
                     if  loc.longitude >= -12.5 && loc.longitude <= 2.7 &&
                         loc.latitude >= 49.9 && loc.latitude <= 59.7 &&
-                        loc.radius < 100000.0 )
+                        loc.radius < 100000.0 && user.reputation >= 2L )
                 yield user.display_name ~ user.user_id ~ user.reputation ~ loc.longitude ~ loc.latitude ).list
             
             val userData = mutable.ArrayBuffer[UserData]()
@@ -189,6 +200,7 @@ class MarkerClusterer( val db : Database )
         
         println( "Building merge tree" )
         var mergeSet = immutable.HashMap[(Double, Double), UserCluster]()
+        var debugCount = 0
         for ( ud <- allUsers )
         {
             val u = new UserCluster(ud)
@@ -196,18 +208,22 @@ class MarkerClusterer( val db : Database )
             {
                 val original = mergeSet(u.tupleCoords)
                 mergeSet -= u.tupleCoords
+                debugCount -= 1
                 new UserCluster( u.lon, u.lat, ud :: original.users )
             }
             else u
             
+            debugCount += 1
             mergeSet += (nu.tupleCoords -> nu)
         }
+        
+        assert( debugCount == mergeSet.size )
         
         val mergeTree = new edu.wlu.cs.levy.CG.KDTree[UserCluster](2)
         for ( (c, u) <- mergeSet ) mergeTree.insert( u.coords, u )
         
         // In metres
-        var maxMergeDistance = 0.4
+        var maxMergeDistance = 0.2
         for ( level <- 16 to 5 by -1 )
         {
             println( "Merge distance: %f %d".format( maxMergeDistance, mergeSet.size ) ) 
@@ -253,10 +269,12 @@ class MarkerClusterer( val db : Database )
                         mergeTree.delete( c2.coords )
                         mergeSet += (merged.tupleCoords -> merged)
                         mergeTree.insert( merged.coords, merged )
-                        println( "      %s (%d) (%s, %s, %s, %s)".format( d.toString, mergeSet.size, c1.lon.toString, c1.lat.toString, c2.lon.toString, c2.lat.toString ) )
+                        //println( "      %s (%d) (%s, %s, %s, %s)".format( d.toString, mergeSet.size, c1.lon.toString, c1.lat.toString, c2.lon.toString, c2.lat.toString ) )
                     }
                     case None => finished = true
                 }
+                
+                if ( mergeSet.size < 10 ) finished = true
             }
             
             println( "  after merge: %d".format( mergeSet.size ) )
@@ -266,7 +284,47 @@ class MarkerClusterer( val db : Database )
                 for ( (c, u) <- mergeSet )
                 {
                     val dh = CriticalMassTables.DataHierarchy
-                    (dh.level ~ dh.longitude ~ dh.latitude ~ dh.count) insert ( (level, u.lon, u.lat, u.users.size) )
+                    
+                    val numUsers = u.users.size
+                    var tagSummary = immutable.Map[String, Double]()
+                    for ( user <- u.users ) yield
+                    {
+                        val totalCount = user.tags.foldLeft(0L)( _ + _.count ).toDouble
+                        
+                        if ( totalCount > 5 )
+                        {
+                            for ( tag <- user.tags )
+                            {
+                                val oldScore = tagSummary.getOrElse(tag.name, 0.0)
+                                val newScore = (tag.count.toDouble / totalCount.toDouble)
+                                
+                                tagSummary += (tag.name -> (newScore+oldScore))
+                            }
+                        }
+                    }
+                    
+                    val topTags = tagSummary.toList.sortWith( _._2 > _._2 ).take(5)
+                    val maxRepUser = u.users.sortWith( _.reputation > _.reputation ).head
+                    val maxRep = maxRepUser.reputation.toInt
+                    val maxRepUid = maxRepUser.uid
+                    
+                    val label = "%d: %s".format( numUsers, topTags.map(_._1).mkString(" ") )
+                    
+                    // Load this dh point plus all the relevant users
+                    db withTransaction
+                    {
+                        val scopeIdentity = SimpleFunction.nullary[Long]("scope_identity")
+                        (dh.level ~ dh.longitude ~ dh.latitude ~ dh.count ~ dh.maxRep ~ dh.maxRepUid ~ dh.label) insert ( (level, u.lon, u.lat, numUsers, maxRep, maxRepUid, label) )
+                        
+                        
+                        val dhId = Query(scopeIdentity).first
+                        
+                        for ( user <- u.users )
+                        {
+                            CriticalMassTables.UserMap insert ( (dhId, user.uid) )
+                        }
+                        
+                    }
                 }
             }
             
@@ -482,7 +540,8 @@ object Main extends App
         {
             db withSession
             {
-                (CriticalMassTables.Users.ddl ++ CriticalMassTables.Locations.ddl ++ CriticalMassTables.Tags.ddl ++ CriticalMassTables.UserTags.ddl + CriticalMassTables.DataHierarchy.ddl) create
+                (CriticalMassTables.Users.ddl ++ CriticalMassTables.Locations.ddl ++ CriticalMassTables.Tags.ddl ++ CriticalMassTables.UserTags.ddl ++ CriticalMassTables.DataHierarchy.ddl) create
+                //(CriticalMassTables.DataHierarchy.ddl) create
             }
         }
         val mc = new MarkerClusterer(db)
