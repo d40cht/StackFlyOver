@@ -2,11 +2,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html style="height:100%">
     <head>
         <title>@title</title>
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
-        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
         <script src="@routes.Assets.at("javascripts/jquery-1.7.2.min.js")" type="text/javascript"></script>
         <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyA_F10Lcod9fDputQVMZOtM4cMMaFbJybU&sensor=false" type="text/javascript">
         </script>
@@ -27,17 +26,6 @@
         var markersArray = [];
         var map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
         
-        /*var markers = [];
-        for (var i = 0; i < 9584; i++) {
-          var datapoint = data[i];
-          var latLng = new google.maps.LatLng(datapoint.lat,
-              datapoint.lon);
-          var marker = new google.maps.Marker({
-            position: latLng
-          });
-          markers.push(marker);
-        }
-        var markerCluster = new MarkerClusterer(map, markers);*/
       
         google.maps.event.addListener(map, 'idle', function ()
         {
@@ -62,22 +50,22 @@
                         var icon = new google.maps.MarkerImage("http://www.google.com/intl/en_us/mapfiles/ms/micons/blue-dot.png");
                         var count = parseInt(item.count);
                         var maxRep = parseInt(item.maxRep);
-                        if ( count > 5000 )
+                        if ( count > 2000 )
                         {
                             icon = new google.maps.MarkerImage( "http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/images/m5.png", null, null, new google.maps.Point( 45, 45 ) );
                         }
-                        else if ( count > 1000 )
+                        else if ( count > 500 )
                         {
                             icon = new google.maps.MarkerImage( "http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/images/m4.png", null, null, new google.maps.Point( 39, 39 ) );
                         }
-                        else if ( count > 200 )
+                        else if ( count > 20 )
                         {
                             icon = new google.maps.MarkerImage( "http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/images/m3.png", null, null, new google.maps.Point( 33, 33 ) );
                         }
-                        else if ( count > 20 )
+                        /*else if ( count > 20 )
                         {
                             icon = new google.maps.MarkerImage( "http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/images/m2.png", null, null, new google.maps.Point( 28, 28 ) );
-                        }
+                        }*/
                         else if ( count > 1 )
                         {
                             icon = new google.maps.MarkerImage( "http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/images/m1.png", null, null, new google.maps.Point( 26, 26 ) );
@@ -126,7 +114,7 @@
                             var markerImageRep = new google.maps.MarkerImage( base + repIcon, null, null, new google.maps.Point( 16, 8 ) );
                             var smarker = new google.maps.Marker( {
                               position: new google.maps.LatLng(item.lat, item.lon),
-                              //title : "Max rep: " +maxRep.toString(), 
+                              title : item.name, 
                               map: map,
                               icon : markerImageRep,
                               zIndex : 1
@@ -147,7 +135,7 @@
         </script>
     
     </head>
-    <body onload="initialize();">
+    <body onload="initialize();" style="height:100%; padding-left:3%; padding-right:3%">
         @content
     </body>
 </html>

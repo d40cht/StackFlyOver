@@ -30,6 +30,7 @@ object CriticalMassTables
         
         def * = id ~ level ~ longitude ~ latitude ~ count ~ maxRep ~ maxRepUid ~ label
     }
+    val dbUri="jdbc:h2:file:/home/alex/StackFlyover/CriticalMass/stack_users;DB_CLOSE_DELAY=-1"
 }
 
 object Application extends Controller
@@ -39,7 +40,7 @@ object Application extends Controller
     val googleMapsKey = "AIzaSyA_F10Lcod9fDputQVMZOtM4cMMaFbJybU"
     def index = Action
     {
-        val db = Database.forURL("jdbc:h2:file:/home/alex/Devel/AW/CriticalMass/stack_users;DB_CLOSE_DELAY=-1", driver = "org.h2.Driver")
+        val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
         
         db withSession
         {
@@ -49,7 +50,7 @@ object Application extends Controller
     
     def mapData( loc : String ) = Action
     {
-        val db = Database.forURL("jdbc:h2:file:/home/alex.wilson/Devel/AW/CriticalMass/stack_users;DB_CLOSE_DELAY=-1", driver = "org.h2.Driver")
+        val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
         
         // http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/images/m4.png
         // Then ClusterIcon from here: http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/src/markerclusterer.js
