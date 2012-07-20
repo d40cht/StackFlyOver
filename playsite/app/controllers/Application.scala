@@ -40,6 +40,7 @@ object Application extends Controller
     
     case class Pos( val name : String, val lon : Double, val lat : Double )
     
+    val stackOverFlowKey = "5FUHVgHRGHWbz9J5bEy)Ng(("
     val stackOverFlowSecretKey = "aL1DlUG5A7M96N48t2*k0w(("
     val googleMapsKey = "AIzaSyA_F10Lcod9fDputQVMZOtM4cMMaFbJybU"
     def index = Action
@@ -121,15 +122,21 @@ object Application extends Controller
             baseUrl + "?" + params.map( x => encode(x._1, "utf-8") + "=" + encode(x._2, "utf-8") ).mkString("&")
         }
         
-        val uidurl = WS.url( uencode("http://api.stackexchange.com/2.0/me/associated",
+        val uidurlRes = WS.url( uencode("https://api.stackexchange.com/2.0/me",
             List(
-            //("site",       "stackoverflow"),
+            ("site",       "stackoverflow"),
             ("access_token", accessToken),
-            ("key",          stackOverFlowSecretKey) ) ) )
+            ("key",          stackOverFlowKey) ) ) )
             
-        val response = uidurl.get().await(5000).get.json
+        val response = (uidurlRes.get().await(5000).get.json \ "items")(0)
 
-        println( "Resp: " + response )
+        println( "Resp: ", response )
+        val meuid = response \ "user_id"
+        val mename = response \ "display_name"
+        println( "User: ", meuid, mename )
+        
+        Cache.set("userId", meuid )
+        Cache.set("userName", mename )
         
         // Get user_id and display_name and stick them in the cache
         
