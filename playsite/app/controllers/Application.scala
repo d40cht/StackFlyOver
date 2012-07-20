@@ -115,12 +115,19 @@ object Application extends Controller
         Cache.set("accessTokenExpires", expires)
         
         // Now we need to get the user_id on stackoverflow
-        val uidurl = WS.url("http://api.stackexchange.com//2.0/me/associated")
-        val userIdRes = uidurl.post( Map(
+        import java.net.URLEncoder.encode
+        
+        def encode( baseUrl : String, params : List[(String, String)] ) =
+            baseUrl + "?" + params.map( x => encode(x._1, "utf-8") + "=" + encode(x._2, "utf-8") ).mkString("&")
+        
+        val uidurl = WS.url( encode("http://api.stackexchange.com//2.0/me/associated",
+            Map(
             //"site"        -> "stackoverflow",
-            "access_token"  -> Seq(accessToken),
-            "key"           -> Seq(stackOverflowKey) ) )
-        val response = userIdRes.await(5000).get.json
+            "access_token"  -> accessToken,
+            "key"           -> stackOverflowKey ) ) )
+            
+        val response = promiseRes.await(5000).get.json
+
         println( "Resp: " + response )
         
         Redirect(routes.Application.index)
