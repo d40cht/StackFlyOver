@@ -51,6 +51,36 @@ object CriticalMassTables
         
         def * = id ~ level ~ longitude ~ latitude ~ count ~ maxRep ~ maxRepUid ~ label
     }
+    
+    object Locations extends Table[(String, Double, Double, Double)]("Locations")
+    {
+        def name                = column[String]("name", O PrimaryKey)
+        def longitude           = column[Double]("longitude")
+        def latitude            = column[Double]("latitude")
+        def radius              = column[Double]("radius")
+        
+        def * = name ~ longitude ~ latitude ~ radius
+    }
+    
+    object Users extends Table[(Long, String, Long, Long, Long, Int, Int, String, String, Int, Int, Int)]("Users")
+    {
+        def user_id             = column[Long]("user_id", O PrimaryKey)
+        def display_name        = column[String]("display_name")
+        def creation_date       = column[Long]("creation_date")
+        def last_access_date    = column[Long]("last_access_date")
+        def reputation          = column[Long]("reputation")
+        def age                 = column[Int]("age")
+        def accept_rate         = column[Int]("accept_rate")
+        def website_url         = column[String]("website_url")
+        def location            = column[String]("location")
+        def badge_gold          = column[Int]("badge_gold")
+        def badge_silver        = column[Int]("badge_silver")
+        def badge_bronze        = column[Int]("badge_bronze")
+        
+        def * = user_id ~ display_name ~ creation_date ~ last_access_date ~ reputation ~
+                age ~ accept_rate ~ website_url ~ location ~ badge_gold ~ badge_silver ~ badge_bronze
+    }
+    
     val dbUri="jdbc:h2:file:./stack_users;DB_CLOSE_DELAY=-1"
 }
 
@@ -79,12 +109,8 @@ object Application extends Controller
     {
         val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
         
-        // http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/images/m4.png
-        // Then ClusterIcon from here: http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/src/markerclusterer.js
-        // which manages text over the top of the icon
         val Array( swlat, swlon, nelat, nelon, zoom ) = loc.split(",").map(_.toDouble)
         println( swlat, swlon, nelat, nelon, zoom )
-        //val json = render(data.map( x => ("name" -> x.name) ~ ("lon" -> x.lon.toString) ~ ("lat" -> x.lat.toString) ))
         
         db withSession
         {
@@ -148,10 +174,12 @@ object Application extends Controller
 
         val meuid = (response \ "user_id").extract[Int]
         val mename = (response \ "display_name").extract[String]
-        
+                
+        // Get user_id and display_name and stick them in the cache
         Cache.set("user", new UserData(accessToken, expires, meuid, mename ) )
         
-        // Get user_id and display_name and stick them in the cache
+        // TODO: If this is their first login, ask for more details
+        // namely finer location, company name
         
         Redirect(routes.Application.index)
     }
