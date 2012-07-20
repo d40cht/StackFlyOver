@@ -114,10 +114,10 @@ object Application extends Controller
         Cache.set("accessToken", accessToken)
         Cache.set("accessTokenExpires", expires)
         
-        /2.0/me/associated?access_token=vwAS(O9O7bressn2c0Sj1Q))&
         // Now we need to get the user_id on stackoverflow
-        // Talk to /2.0/me/associated?access_token=?
-        val userId = url.post( Map(
+        val uidurl = WS.url("http://api.stackexchange.com//2.0/me/associated")
+        val userId = uidurl.post( Map(
+            //"site"        -> "stackoverflow",
             "access_token"  -> Seq(accessToken),
             "key"           -> Seq(stackOverflowKey) ) )
         val response = promiseRes.await(5000).get.body
