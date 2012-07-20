@@ -40,7 +40,7 @@ object Application extends Controller
     
     case class Pos( val name : String, val lon : Double, val lat : Double )
     
-    val stackOverflowKey = "5FUHVgHRGHWbz9J5bEy)Ng(("
+    val stackOverFlowSecretKey = "aL1DlUG5A7M96N48t2*k0w(("
     val googleMapsKey = "AIzaSyA_F10Lcod9fDputQVMZOtM4cMMaFbJybU"
     def index = Action
     {
@@ -96,7 +96,7 @@ object Application extends Controller
             "client_id"     -> Seq("498"),
             "code"          -> Seq(code),
             "redirect_uri"  -> Seq("http://www.stackflyover.com/authenticate"),
-            "client_secret" -> Seq("aL1DlUG5A7M96N48t2*k0w((") ) )
+            "client_secret" -> Seq(stackOverFlowSecretKey) ) )
         val post = promiseRes.await(5000).get.body
 
 
@@ -121,11 +121,11 @@ object Application extends Controller
             baseUrl + "?" + params.map( x => encode(x._1, "utf-8") + "=" + encode(x._2, "utf-8") ).mkString("&")
         }
         
-        val uidurl = WS.url( uencode("http://api.stackexchange.com//2.0/me/associated",
+        val uidurlRes = WS.url( uencode("http://api.stackexchange.com//2.0/me/associated",
             List(
             //("site",       "stackoverflow"),
             ("access_token", accessToken),
-            ("key",          stackOverflowKey) ) ) )
+            ("key",          stackOverFlowSecretKey) ) ) )
             
         val response = promiseRes.await(5000).get.json
 
