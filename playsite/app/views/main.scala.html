@@ -34,6 +34,21 @@
             var ne = bounds.getNorthEast();
             var sw = bounds.getSouthWest();
             
+            var oTable = $('#example').dataTable( {
+                "bProcessing": false,
+                "bAutoWidth":true,
+                "bFilter":false,
+                "bInfo":false,
+                "bLengthChange":false,
+                "sAjaxSource": "@routes.Assets.at("javascripts/tabledata.json")",
+                "aoColumns": [
+                    { "mDataProp": "reputation" },
+                    { "mDataProp": "user_name" },
+                    { "mDataProp": "top_tags" },
+                    { "mDataProp": "location" }
+                ]
+            } );
+            
             $.getJSON("/mapData?loc="+sw.lat() + "," + sw.lng() + "," + ne.lat() + "," + ne.lng() + "," + zoom,
                 function(data)
                 {
@@ -134,21 +149,6 @@
       
       $(document).ready(function() {
             initialize();
-            var oTable = $('#example').dataTable( {
-                "bProcessing": false,
-                "bAutoWidth":true,
-                "bFilter":false,
-                "bInfo":false,
-                "bLengthChange":false,
-                "sAjaxSource": "@routes.Assets.at("javascripts/tabledata.json")",
-                "aoColumns": [
-                    { "mDataProp": "reputation" },
-                    { "mDataProp": "user_name" },
-                    { "mDataProp": "top_tags" },
-                    { "mDataProp": "location" }
-                ]
-            } );
-
         } );
       
         </script>
