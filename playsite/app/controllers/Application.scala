@@ -104,6 +104,7 @@ object Application extends Controller
     
     def logout() = Action
     {
+        Cache.set("user", None)
         Redirect(routes.Application.index)
     }
     
