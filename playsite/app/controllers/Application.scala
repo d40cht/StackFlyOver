@@ -40,6 +40,7 @@ object Application extends Controller
     
     case class Pos( val name : String, val lon : Double, val lat : Double )
     
+    val stackOverflowKey = "5FUHVgHRGHWbz9J5bEy)Ng(("
     val googleMapsKey = "AIzaSyA_F10Lcod9fDputQVMZOtM4cMMaFbJybU"
     def index = Action
     {
@@ -113,8 +114,14 @@ object Application extends Controller
         Cache.set("accessToken", accessToken)
         Cache.set("accessTokenExpires", expires)
         
+        /2.0/me/associated?access_token=vwAS(O9O7bressn2c0Sj1Q))&
         // Now we need to get the user_id on stackoverflow
         // Talk to /2.0/me/associated?access_token=?
+        val userId = url.post( Map(
+            "access_token"  -> Seq(accessToken),
+            "key"           -> Seq(stackOverflowKey) ) )
+        val response = promiseRes.await(5000).get.body
+        println( "Resp: " + response )
         
         Redirect(routes.Application.index)
     }
