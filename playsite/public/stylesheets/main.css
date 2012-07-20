@@ -55,6 +55,7 @@ table caption
 
 table td, table th
 {
+	font-size:85%;
 	text-align: left;
 	border: 1px solid #b1d2e4;
 	padding: 5px 10px;
