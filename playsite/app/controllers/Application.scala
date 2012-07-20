@@ -11,6 +11,27 @@ import org.scalaquery.ql.basic.BasicDriver.Implicit._
 import net.liftweb.json._
 import net.liftweb.json.JsonDSL._
 
+object Dispatch
+{
+    import dispatch._
+    
+    lazy val h = new Http
+    
+    def pullJSON( baseUrl : String, params : List[(String, String)] ) =
+    {
+        import java.net.URLEncoder.encode
+        
+        val fullUrl = baseUrl + "?" + params.map( x => encode(x._1, "utf-8") + "=" + encode(x._2, "utf-8") ).mkString("&")
+        val u = url( fullUrl )
+        val res = h(u as_str)   
+        val j = JsonParser.parse(res)
+        
+        
+        
+        j
+    }
+}
+
 object CriticalMassTables
 {
     import org.scalaquery.ql.extended.{ExtendedTable => Table}
@@ -114,21 +135,14 @@ object Application extends Controller
         
         Cache.set("accessToken", accessToken)
         Cache.set("accessTokenExpires", expires)
-        
-        // Now we need to get the user_id on stackoverflow
-        def uencode( baseUrl : String, params : List[(String, String)] ) =
-        {
-            import java.net.URLEncoder.encode
-            baseUrl + "?" + params.map( x => encode(x._1, "utf-8") + "=" + encode(x._2, "utf-8") ).mkString("&")
-        }
-        
-        val uidurlRes = WS.url( uencode("https://api.stackexchange.com/2.0/me",
+       
+        val uidurlRes = Dispatch.pullJSON("https://api.stackexchange.com/2.0/me",
             List(
             ("site",       "stackoverflow"),
             ("access_token", accessToken),
-            ("key",          stackOverFlowKey) ) ) )
+            ("key",          stackOverFlowKey) ) )
             
-        val response = (uidurlRes.get().await(5000).get.json \ "items")(0)
+        val response = uidurlRes.children.head
 
         println( "Resp: ", response )
         val meuid = response \ "user_id"
