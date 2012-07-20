@@ -121,13 +121,14 @@ object Application extends Controller
             baseUrl + "?" + params.map( x => encode(x._1, "utf-8") + "=" + encode(x._2, "utf-8") ).mkString("&")
         }
         
-        val uidurl = WS.url( uencode("http://api.stackexchange.com//2.0/me/associated",
+        val uidurl = WS.url( uencode("http://api.stackexchange.com/2.0/me/associated",
             List(
             //("site",       "stackoverflow"),
             ("access_token", accessToken),
             ("key",          stackOverflowKey) ) ) )
+        println( uidurl.toString )
             
-        val response = promiseRes.await(5000).get.json
+        val response = uidurl.get().await(5000).get.json
 
         println( "Resp: " + response )
         
