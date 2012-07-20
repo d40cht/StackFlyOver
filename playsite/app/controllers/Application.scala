@@ -99,7 +99,11 @@ object Application extends Controller
         val post = promiseRes.await(5000).get.body
 
 
-	val fields = post.split("&").map( _.split("=") ).toMap
+        val fields = post.split("&").map
+        { el =>
+            val Array( key, value ) = el.split("=") 
+            (key, value)
+        } toMap
 
         // Got an access token
         val accessToken = fields("access_token")
