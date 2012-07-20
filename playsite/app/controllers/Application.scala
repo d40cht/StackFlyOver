@@ -74,5 +74,11 @@ object Application extends Controller
             Ok(compact(json))
         }
     }
+    
+    def authenticate( access_token : String, expires : String ) = Action
+    {
+        println( "Authentication: %s, %s".format( access_token, expires ) )
+        Redirect(routes.Application.index)
+    }
   
 }
