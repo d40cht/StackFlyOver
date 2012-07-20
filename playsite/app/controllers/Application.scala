@@ -35,6 +35,9 @@ object CriticalMassTables
 
 object Application extends Controller
 {
+    import play.api.cache.Cache
+    import play.api.Play.current
+    
     case class Pos( val name : String, val lon : Double, val lat : Double )
     
     val googleMapsKey = "AIzaSyA_F10Lcod9fDputQVMZOtM4cMMaFbJybU"
@@ -75,9 +78,37 @@ object Application extends Controller
         }
     }
     
-    def authenticate( access_token : String, expires : String ) = Action
+    def authenticate( code : String ) = Action
     {
-        println( "Authentication: %s, %s".format( access_token, expires ) )
+        import akka.util.Timeout
+        import akka.dispatch.Await
+        import play.api.libs.ws.WS
+        import akka.util.duration._
+        
+        // Post the code back to try to get an access token
+        println( "Authentication code: %s".format( code ) )
+        
+        
+        val timeout = Timeout(5.seconds)
+        val url = WS.url("https://stackexchange.com/oauth/access_token")
+        val promiseRes = url.post( Map(
+            "client_id"     -> Seq("498"),
+            "code"          -> Seq(code),
+            "redirect_uri"  -> Seq("http://www.stackflyover.com/authenticate"),
+            "client_secret" -> Seq("aL1DlUG5A7M96N48t2*k0w((") ) )
+        val post = promiseRes.await(5000).get.json
+               
+        // Got an access token
+        val accessToken = post \ "access_token"
+        val expires = post \ "expires"
+        println( "Got a response from the API webservice: %s, %s".format( accessToken, expires ) )
+        
+        Cache.set("accessToken", accessToken)
+        Cache.set("accessTokenExpires", expires)
+        
+        // Now we need to get the user_id on stackoverflow
+        // Talk to /2.0/me/associated?access_token=?
+        
         Redirect(routes.Application.index)
     }
   
