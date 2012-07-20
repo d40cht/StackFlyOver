@@ -123,13 +123,15 @@ object Application extends Controller
         
         val uidurl = WS.url( uencode("http://api.stackexchange.com//2.0/me/associated",
             List(
-            //"site",       "stackoverflow",
-            "access_token", accessToken,
-            "key",          stackOverflowKey ) ) )
+            //("site",       "stackoverflow"),
+            ("access_token", accessToken),
+            ("key",          stackOverflowKey) ) ) )
             
         val response = promiseRes.await(5000).get.json
 
         println( "Resp: " + response )
+        
+        // Get user_id and display_name and stick them in the cache
         
         Redirect(routes.Application.index)
     }
