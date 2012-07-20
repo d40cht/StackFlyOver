@@ -115,13 +115,13 @@ object Application extends Controller
         Cache.set("accessTokenExpires", expires)
         
         // Now we need to get the user_id on stackoverflow
-        def encode( baseUrl : String, params : List[(String, String)] ) =
+        def uencode( baseUrl : String, params : List[(String, String)] ) =
         {
             import java.net.URLEncoder.encode
             baseUrl + "?" + params.map( x => encode(x._1, "utf-8") + "=" + encode(x._2, "utf-8") ).mkString("&")
         }
         
-        val uidurl = WS.url( encode("http://api.stackexchange.com//2.0/me/associated",
+        val uidurl = WS.url( uencode("http://api.stackexchange.com//2.0/me/associated",
             Map(
             //"site"        -> "stackoverflow",
             "access_token"  -> accessToken,
