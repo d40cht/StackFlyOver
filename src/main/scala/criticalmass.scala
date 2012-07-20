@@ -335,7 +335,7 @@ class MarkerClusterer( val db : Database )
 
 class UserScraper( val db : Database )
 {
-    val stackOverflowKey = "b*DdyNcsAlQOQak6IvFH*w(("
+    val stackOverflowKey = "5FUHVgHRGHWbz9J5bEy)Ng(("
     val yahooAPIKey = "50EgoNvV34HOEN8sYfWvUqVqpOfapxOSGBiRb7VjwbdsfYwolMb4XdFPhuuz"
     
     def run()
