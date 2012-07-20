@@ -96,11 +96,14 @@ object Application extends Controller
             "code"          -> Seq(code),
             "redirect_uri"  -> Seq("http://www.stackflyover.com/authenticate"),
             "client_secret" -> Seq("aL1DlUG5A7M96N48t2*k0w((") ) )
-        val post = promiseRes.await(5000).get.json
-               
+        val post = promiseRes.await(5000).get.body
+
+
+	val fields = post.split("&").map( _.split("=") ).toMap
+
         // Got an access token
-        val accessToken = post \ "access_token"
-        val expires = post \ "expires"
+        val accessToken = fields("access_token")
+        val expires = fields("expires")
         println( "Got a response from the API webservice: %s, %s".format( accessToken, expires ) )
         
         Cache.set("accessToken", accessToken)
