@@ -60,6 +60,7 @@ object Application extends Controller
     import play.api.Play.current
     
     case class Pos( val name : String, val lon : Double, val lat : Double )
+    case class UserData( val accessToken : String, val expiry : String, val uid : Int, val name : String )
     
     val stackOverFlowKey = "5FUHVgHRGHWbz9J5bEy)Ng(("
     val stackOverFlowSecretKey = "aL1DlUG5A7M96N48t2*k0w(("
@@ -70,7 +71,7 @@ object Application extends Controller
         
         db withSession
         {
-            Ok(views.html.index("Your new application is ready."))
+            Ok(views.html.index(Cache.getAs[UserData]("user")))
         }
     }
     
@@ -101,6 +102,11 @@ object Application extends Controller
         }
     }
     
+    def logout() = Action
+    {
+        Redirect(routes.Application.index)
+    }
+    
     def authenticate( code : String ) = Action
     {
         import akka.util.Timeout
@@ -108,10 +114,9 @@ object Application extends Controller
         import play.api.libs.ws.WS
         import akka.util.duration._
         
+        implicit val formats = net.liftweb.json.DefaultFormats
+        
         // Post the code back to try to get an access token
-        println( "Authentication code: %s".format( code ) )
-        
-        
         val timeout = Timeout(5.seconds)
         val url = WS.url("https://stackexchange.com/oauth/access_token")
         val promiseRes = url.post( Map(
@@ -131,11 +136,7 @@ object Application extends Controller
         // Got an access token
         val accessToken = fields("access_token")
         val expires = fields("expires")
-        println( "Got a response from the API webservice: %s, %s".format( accessToken, expires ) )
         
-        Cache.set("accessToken", accessToken)
-        Cache.set("accessTokenExpires", expires)
-       
         val uidurlRes = Dispatch.pullJSON("https://api.stackexchange.com/2.0/me",
             List(
             ("site",       "stackoverflow"),
@@ -144,13 +145,10 @@ object Application extends Controller
             
         val response = uidurlRes.children.head
 
-        println( "Resp: ", response )
-        val meuid = response \ "user_id"
-        val mename = response \ "display_name"
-        println( "User: ", meuid, mename )
+        val meuid = (response \ "user_id").extract[Int]
+        val mename = (response \ "display_name").extract[String]
         
-        Cache.set("userId", meuid )
-        Cache.set("userName", mename )
+        Cache.set("user", new UserData(accessToken, expires, meuid, mename ) )
         
         // Get user_id and display_name and stick them in the cache
         

@@ -1,14 +1,22 @@
-@(message: String)
+@(user : Option[controllers.Application.UserData])
+
+@import controllers.Application.UserData
 
 @main("StackFlyOver: StackOverflow users on a map") {
-    
-    <!-- See here: https://api.stackexchange.com/docs/authentication -->
-
     <div style="position:absolute;top:1%;right:1%">
-        <a href="https://stackexchange.com/oauth?client_id=498&redirect_uri=http://www.stackflyover.com/authenticate">
-           Sign in 
-        </a>
-        with your StackOverflow account for more features.
+        @user match {
+            case None => {
+                <span>
+                    <a href="https://stackexchange.com/oauth?client_id=498&redirect_uri=http://www.stackflyover.com/authenticate">
+                       Sign in 
+                    </a>
+                    with your StackOverflow account for more features.
+                <span>
+            }
+            case Some(u) => {
+                <span> @u.name <a href="@routes.Application.logout"> </span>
+            }
+        }
     </div>
 
     <h1>StackOverflow users on a map</h1>
