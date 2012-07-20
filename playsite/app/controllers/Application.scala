@@ -116,11 +116,11 @@ object Application extends Controller
         
         // Now we need to get the user_id on stackoverflow
         val uidurl = WS.url("http://api.stackexchange.com//2.0/me/associated")
-        val userId = uidurl.post( Map(
+        val userIdRes = uidurl.post( Map(
             //"site"        -> "stackoverflow",
             "access_token"  -> Seq(accessToken),
             "key"           -> Seq(stackOverflowKey) ) )
-        val response = promiseRes.await(5000).get.body
+        val response = userIdRes.await(5000).get.json
         println( "Resp: " + response )
         
         Redirect(routes.Application.index)
