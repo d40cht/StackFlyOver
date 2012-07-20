@@ -1,24 +1,43 @@
 @(message: String)
 
-@main("Stack overflow users on a map") {
+@main("StackFlyOver: StackOverflow users on a map") {
     
-    <h1>Stack overflow users on a map</h1>
+    <!-- See here: https://api.stackexchange.com/docs/authentication -->
+
+    <div style="position:absolute;top:1%;right:1%">
+        <a href="https://stackexchange.com/oauth?scope=private_info&redirect_uri=http://www.stackflyover.com/signin&client_id=498">
+           Sign in 
+        </a>
+        with your StackOverflow account for more features.
+    </div>
+
+    <h1>StackOverflow users on a map</h1>
     
+
     <p>Zoom in to see more detail. Stars denote high-scoring individuals in that area (click to see who's top). Hover over each icon to see the top five tags in that cluster.</p>
     
-    <div id="map_canvas" style="height:90%; width:65%; float:left"></div>
+
+    <div id="map_canvas" style="height:80%; width:65%; float:left"></div>
     
     <div id="dynamic" style="width:30%; float:right">
     <table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
         <thead>
             <tr>
-	            <th width="20%">Rendering engine</th>
-	            <th width="25%">Browser</th>
-	            <th width="25%">Platform(s)</th>
+	            <th width="10%">Reputation</th>
+	            <th width="15%">User name</th>
+	            <th width="15%">Top tags</th>
+	            <th width="20%">Location</th>
             </tr>
         </thead>
         <tbody></tbody>
     </table>
     </div>
 
+    <div style="position:absolute;bottom:1%;right:1%">
+        Created by
+        <a href="http://stackoverflow.com/users/415313/alex-wilson">
+            Alex Wilson
+        </a>
+    </div>
+    
 }
