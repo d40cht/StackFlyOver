@@ -7,6 +7,7 @@ import org.scalaquery.session.Database
 import org.scalaquery.session._
 import org.scalaquery.session.Database.threadLocalSession
 import org.scalaquery.ql.basic.BasicDriver.Implicit._
+import org.scalaquery.ql.{Join, SimpleFunction, Query}
 
 import net.liftweb.json._
 import net.liftweb.json.JsonDSL._
@@ -60,6 +61,14 @@ object CriticalMassTables
         def radius              = column[Double]("radius")
         
         def * = name ~ longitude ~ latitude ~ radius
+    }
+    
+    object UserMap extends Table[(Long, Long)]("UserMap")
+    {
+        def dh_id               = column[Long]("dh_id")
+        def user_id             = column[Long]("user_id")
+        
+        def * = dh_id ~ user_id
     }
     
     object Users extends Table[(Long, String, Long, Long, Long, Int, Int, String, String, Int, Int, Int)]("Users")
@@ -123,6 +132,33 @@ object Application extends Controller
             } yield dh.count ~ dh.longitude ~ dh.latitude ~ dh.label ~ dh.maxRep ~ dh.maxRepUid
             
             val json = render( points.list.map( x => ("name" -> x._4) ~ ("lon" -> x._2.toString) ~ ("lat" -> x._3.toString) ~ ("count" -> x._1) ~ ("maxRep" -> x._5 ) ~ ("maxRepUid" -> x._6 ) ) )
+            
+            Ok(compact(json))
+        }
+    }
+    
+    def markerUsers( dh_id : Long ) = Action
+    {
+        import org.scalaquery.ql.Ordering.Desc
+        import org.scalaquery.ql.extended.H2Driver.Implicit._
+        
+        val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
+        
+        // select * from "UserMap" as um INNER JOIN  "Users" as u ON um."user_id" = u."user_id" where "dh_id"=4061 ORDER BY "reputation" DESC LIMIT 100
+        db withSession
+        {
+            val users = (for
+            {
+                Join(userMap, users) <-
+                CriticalMassTables.UserMap innerJoin
+                CriticalMassTables.Users on (_.user_id is _.user_id)
+                if userMap.dh_id === dh_id
+                _ <- Query orderBy(Desc(users.reputation))
+            } yield users.reputation ~ users.display_name ~ users.location)
+            
+            val firstN = users take 100
+            
+            val json = render( firstN.list.map( x => ("reputation" -> x._1) ~ ("name" -> x._2) ~ ("location" -> x._3) ) )
             
             Ok(compact(json))
         }
