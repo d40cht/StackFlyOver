@@ -174,6 +174,8 @@ object Application extends Controller
 
         val meuid = (response \ "user_id").extract[Int]
         val mename = (response \ "display_name").extract[String]
+
+	println( "User authenticated: ", meuid, mename )
                 
         // Get user_id and display_name and stick them in the cache
         Cache.set("user", new UserData(accessToken, expires, meuid, mename ) )
