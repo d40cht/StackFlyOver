@@ -90,7 +90,7 @@ object Application extends Controller
     import play.api.Play.current
     
     case class Pos( val name : String, val lon : Double, val lat : Double )
-    case class UserData( val accessToken : String, val expiry : String, val uid : Int, val name : String )
+    case class UserData( val accessToken : String, val expiry : Int, val uid : Int, val name : String )
     
     val stackOverFlowKey = "5FUHVgHRGHWbz9J5bEy)Ng(("
     val stackOverFlowSecretKey = "aL1DlUG5A7M96N48t2*k0w(("
@@ -144,6 +144,7 @@ object Application extends Controller
         implicit val formats = net.liftweb.json.DefaultFormats
         
         // Post the code back to try to get an access token
+        println( "Requesting access token" )
         val timeout = Timeout(5.seconds)
         val url = WS.url("https://stackexchange.com/oauth/access_token")
         val promiseRes = url.post( Map(
@@ -162,13 +163,16 @@ object Application extends Controller
 
         // Got an access token
         val accessToken = fields("access_token")
-        val expires = fields("expires")
+        val expires = fields("expires").toInt
         
+        println( "Received access token: %s (expires: %f hours)".format( accessToken, (expires/3600.0) ) )
+        
+        println( "Getting details for authenticated user" )
         val uidurlRes = Dispatch.pullJSON("https://api.stackexchange.com/2.0/me",
             List(
-            ("site",       "stackoverflow"),
-            ("access_token", accessToken),
-            ("key",          stackOverFlowKey) ) )
+            ("site",            "stackoverflow"),
+            ("access_token",    accessToken),
+            ("key",             stackOverFlowKey) ) )
             
         val response = uidurlRes.children.head
 
@@ -179,6 +183,8 @@ object Application extends Controller
                 
         // Get user_id and display_name and stick them in the cache
         Cache.set("user", new UserData(accessToken, expires, meuid, mename ) )
+        
+        println( "User is %s (%d)".format( mename, meuid ) )
         
         // TODO: If this is their first login, ask for more details
         // namely finer location, company name
