@@ -98,7 +98,8 @@
 
                         var marker = new google.maps.Marker( {
                           position: new google.maps.LatLng(item.lat, item.lon),
-                          title : item.name, 
+                          title : item.name,
+                          url : "/markerUsers?dh_id=" + item.dh_id,
                           map: map,
                           icon : icon,
                           zIndex : 0
@@ -140,6 +141,7 @@
                             var smarker = new google.maps.Marker( {
                               position: new google.maps.LatLng(item.lat, item.lon),
                               title : item.name, 
+                              url : "/markerUsers?dh_id=" + item.dh_id,
                               map: map,
                               icon : markerImageRep,
                               zIndex : 1

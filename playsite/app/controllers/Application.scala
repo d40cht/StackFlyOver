@@ -129,9 +129,9 @@ object Application extends Controller
                 dh.level === (zoom.toInt) &&
                 dh.longitude >= swlon && dh.longitude <= nelon &&
                 dh.latitude >= swlat && dh.latitude <= nelat
-            } yield dh.count ~ dh.longitude ~ dh.latitude ~ dh.label ~ dh.maxRep ~ dh.maxRepUid
+            } yield dh.count ~ dh.longitude ~ dh.latitude ~ dh.label ~ dh.maxRep ~ dh.maxRepUid ~ dh.id
             
-            val json = render( points.list.map( x => ("name" -> x._4) ~ ("lon" -> x._2.toString) ~ ("lat" -> x._3.toString) ~ ("count" -> x._1) ~ ("maxRep" -> x._5 ) ~ ("maxRepUid" -> x._6 ) ) )
+            val json = render( points.list.map( x => ("name" -> x._4) ~ ("lon" -> x._2.toString) ~ ("lat" -> x._3.toString) ~ ("count" -> x._1) ~ ("maxRep" -> x._5 ) ~ ("maxRepUid" -> x._6 ) ~ ("dh_id" -> x._7) ) )
             
             Ok(compact(json))
         }
@@ -144,7 +144,6 @@ object Application extends Controller
         
         val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
         
-        // select * from "UserMap" as um INNER JOIN  "Users" as u ON um."user_id" = u."user_id" where "dh_id"=4061 ORDER BY "reputation" DESC LIMIT 100
         db withSession
         {
             val users = (for
