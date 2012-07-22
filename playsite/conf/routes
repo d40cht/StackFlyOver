@@ -7,7 +7,7 @@ GET     /                           controllers.Application.index
 GET     /mapData                    controllers.Application.mapData( loc : String )
 GET     /authenticate               controllers.Application.authenticate( code : String )
 GET     /logout                     controllers.Application.logout
-GET     /markerUsers                controllers.Application.( dh_id : Long )
+GET     /markerUsers                controllers.Application.markerUsers( dh_id : Long )
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
