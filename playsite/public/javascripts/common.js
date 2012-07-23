@@ -18,7 +18,8 @@
     }
 
 
-      function initialize() {
+      function initialize()
+      {
         var myOptions = {
           center: new google.maps.LatLng(54.0, -2.0),
           zoom: 5,
@@ -111,6 +112,7 @@
                                 oTable = $('#example').dataTable( {
                                     // Disable sorting. Take what comes from the server
                                     "aaSorting": [],
+                                    "sPaginationType": "full_numbers",
                                     "bProcessing": false,
                                     "bAutoWidth":true,
                                     "bFilter":false,

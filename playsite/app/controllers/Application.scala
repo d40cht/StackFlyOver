@@ -168,11 +168,11 @@ object Application extends Controller
                 Join(userMap, users) <-
                 CriticalMassTables.UserMap innerJoin
                 CriticalMassTables.Users on (_.user_id is _.user_id)
-                if userMap.dh_id === dh_id
+                if userMap.dh_id === dh_id && users.reputation > 500L
                 _ <- Query orderBy(Desc(users.reputation))
             } yield users.reputation ~ users.display_name ~ users.user_id ~ users.location)
             
-            val topN = (users take 20).list
+            val topN = (users take 100).list
             
             // Inefficient - cache in Users tables
             val userTags = for ( u <- topN ) yield
