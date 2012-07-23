@@ -154,11 +154,11 @@ object Application extends Controller
                 if userMap.dh_id === dh_id
                 _ <- Query orderBy(Desc(users.reputation))
             } yield users.reputation ~ users.display_name ~ users.location)
+
             
             val firstN = users take 100
             
             val json = render( "aaData" -> firstN.list.map( x => ("reputation" -> x._1) ~ ("name" -> x._2) ~ ("location" -> x._3) ) )
-            
             Ok(compact(json))
         }
     }

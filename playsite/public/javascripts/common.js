@@ -138,7 +138,7 @@
                                         "sAjaxSource": "/markerUsers?dh_id=" + item.dh_id,
                                         "aoColumns": [
                                             { "mDataProp": "reputation" },
-                                            { "mDataProp": "user_name" },
+                                            { "mDataProp": "name" },
                                             { "mDataProp": "location" }
                                         ]
                                     } );
@@ -149,7 +149,7 @@
                                 }
                                 
                                 markersArray.push(smarker);
-                            }
+                            } );
                         }
                         
                     } );
