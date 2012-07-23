@@ -124,8 +124,10 @@
                               zIndex : 1
                             });
                             
+                            markersArray.push(smarker);
+                            
                             google.maps.event.addListener(smarker, 'click', function() {
-                              infowindow.open(map,smarker);
+                                //infowindow.open(map,smarker);
                               
                                 // Reload the table with local users
                                 if ( oTable == null )
@@ -148,8 +150,6 @@
                                 {
                                     refreshTable( oTable, "/markerUsers?dh_id=" + item.dh_id );
                                 }
-                                
-                                markersArray.push(smarker);
                             }
                         }
                         
