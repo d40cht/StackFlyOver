@@ -157,7 +157,7 @@ object Application extends Controller
             
             val firstN = users take 100
             
-            val json = render( firstN.list.map( x => ("reputation" -> x._1) ~ ("name" -> x._2) ~ ("location" -> x._3) ) )
+            val json = render( "aaData" -> firstN.list.map( x => ("reputation" -> x._1) ~ ("name" -> x._2) ~ ("location" -> x._3) ) )
             
             Ok(compact(json))
         }

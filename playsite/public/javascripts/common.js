@@ -40,29 +40,6 @@
             $.getJSON("/mapData?loc="+sw.lat() + "," + sw.lng() + "," + ne.lat() + "," + ne.lng() + "," + zoom,
                 function(data)
                 {
-                    // Reload the table
-                    if ( oTable == null )
-                    {
-                        oTable = $('#example').dataTable( {
-                            "bProcessing": false,
-                            "bAutoWidth":true,
-                            "bFilter":false,
-                            "bInfo":false,
-                            "bLengthChange":false,
-                            "sAjaxSource": "/assets/javascripts/tabledata.json",
-                            "aoColumns": [
-                                { "mDataProp": "reputation" },
-                                { "mDataProp": "user_name" },
-                                { "mDataProp": "top_tags" },
-                                { "mDataProp": "location" }
-                            ]
-                        } );
-                    }
-                    else
-                    {
-                        refreshTable( oTable, "/assets/javascripts/tabledata.json" );
-                    }
-                    
                     // Clear any existing markers
                     while ( markersArray[0] )
                     {
@@ -141,7 +118,6 @@
                             var smarker = new google.maps.Marker( {
                               position: new google.maps.LatLng(item.lat, item.lon),
                               title : item.name, 
-                              url : "/markerUsers?dh_id=" + item.dh_id,
                               map: map,
                               icon : markerImageRep,
                               zIndex : 1
@@ -149,7 +125,28 @@
                             
                             google.maps.event.addListener(smarker, 'click', function() {
                               infowindow.open(map,smarker);
-                            });
+                              
+                            // Reload the table with local users
+                            if ( oTable == null )
+                            {
+                                oTable = $('#example').dataTable( {
+                                    "bProcessing": false,
+                                    "bAutoWidth":true,
+                                    "bFilter":false,
+                                    "bInfo":false,
+                                    "bLengthChange":false,
+                                    "sAjaxSource": "/markerUsers?dh_id=" + item.dh_id,
+                                    "aoColumns": [
+                                        { "mDataProp": "reputation" },
+                                        { "mDataProp": "user_name" },
+                                        { "mDataProp": "location" }
+                                    ]
+                                } );
+                            }
+                            else
+                            {
+                                refreshTable( oTable, "/markerUsers?dh_id=" + item.dh_id );
+                            }
                             
                             markersArray.push(smarker);
                         }
