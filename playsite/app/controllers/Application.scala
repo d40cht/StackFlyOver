@@ -39,6 +39,23 @@ object CriticalMassTables
     import org.scalaquery.ql.TypeMapper._
     import org.scalaquery.ql._
     
+    object Tags extends Table[(Long, String)]("Tags")
+    {
+        def id                  = column[Long]("id", O PrimaryKey, O AutoInc)
+        def name                = column[String]("name")
+        
+        def * = id ~ name
+    }
+    
+    object UserTags extends Table[(Long, Long, Long)]("UserTags")
+    {
+        def tag_id              = column[Long]("tag_id")
+        def user_id             = column[Long]("user_id")
+        def count               = column[Long]("count")
+        
+        def * = tag_id ~ user_id ~ count
+    }
+    
     object DataHierarchy extends Table[(Long, Int, Double, Double, Int, Int, Long, String)]("DataHierarchy")
     {
         def id                  = column[Long]("id", O PrimaryKey, O AutoInc)
@@ -155,12 +172,23 @@ object Application extends Controller
                 _ <- Query orderBy(Desc(users.reputation))
             } yield users.reputation ~ users.display_name ~ users.user_id ~ users.location)
             
-            val firstN = users take 100
+            val topN = (users take 20).list
             
-            val json = render( "aaData" -> firstN.list.map( x =>
+            // Inefficient - cache in Users tables
+            val userTags = for ( u <- topN ) yield
+            {
+                val topTags = (for (Join(userTags, tag) <-
+                    CriticalMassTables.UserTags innerJoin
+                    CriticalMassTables.Tags on (_.tag_id is _.id)
+                    if userTags.user_id === u._3) yield tag.name).take(5).list.mkString(" ")
+                topTags
+            }
+
+            val json = render( "aaData" -> (topN zip userTags).map { case (x, t) =>
                 ("reputation" -> x._1) ~
                 ("name" -> "<a href=\"http://stackoverflow.com/users/%d\">%s</a>".format(x._3, x._2)) ~
-                ("location" -> x._4) ) )
+                ("location" -> x._4) ~
+                ("tags" -> t) } )
             
             Ok(compact(json))
         }

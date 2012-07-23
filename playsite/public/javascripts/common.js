@@ -121,7 +121,8 @@
                                     "aoColumns": [
                                         { "mDataProp": "reputation" },
                                         { "mDataProp": "name" },
-                                        { "mDataProp": "location" }
+                                        { "mDataProp": "location" },
+                                        { "mDataProp": "tags" },
                                     ]
                                 } );
                             }
