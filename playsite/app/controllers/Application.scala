@@ -153,12 +153,15 @@ object Application extends Controller
                 CriticalMassTables.Users on (_.user_id is _.user_id)
                 if userMap.dh_id === dh_id
                 _ <- Query orderBy(Desc(users.reputation))
-            } yield users.reputation ~ users.display_name ~ users.location)
-
+            } yield users.reputation ~ users.display_name ~ users.user_id ~ users.location)
             
             val firstN = users take 100
             
-            val json = render( "aaData" -> firstN.list.map( x => ("reputation" -> x._1) ~ ("name" -> x._2) ~ ("location" -> x._3) ) )
+            val json = render( "aaData" -> firstN.list.map( x =>
+                ("reputation" -> x._1) ~
+                ("name" -> "<a href=\"http://stackoverflow.com/users/%d\">%s</a>".format(x._3, x._2)) ~
+                ("location" -> x._4) ) )
+            
             Ok(compact(json))
         }
     }

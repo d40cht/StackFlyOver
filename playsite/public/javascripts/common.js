@@ -9,8 +9,7 @@
             table.fnClearTable(this);
 
             for (var i=0; i<json.aaData.length; i++) {
-                var ins = ((json.aaData.length)-1)-i;
-                table.oApi._fnAddData(oSettings, json.aaData[ins]);
+                table.oApi._fnAddData(oSettings, json.aaData[i]);
             }
 
             oSettings.aiDisplay = oSettings.aiDisplayMaster.slice();
@@ -124,8 +123,10 @@
                               zIndex : 1
                             });
                             
+                            markersArray.push(smarker);
+                            
                             google.maps.event.addListener(smarker, 'click', function() {
-                              infowindow.open(map,smarker);
+                                //infowindow.open(map,smarker);
                               
                                 // Reload the table with local users
                                 if ( oTable == null )
@@ -148,8 +149,6 @@
                                 {
                                     refreshTable( oTable, "/markerUsers?dh_id=" + item.dh_id );
                                 }
-                                
-                                markersArray.push(smarker);
                             } );
                         }
                         
