@@ -102,6 +102,36 @@
                             repIcon = "stars1.png";
                         }
                         
+                        var markerClickFn = function() {
+                            //infowindow.open(map,smarker);
+                          
+                            // Reload the table with local users
+                            if ( oTable == null )
+                            {
+                                oTable = $('#example').dataTable( {
+                                    // Disable sorting. Take what comes from the server
+                                    "aaSorting": [],
+                                    "bProcessing": false,
+                                    "bAutoWidth":true,
+                                    "bFilter":false,
+                                    "bInfo":false,
+                                    "bLengthChange":false,
+                                    "sAjaxSource": "/markerUsers?dh_id=" + item.dh_id,
+                                    "aoColumns": [
+                                        { "mDataProp": "reputation" },
+                                        { "mDataProp": "name" },
+                                        { "mDataProp": "location" }
+                                    ]
+                                } );
+                            }
+                            else
+                            {
+                                refreshTable( oTable, "/markerUsers?dh_id=" + item.dh_id );
+                            }
+                        }
+                        
+                        google.maps.event.addListener(marker, 'click', markerClickFn );
+                        
                         if ( repIcon != "" )
                         {
                             var infoContent = 
@@ -125,31 +155,7 @@
                             
                             markersArray.push(smarker);
                             
-                            google.maps.event.addListener(smarker, 'click', function() {
-                                //infowindow.open(map,smarker);
-                              
-                                // Reload the table with local users
-                                if ( oTable == null )
-                                {
-                                    oTable = $('#example').dataTable( {
-                                        "bProcessing": false,
-                                        "bAutoWidth":true,
-                                        "bFilter":false,
-                                        "bInfo":false,
-                                        "bLengthChange":false,
-                                        "sAjaxSource": "/markerUsers?dh_id=" + item.dh_id,
-                                        "aoColumns": [
-                                            { "mDataProp": "reputation" },
-                                            { "mDataProp": "name" },
-                                            { "mDataProp": "location" }
-                                        ]
-                                    } );
-                                }
-                                else
-                                {
-                                    refreshTable( oTable, "/markerUsers?dh_id=" + item.dh_id );
-                                }
-                            } );
+                            google.maps.event.addListener(smarker, 'click', markerClickFn );
                         }
                         
                     } );
