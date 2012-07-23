@@ -49,28 +49,28 @@
                     // Add the new markers in
                     $.each(data, function(i, item)
                     {
-                        var icon = new google.maps.MarkerImage("http://www.google.com/intl/en_us/mapfiles/ms/micons/blue-dot.png");
+                        var icon = new google.maps.MarkerImage("/assets/images/blue-dot.png");
                         var count = parseInt(item.count);
                         var maxRep = parseInt(item.maxRep);
                         if ( count > 2000 )
                         {
-                            icon = new google.maps.MarkerImage( "http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/images/m5.png", null, null, new google.maps.Point( 45, 45 ) );
+                            icon = new google.maps.MarkerImage( "/assets/images/m5.png", null, null, new google.maps.Point( 45, 45 ) );
                         }
                         else if ( count > 500 )
                         {
-                            icon = new google.maps.MarkerImage( "http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/images/m4.png", null, null, new google.maps.Point( 39, 39 ) );
+                            icon = new google.maps.MarkerImage( "/assets/images/m4.png", null, null, new google.maps.Point( 39, 39 ) );
                         }
                         else if ( count > 20 )
                         {
-                            icon = new google.maps.MarkerImage( "http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/images/m3.png", null, null, new google.maps.Point( 33, 33 ) );
+                            icon = new google.maps.MarkerImage( "/assets/images/m3.png", null, null, new google.maps.Point( 33, 33 ) );
                         }
                         /*else if ( count > 20 )
                         {
-                            icon = new google.maps.MarkerImage( "http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/images/m2.png", null, null, new google.maps.Point( 28, 28 ) );
+                            icon = new google.maps.MarkerImage( "/assets/images/m2.png", null, null, new google.maps.Point( 28, 28 ) );
                         }*/
                         else if ( count > 1 )
                         {
-                            icon = new google.maps.MarkerImage( "http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/images/m1.png", null, null, new google.maps.Point( 26, 26 ) );
+                            icon = new google.maps.MarkerImage( "/assets/images/m1.png", null, null, new google.maps.Point( 26, 26 ) );
                         }
 
                         var marker = new google.maps.Marker( {
