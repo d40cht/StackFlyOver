@@ -4,6 +4,8 @@
 
 # Home page
 GET     /                           controllers.Application.index
+GET     /refineUser                 controllers.Application.refineUser
+POST    /refineUserAccept           controllers.Application.refineUserAccept
 GET     /mapData                    controllers.Application.mapData( loc : String )
 GET     /authenticate               controllers.Application.authenticate( code : String )
 GET     /logout                     controllers.Application.logout

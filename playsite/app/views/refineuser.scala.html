@@ -1,0 +1,19 @@
+@(user : controllers.Application.UserData, refineForm : play.api.data.Form[controllers.SupplementaryData])
+
+@import controllers.Application.UserData
+
+@main("Welcome: @user.name") {
+    <h1>Welcome: @user.name</h1>
+    
+
+    <p>To gain full access to the site, please enter a few extra details.</p>
+    
+    @helper.form(action=routes.Application.refineUserAccept) {
+        @helper.inputText(refineForm("WorkLocation"))
+        @helper.inputText(refineForm("EmployerName"))
+        @helper.inputText(refineForm("EmployerURL"))
+        @helper.inputText(refineForm("WorkSector"))
+        
+        <input type="submit"/>
+    }
+}

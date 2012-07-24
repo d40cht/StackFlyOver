@@ -39,6 +39,8 @@ object CriticalMassTables
     import org.scalaquery.ql.TypeMapper._
     import org.scalaquery.ql._
     
+    
+    
     object Tags extends Table[(Long, String)]("Tags")
     {
         def id                  = column[Long]("id", O PrimaryKey, O AutoInc)
@@ -119,10 +121,18 @@ object CriticalMassTables
     val dbUri="jdbc:h2:file:./stack_users;DB_CLOSE_DELAY=-1"
 }
 
+case class SupplementaryData(
+    val workLocation : String,
+    val employerName : String,
+    val employerURL : String,
+    val sectorTags : List[String] )
+
 object Application extends Controller
 {
     import play.api.cache.Cache
     import play.api.Play.current
+    import play.api.data._
+    import play.api.data.Forms._
     
     case class Pos( val name : String, val lon : Double, val lat : Double )
     case class UserData( val accessToken : String, val expiry : Int, val uid : Int, val name : String )
@@ -130,6 +140,7 @@ object Application extends Controller
     val stackOverFlowKey = "5FUHVgHRGHWbz9J5bEy)Ng(("
     val stackOverFlowSecretKey = "aL1DlUG5A7M96N48t2*k0w(("
     val googleMapsKey = "AIzaSyA_F10Lcod9fDputQVMZOtM4cMMaFbJybU"
+    
     def index = Action
     {
         val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
@@ -138,6 +149,37 @@ object Application extends Controller
         {
             Ok(views.html.index(Cache.getAs[UserData]("user")))
         }
+    }
+    
+    // Use jquery autocomplete ui widget for looking up company names and sector tags
+    // http://stackoverflow.com/questions/8873513/jquery-autocomplete-server-side-matching
+    
+    val userForm = Form(
+        mapping(
+            "WorkLocation"  -> text,
+            "EmployerName"  -> text,
+            "EmployerURL"   -> text,
+            "WorkSector"    -> list(text)
+        )(SupplementaryData.apply)(SupplementaryData.unapply)
+    )
+    
+    def refineUserAccept = Action
+    { implicit request =>
+        userForm.bindFromRequest.fold(
+            errors =>BadRequest,
+            {
+                case (data) =>
+                {
+                    println( "Received user data: " + data.toString )
+                    Redirect(routes.Application.index)
+                }
+            }
+        )
+    }
+        
+    def refineUser() = Action
+    {        
+        Ok(views.html.refineuser(Cache.getAs[UserData]("user").get, userForm))
     }
     
     def mapData( loc : String ) = Action
@@ -278,7 +320,7 @@ object Application extends Controller
         val meuid = (response \ "user_id").extract[Int]
         val mename = (response \ "display_name").extract[String]
 
-	println( "User authenticated: ", meuid, mename )
+	    println( "User authenticated: ", meuid, mename )
                 
         // Get user_id and display_name and stick them in the cache
         Cache.set("user", new UserData(accessToken, expires, meuid, mename ) )
@@ -288,7 +330,8 @@ object Application extends Controller
         // TODO: If this is their first login, ask for more details
         // namely finer location, company name
         
-        Redirect(routes.Application.index)
+        Redirect(routes.Application.refineUser)
+        //Redirect(routes.Application.index)
     }
   
 }

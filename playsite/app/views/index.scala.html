@@ -2,7 +2,7 @@
 
 @import controllers.Application.UserData
 
-@main("StackFlyOver: StackOverflow users on a map") {
+@main("StackNative: StackOverflow users on a map") {
     <div style="position:absolute;top:1%;right:1%">
         @user match {
             case None => {
@@ -10,7 +10,7 @@
                     <a href="https://stackexchange.com/oauth?client_id=498&redirect_uri=http://www.stackflyover.com/authenticate">
                        Sign in 
                     </a>
-                    with your StackOverflow account for more features.
+                    with your SO account for employer details and more features.
                 <span>
             }
             case Some(u) => {
@@ -19,7 +19,7 @@
         }
     </div>
 
-    <h1>StackOverflow users on a map</h1>
+    <h1>StackNative: StackOverflow highlights on a map</h1>
     
 
     <p>Zoom in to see more detail. Stars denote high-scoring individuals in that area (click to see who's top). Hover over each icon to see the top five tags in that cluster.</p>
