@@ -47,6 +47,15 @@ object CriticalMassTables
         def * = id ~ name
     }
     
+    object TagMap extends Table[(Long, Long, Long)]("TagMap")
+    {
+        def dh_id               = column[Long]("dh_id")
+        def tag_id              = column[Long]("tag_id")
+        def count               = column[Long]("count")
+        
+        def * = dh_id ~ tag_id ~ count
+    }
+    
     object UserTags extends Table[(Long, Long, Long)]("UserTags")
     {
         def tag_id              = column[Long]("tag_id")
@@ -183,14 +192,37 @@ object Application extends Controller
                     if userTags.user_id === u._3) yield tag.name).take(5).list.mkString(" ")
                 topTags
             }
+            
+            
 
-            val json = render( "aaData" -> (topN zip userTags).map { case (x, t) =>
+            val userTableData = (topN zip userTags).map { case (x, t) =>
                 ("reputation" -> x._1) ~
                 ("name" -> "<a href=\"http://stackoverflow.com/users/%d\">%s</a>".format(x._3, x._2)) ~
                 ("location" -> x._4) ~
-                ("tags" -> t) } )
+                ("tags" -> t) }
+    
             
-            Ok(compact(json))
+            val json = ("aaData" -> userTableData)
+            Ok(compact(render(json)))
+        }
+    }
+    
+    def markerTags( dh_id : Long ) = Action
+    {
+        import org.scalaquery.ql.Ordering.Desc
+        import org.scalaquery.ql.extended.H2Driver.Implicit._
+        
+        val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
+        
+        db withSession
+        {
+            val topTags = (for (Join(tagMap, tags) <-
+                CriticalMassTables.TagMap innerJoin
+                CriticalMassTables.Tags on (_.tag_id is _.id)
+                if tagMap.dh_id === dh_id) yield tags.name ~ tagMap.count).take(30).list
+
+            val tagData = topTags.map( t => ("tag" -> t._1) ~ ("count" -> t._2) )
+            Ok(compact(render(tagData)))
         }
     }
     

@@ -132,6 +132,14 @@
                             {
                                 refreshTable( oTable, "/markerUsers?dh_id=" + item.dh_id );
                             }
+                            
+                            $.getJSON("/markerTags?dh_id=" + item.dh_id,
+                                function(tags)
+                                {
+                                    $("#tagcloud").tagCloud(tags);
+                                }
+                            );
+                            
                         }
                         
                         google.maps.event.addListener(marker, 'click', markerClickFn );
