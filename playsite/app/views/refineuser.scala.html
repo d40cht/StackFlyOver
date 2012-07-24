@@ -6,13 +6,13 @@
     <h1>Welcome: @user.name</h1>
     
 
-    <p>To gain full access to the site, please enter a few extra details.</p>
+    <p>To help make this site more useful, please enter a few extra details to continue.</p>
     
     @helper.form(action=routes.Application.refineUserAccept) {
-        @helper.inputText(refineForm("WorkLocation"))
-        @helper.inputText(refineForm("EmployerName"))
-        @helper.inputText(refineForm("EmployerURL"))
-        @helper.inputText(refineForm("WorkSector"))
+        @helper.inputText(refineForm("WorkLocation"), 'label -> "Address of your workplace")
+        @helper.inputText(refineForm("EmployerName"), 'label -> "Name of your employer")
+        @helper.inputText(refineForm("EmployerURL"), 'label -> "Web site of your employer")
+        @helper.inputText(refineForm("WorkSector"), 'label -> "Industry sector tags, e.g. Telecomms, Retail etc")
         
         <input type="submit"/>
     }
