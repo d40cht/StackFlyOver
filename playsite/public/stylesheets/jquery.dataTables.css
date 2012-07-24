@@ -87,7 +87,7 @@ table.dataTable tr.even td.sorting_3 { background-color: #F9F9FF; }
 }
 
 /* Two button pagination - previous / next */
-.paginate_disabled_previous,
+/*.paginate_disabled_previous,
 .paginate_enabled_previous,
 .paginate_disabled_next,
 .paginate_enabled_next {
@@ -131,8 +131,9 @@ table.dataTable tr.even td.sorting_3 { background-color: #F9F9FF; }
 .paginate_enabled_next { background: url('../images/forward_enabled.png') no-repeat top right; }
 .paginate_enabled_next:hover { background: url('../images/forward_enabled_hover.png') no-repeat top right; }
 .paginate_disabled_next { background: url('../images/forward_disabled.png') no-repeat top right; }
-
+*/
 /* Full number pagination */
+i/*
 .paging_full_numbers {
 	height: 22px;
 	line-height: 22px;
@@ -169,7 +170,7 @@ table.dataTable tr.even td.sorting_3 { background-color: #F9F9FF; }
 .paging_full_numbers a.paginate_active {
 	background-color: #99B3FF;
 }
-
+*/
 
 /*
  * Processing indicator
