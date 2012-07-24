@@ -177,7 +177,7 @@ object Application extends Controller
                 Join(userMap, users) <-
                 CriticalMassTables.UserMap innerJoin
                 CriticalMassTables.Users on (_.user_id is _.user_id)
-                if userMap.dh_id === dh_id && users.reputation > 500L
+                if userMap.dh_id === dh_id && users.reputation > 150L
                 _ <- Query orderBy(Desc(users.reputation))
             } yield users.reputation ~ users.display_name ~ users.user_id ~ users.location)
             
@@ -219,9 +219,10 @@ object Application extends Controller
             val topTags = (for (Join(tagMap, tags) <-
                 CriticalMassTables.TagMap innerJoin
                 CriticalMassTables.Tags on (_.tag_id is _.id)
-                if tagMap.dh_id === dh_id) yield tags.name ~ tagMap.count).take(30).list
+                if tagMap.dh_id === dh_id) yield tags.name ~ tagMap.count).list
 
             val tagData = topTags.map( t => ("tag" -> t._1) ~ ("count" -> t._2) )
+
             Ok(compact(render(tagData)))
         }
     }
