@@ -1,0 +1,15 @@
+@(user : controllers.Application.UserData, roles : List[controllers.Application.UserRole])
+
+@main("Roles for: @user.name") {
+    <h1>Roles for: @user.name</h1>
+   
+    <table>
+    @roles.map( m => {
+        <tr>
+            <td>
+            @m.institution
+            </td>
+        </tr>
+    } )
+    </table>
+}
