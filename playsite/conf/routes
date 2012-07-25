@@ -15,6 +15,7 @@ GET     /tagBySuffix                controllers.Application.tagBySuffix( q : Str
 GET     /logout                     controllers.Application.logout
 GET     /markerUsers                controllers.Application.markerUsers( dh_id : Long )
 GET     /markerTags                 controllers.Application.markerTags( dh_id : Long )
+GET     /userHome                   controllers.Application.userHome
 
 
 # Map static resources from the /public folder to the /assets URL path
