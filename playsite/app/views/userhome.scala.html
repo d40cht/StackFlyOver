@@ -11,8 +11,20 @@
             	<a href={r.url}>{r.institutionName}</a>
             </td>
             <td>{r.location}</td>
-            <td>{r.soTags.mkString(" ")}</td>
-            <td>{r.sectorTags.mkString(" ")}</td>
+            <td>
+                <ul class="token-input-list-facebook">
+                {
+                    r.soTags.map( tag => <li class="token-input-token-facebook"><p>{tag}</p></li> )
+                }
+                </ul>
+            </td>
+            <td>
+                <ul class="token-input-list-facebook">
+                {
+                    r.sectorTags.map( tag => <li class="token-input-token-facebook"><p>{tag}</p></li> )
+                }
+                </ul>
+            </td>
         </tr>
     } )
     </table>
