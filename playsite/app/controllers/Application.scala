@@ -183,7 +183,7 @@ object Application extends Controller
     
     case class Pos( val name : String, val lon : Double, val lat : Double )
     case class UserData( val accessToken : String, val expiry : Int, val uid : Int, val name : String )
-    case class UserRole( val institutionName : String, val url : String, val location : String, val soTags : List[String], val sectorTags : List[String] )
+    case class UserRole( val institutionName : String, val url : String, val location : String, val soTags : List[String], val sectorTags : List[String], val anonymize : Boolean )
     
     val stackOverFlowKey = "5FUHVgHRGHWbz9J5bEy)Ng(("
     val stackOverFlowSecretKey = "aL1DlUG5A7M96N48t2*k0w(("
@@ -206,7 +206,8 @@ object Application extends Controller
             "InstitutionName"   -> text,
             "InstitutionURL"    -> text,
             "SOTags"            -> text,
-            "SectorTags"        -> text
+            "SectorTags"        -> text,
+            "Anonymize"         -> boolean
         )(SupplementaryData.apply)(SupplementaryData.unapply)
     )
     
