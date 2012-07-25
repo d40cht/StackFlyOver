@@ -278,8 +278,7 @@ object Application extends Controller
         
     def refineUser() = Action
     {        
-        //val currUser = Cache.getAs[UserData]("user").get
-        val currUser = new UserData( "dhkajshd", 10000, 21312, "Bob Geldof" )
+        val currUser = Cache.getAs[UserData]("user").get
         Ok(views.html.refineuser(currUser, userForm))
     }
     
