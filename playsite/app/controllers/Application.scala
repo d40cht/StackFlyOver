@@ -394,7 +394,7 @@ object Application extends Controller
         val promiseRes = url.post( Map(
             "client_id"     -> Seq("498"),
             "code"          -> Seq(code),
-            "redirect_uri"  -> Seq("http://www.stackflyover.com/authenticate"),
+            "redirect_uri"  -> Seq("http://www.stacknative.com/authenticate"),
             "client_secret" -> Seq(stackOverFlowSecretKey) ) )
         val post = promiseRes.await(5000).get.body
 
