@@ -471,14 +471,18 @@ object Application extends Controller
         // TODO: If this is their first login, ask for more details
         // namely finer location, company name
         
-        val checkRoles = ( for ( r <- CriticalMassTables.UserRole if r.user_id == meuid ) yield r.id ).list
-        if ( checkRoles.isEmpty )
+        val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
+        db withSession
         {
-            Redirect(routes.Application.refineUser)
-        }
-        else
-        {
-            Redirect(routes.Application.userHome)
+            val checkRoles = ( for ( r <- CriticalMassTables.UserRole if r.user_id == meuid ) yield r.id ).list
+            if ( checkRoles.isEmpty )
+            {
+                Redirect(routes.Application.refineUser)
+            }
+            else
+            {
+                Redirect(routes.Application.userHome)
+            }
         }
     }
     
