@@ -39,7 +39,48 @@ object CriticalMassTables
     import org.scalaquery.ql.TypeMapper._
     import org.scalaquery.ql._
     
+    object SectorTags extends Table[(Long, String)]("SectorTags")
+    {
+        def id                  = column[Long]("id", O PrimaryKey, O AutoInc)
+        def name                = column[String]("name")
+        
+        def * = id ~ name
+    }
     
+    object Institution extends Table[(Long, String, String)]("Institutions")
+    {
+        def id                  = column[Long]("id", O PrimaryKey, O AutoInc)
+        def name                = column[String]("name")
+        def url                 = column[String]("url")
+        
+        def * = id ~ name ~ url
+    }
+    
+    object UserRole extends Table[(Long, Long, Long, String)]("UserRole")
+    {
+        def id                  = column[Long]("id", O PrimaryKey, O AutoInc)
+        def user_id             = column[Long]("user_id")
+        def institution_id      = column[Long]("institution_id")
+        def work_location       = column[String]("work_location")
+        
+        def * = id ~ user_id ~ institution_id ~ work_location
+    }
+    
+    object RoleSOTags extends Table[(Long, Long)]("RoleSOTags")
+    {
+        def role_id             = column[Long]("role_id")
+        def tag_id              = column[Long]("tag_id")
+        
+        def * = role_id ~ tag_id
+    }
+    
+    object RoleSectorTags extends Table[(Long, Long)]("RoleSectorTags")
+    {
+        def role_id             = column[Long]("role_id")
+        def tag_id              = column[Long]("tag_id")
+        
+        def * = role_id ~ tag_id
+    }
     
     object Tags extends Table[(Long, String)]("Tags")
     {
@@ -49,6 +90,17 @@ object CriticalMassTables
         def * = id ~ name
     }
     
+    // Top tags for a user, including counts
+    object UserTags extends Table[(Long, Long, Long)]("UserTags")
+    {
+        def tag_id              = column[Long]("tag_id")
+        def user_id             = column[Long]("user_id")
+        def count               = column[Long]("count")
+        
+        def * = tag_id ~ user_id ~ count
+    }
+    
+    // Top tags for a hierarchy area, including counts
     object TagMap extends Table[(Long, Long, Long)]("TagMap")
     {
         def dh_id               = column[Long]("dh_id")
@@ -58,13 +110,13 @@ object CriticalMassTables
         def * = dh_id ~ tag_id ~ count
     }
     
-    object UserTags extends Table[(Long, Long, Long)]("UserTags")
+    // Users for a hierarchy area
+    object UserMap extends Table[(Long, Long)]("UserMap")
     {
-        def tag_id              = column[Long]("tag_id")
+        def dh_id               = column[Long]("dh_id")
         def user_id             = column[Long]("user_id")
-        def count               = column[Long]("count")
         
-        def * = tag_id ~ user_id ~ count
+        def * = dh_id ~ user_id
     }
     
     object DataHierarchy extends Table[(Long, Int, Double, Double, Int, Int, Long, String)]("DataHierarchy")
@@ -81,6 +133,8 @@ object CriticalMassTables
         def * = id ~ level ~ longitude ~ latitude ~ count ~ maxRep ~ maxRepUid ~ label
     }
     
+    
+    // A sensible radius threshold seems to be 40km (40,000)
     object Locations extends Table[(String, Double, Double, Double)]("Locations")
     {
         def name                = column[String]("name", O PrimaryKey)
@@ -89,14 +143,6 @@ object CriticalMassTables
         def radius              = column[Double]("radius")
         
         def * = name ~ longitude ~ latitude ~ radius
-    }
-    
-    object UserMap extends Table[(Long, Long)]("UserMap")
-    {
-        def dh_id               = column[Long]("dh_id")
-        def user_id             = column[Long]("user_id")
-        
-        def * = dh_id ~ user_id
     }
     
     object Users extends Table[(Long, String, Long, Long, Long, Int, Int, String, String, Int, Int, Int)]("Users")
@@ -117,15 +163,16 @@ object CriticalMassTables
         def * = user_id ~ display_name ~ creation_date ~ last_access_date ~ reputation ~
                 age ~ accept_rate ~ website_url ~ location ~ badge_gold ~ badge_silver ~ badge_bronze
     }
-    
+
     val dbUri="jdbc:h2:file:./stack_users;DB_CLOSE_DELAY=-1"
 }
 
 case class SupplementaryData(
     val workLocation : String,
-    val employerName : String,
-    val employerURL : String,
-    val sectorTags : List[String] )
+    val institutionName : String,
+    val institutionURL : String,
+    val soTags : String,
+    val sectorTags : String )
 
 object Application extends Controller
 {
@@ -151,35 +198,89 @@ object Application extends Controller
         }
     }
     
-    // Use jquery autocomplete ui widget for looking up company names and sector tags
-    // http://stackoverflow.com/questions/8873513/jquery-autocomplete-server-side-matching
     
     val userForm = Form(
         mapping(
-            "WorkLocation"  -> text,
-            "EmployerName"  -> text,
-            "EmployerURL"   -> text,
-            "WorkSector"    -> list(text)
+            "WorkLocation"      -> text,
+            "InstitutionName"   -> text,
+            "InstitutionURL"    -> text,
+            "SOTags"            -> text,
+            "SectorTags"        -> text
         )(SupplementaryData.apply)(SupplementaryData.unapply)
     )
     
     def refineUserAccept = Action
     { implicit request =>
         userForm.bindFromRequest.fold(
-            errors =>BadRequest,
+            errors => BadRequest,
             {
                 case (data) =>
                 {
                     println( "Received user data: " + data.toString )
-                    Redirect(routes.Application.index)
+                    
+                    val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
+                    db withSession
+                    {
+                        db withTransaction
+                        {
+                            def scopeIdentity = SimpleFunction.nullary[Long]("scope_identity")
+                            
+                            def isId(v:String) = v.foldLeft(true)( (acc,c) => acc && (c >= '0' && c <= '9') )
+                            
+                            val currUser = Cache.getAs[UserData]("user").get
+                            
+                            val institutionId = if ( isId(data.institutionName) ) data.institutionName.toLong
+                            else
+                            {
+                                val i = CriticalMassTables.Institution
+                                (i.name ~ i.url) insert ((data.institutionName, data.institutionURL))
+                                
+                                Query(scopeIdentity).first
+                            }
+                            
+                            val roleId =
+                            {
+                                val r = CriticalMassTables.UserRole
+                                (r.user_id ~ r.institution_id ~ r.work_location) insert ((currUser.uid.toLong, institutionId, data.workLocation))
+                                
+                                Query(scopeIdentity).first
+                            }
+                            
+                            for ( tag <- data.soTags.split(";") )
+                            {
+                                val tagId = tag.toLong
+                                
+                                CriticalMassTables.RoleSOTags insert ((roleId, tagId))
+                            }
+                            
+                            for ( tag <- data.sectorTags.split(";") )
+                            {
+                                val tagId = if ( isId(tag) ) tag.toLong
+                                else
+                                {
+                                    CriticalMassTables.SectorTags.name insert tag
+                                    
+                                    Query(scopeIdentity).first
+                                }
+                                
+                                CriticalMassTables.RoleSectorTags insert ((roleId, tagId))
+                            }
+                            
+                            Redirect(routes.Application.index)
+                        }
+                    }
                 }
             }
         )
     }
+    
+    
         
     def refineUser() = Action
     {        
-        Ok(views.html.refineuser(Cache.getAs[UserData]("user").get, userForm))
+        //val currUser = Cache.getAs[UserData]("user").get
+        val currUser = new UserData( "dhkajshd", 10000, 21312, "Bob Geldof" )
+        Ok(views.html.refineuser(currUser, userForm))
     }
     
     def mapData( loc : String ) = Action
@@ -189,6 +290,9 @@ object Application extends Controller
         val Array( swlat, swlon, nelat, nelon, zoom ) = loc.split(",").map(_.toDouble)
         println( swlat, swlon, nelat, nelon, zoom )
         
+        
+        // If logged in, additionally join on the institution table and give
+        // local insitution summaries, e.g. institution to location, SO rep, SO tags, Sector tags
         db withSession
         {
             val points = for 
@@ -332,6 +436,59 @@ object Application extends Controller
         
         Redirect(routes.Application.refineUser)
         //Redirect(routes.Application.index)
+    }
+    
+    def locationBySuffix( q : String ) = Action
+    {
+        import org.scalaquery.ql.extended.H2Driver.Implicit._
+        
+        val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
+        db withSession
+        {
+            val similar = ( for ( t <- CriticalMassTables.Locations if t.name like q.toLowerCase() + "%" ) yield t.name ~ t.name ).take(10).list
+            
+            Ok(compact(render(similar.map( x => ("id" -> x._1) ~ ("name" -> x._2) ))))
+        }
+    }
+    
+    def workSectorBySuffix( q : String ) = Action
+    {
+        import org.scalaquery.ql.extended.H2Driver.Implicit._
+        
+        val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
+        db withSession
+        {
+            val similar = ( for ( t <- CriticalMassTables.SectorTags if t.name like q.toLowerCase() + "%" ) yield t.id ~ t.name ).take(10).list
+            
+            Ok(compact(render(similar.map( x => ("id" -> x._1) ~ ("name" -> x._2) ))))
+        }
+    }
+    
+    def institutionBySuffix( q : String ) = Action
+    {
+        import org.scalaquery.ql.extended.H2Driver.Implicit._
+        
+        val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
+        db withSession
+        {
+            val similar = ( for ( t <- CriticalMassTables.Institution if t.name like q.toLowerCase() + "%" ) yield t.id ~ t.name ).take(10).list
+            
+            Ok(compact(render(similar.map( x => ("id" -> x._1) ~ ("name" -> x._2) ))))
+        }
+    }
+    
+    
+    def tagBySuffix( q : String ) = Action
+    {
+        import org.scalaquery.ql.extended.H2Driver.Implicit._
+        
+        val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
+        db withSession
+        {
+            val similar = ( for ( t <- CriticalMassTables.Tags if t.name like q.toLowerCase() + "%" ) yield t.id ~ t.name ).take(10).list
+            
+            Ok(compact(render(similar.map( x => ("id" -> x._1) ~ ("name" -> x._2) ))))
+        }
     }
   
 }
