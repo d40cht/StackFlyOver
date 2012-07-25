@@ -8,6 +8,10 @@ GET     /refineUser                 controllers.Application.refineUser
 POST    /refineUserAccept           controllers.Application.refineUserAccept
 GET     /mapData                    controllers.Application.mapData( loc : String )
 GET     /authenticate               controllers.Application.authenticate( code : String )
+GET     /locationBySuffix           controllers.Application.locationBySuffix( q : String )
+GET     /workSectorBySuffix         controllers.Application.workSectorBySuffix( q : String )
+GET     /institutionBySuffix        controllers.Application.institutionBySuffix( q : String )
+GET     /tagBySuffix                controllers.Application.tagBySuffix( q : String )
 GET     /logout                     controllers.Application.logout
 GET     /markerUsers                controllers.Application.markerUsers( dh_id : Long )
 GET     /markerTags                 controllers.Application.markerTags( dh_id : Long )
