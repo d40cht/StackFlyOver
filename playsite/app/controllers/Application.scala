@@ -259,7 +259,7 @@ object Application extends Controller
                                 val tagId = if ( isId(tag) ) tag.toLong
                                 else
                                 {
-                                    CriticalMassTables.SectorTags.name insert tag
+                                    CriticalMassTables.SectorTags.name insert tag.toLowerCase
                                     
                                     Query(scopeIdentity).first
                                 }
@@ -471,8 +471,15 @@ object Application extends Controller
         // TODO: If this is their first login, ask for more details
         // namely finer location, company name
         
-        Redirect(routes.Application.refineUser)
-        //Redirect(routes.Application.index)
+        val checkRoles = ( for ( r <- CriticalMassTables.UserRole if r.user_id == meuid ) yield r.id ).list
+        if ( checkRoles.isEmpty )
+        {
+            Redirect(routes.Application.refineUser)
+        }
+        else
+        {
+            Redirect(routes.Application.userHome)
+        }
     }
     
     def locationBySuffix( q : String ) = Action
