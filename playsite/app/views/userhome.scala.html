@@ -4,11 +4,15 @@
     <h1>Roles for: @user.name</h1>
    
     <table>
+    <tr><th>Institution</th><th>Location</th><th>Stack overflow tags</th><th>Institution sector tags</th></tr>
     @roles.map( r => {
         <tr>
             <td>
-            @r.institutionName
+            	<a href={r.url}>{r.institutionName}</a>
             </td>
+            <td>{r.location}</td>
+            <td>{r.soTags.mkString(" ")}</td>
+            <td>{r.sectorTags.mkString(" ")}</td>
         </tr>
     } )
     </table>

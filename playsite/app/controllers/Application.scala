@@ -474,7 +474,7 @@ object Application extends Controller
         val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
         db withSession
         {
-            val checkRoles = ( for ( r <- CriticalMassTables.UserRole if r.user_id == meuid ) yield r.id ).list
+            val checkRoles = ( for ( r <- CriticalMassTables.UserRole if r.user_id === meuid.toLong ) yield r.id ).list
             if ( checkRoles.isEmpty )
             {
                 Redirect(routes.Application.refineUser)
