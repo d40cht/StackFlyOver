@@ -4,10 +4,10 @@
     <h1>Roles for: @user.name</h1>
    
     <table>
-    @roles.map( m => {
+    @roles.map( r => {
         <tr>
             <td>
-            @m.institution
+            @r.institutionName
             </td>
         </tr>
     } )
