@@ -519,7 +519,7 @@ object Application extends Controller
         val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
         db withSession
         {
-            val similar = ( for ( t <- CriticalMassTables.Institution if t.name like q.toLowerCase() + "%" ) yield t.id ~ t.name ).take(10).list
+            val similar = ( for ( t <- CriticalMassTables.Institution if t.name like q + "%" ) yield t.id ~ t.name ).take(10).list
             
             Ok(compact(render(similar.map( x => ("id" -> x._1) ~ ("name" -> x._2) ))))
         }
