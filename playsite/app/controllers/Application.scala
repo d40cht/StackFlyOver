@@ -172,7 +172,8 @@ case class SupplementaryData(
     val institutionName : String,
     val institutionURL : String,
     val soTags : String,
-    val sectorTags : String )
+    val sectorTags : String,
+    val anonymize : Boolean )
 
 object Application extends Controller
 {
@@ -183,19 +184,50 @@ object Application extends Controller
     
     case class Pos( val name : String, val lon : Double, val lat : Double )
     case class UserData( val accessToken : String, val expiry : Int, val uid : Int, val name : String )
-    case class UserRole( val institutionName : String, val url : String, val location : String, val soTags : List[String], val sectorTags : List[String] )
+    case class UserRole( val institutionName : String, val url : String, val location : String, val soTags : List[String], val sectorTags : List[String], val anonymize : Boolean )
     
     val stackOverFlowKey = "5FUHVgHRGHWbz9J5bEy)Ng(("
     val stackOverFlowSecretKey = "aL1DlUG5A7M96N48t2*k0w(("
     val googleMapsKey = "AIzaSyA_F10Lcod9fDputQVMZOtM4cMMaFbJybU"
     
-    def index = Action
+    class SessionCache( val uuid : String )
     {
+        def get( key : String ) = Cache.get( uuid+key )
+        def getAs[T]( key : String )(implicit app: Application, m: ClassManifest[T]) = Cache.getAs[T]( uuid+key )(app, m)
+        def set( key : String, value : Any ) = Cache.set( uuid+key, value )
+    }
+    
+    
+    // An action wrapped to pass through the cache for this session
+    object SessionCacheAction
+    {
+        def apply[T]( block : (Request[AnyContent], SessionCache) => SimpleResult[T] ) =
+        {
+            Action( request =>
+            {
+                val session = request.session
+                val uuid = session.get("uuid") match
+                {
+                    case Some(uuid) => uuid
+                    case _ => java.util.UUID.randomUUID().toString()
+                }
+                
+                val sessionCache = new SessionCache( uuid )
+                block(request, sessionCache).withSession( session + ("uuid" -> uuid ) )
+            } )
+        }
+    }
+
+    
+    def index = SessionCacheAction
+    {
+        (request, sessionCache) =>
+        
         val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
         
         db withSession
         {
-            Ok(views.html.index(Cache.getAs[UserData]("user")))
+            Ok(views.html.index(sessionCache.getAs[UserData]("user")))
         }
     }
     
@@ -206,12 +238,17 @@ object Application extends Controller
             "InstitutionName"   -> text,
             "InstitutionURL"    -> text,
             "SOTags"            -> text,
-            "SectorTags"        -> text
+            "SectorTags"        -> text,
+            "Anonymize"         -> boolean
         )(SupplementaryData.apply)(SupplementaryData.unapply)
     )
     
-    def refineUserAccept = Action
-    { implicit request =>
+    def refineUserAccept = SessionCacheAction
+    {
+        (requestEx, sessionCache) =>
+        
+        implicit val request = requestEx
+        
         userForm.bindFromRequest.fold(
             errors => BadRequest,
             {
@@ -228,7 +265,7 @@ object Application extends Controller
                             
                             def isId(v:String) = v.foldLeft(true)( (acc,c) => acc && (c >= '0' && c <= '9') )
                             
-                            val currUser = Cache.getAs[UserData]("user").get
+                            val currUser = sessionCache.getAs[UserData]("user").get
                             
                             val institutionId = if ( isId(data.institutionName) ) data.institutionName.toLong
                             else
@@ -277,16 +314,20 @@ object Application extends Controller
     
     
         
-    def refineUser() = Action
-    {        
-        val currUser = Cache.getAs[UserData]("user").get
+    def refineUser() = SessionCacheAction
+    {
+        (request, sessionCache) =>
+        
+        val currUser = sessionCache.getAs[UserData]("user").get
         Ok(views.html.refineuser(currUser, userForm))
     }
     
-    def userHome() = Action
+    def userHome() = SessionCacheAction
     {
+        (request, sessionCache) =>
+        
         val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
-        val user = Cache.getAs[UserData]("user").get
+        val user = sessionCache.getAs[UserData]("user").get
         
         db withSession
         {
@@ -312,7 +353,7 @@ object Application extends Controller
                     on (_.tag_id is _.id)
                     if roleTags.role_id === rid ) yield tags.name ).list
                 
-                new UserRole( instname, insturl, loc, soTags, sectorTags )   
+                new UserRole( instname, insturl, loc, soTags, sectorTags, false )   
             }
 
             Ok(views.html.userhome(user, res.toList))
@@ -410,14 +451,18 @@ object Application extends Controller
         }
     }
     
-    def logout() = Action
+    def logout() = SessionCacheAction
     {
-        Cache.set("user", None)
+        (request, sessionCache) =>
+        
+        sessionCache.set("user", None)
         Redirect(routes.Application.index)
     }
     
-    def authenticate( code : String ) = Action
+    def authenticate( code : String ) = SessionCacheAction
     {
+        (request, sessionCache) =>
+        
         import akka.util.Timeout
         import akka.dispatch.Await
         import play.api.libs.ws.WS
@@ -464,7 +509,7 @@ object Application extends Controller
 	    println( "User authenticated: ", meuid, mename )
                 
         // Get user_id and display_name and stick them in the cache
-        Cache.set("user", new UserData(accessToken, expires, meuid, mename ) )
+        sessionCache.set("user", new UserData(accessToken, expires, meuid, mename ) )
         
         println( "User is %s (%d)".format( mename, meuid ) )
         
