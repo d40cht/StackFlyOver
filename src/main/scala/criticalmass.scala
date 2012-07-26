@@ -15,7 +15,50 @@ object CriticalMassTables
     import org.scalaquery.ql.extended.{ExtendedTable => Table}
     import org.scalaquery.ql.TypeMapper._
     import org.scalaquery.ql._
-
+    
+    object SectorTags extends Table[(Long, String)]("SectorTags")
+    {
+        def id                  = column[Long]("id", O PrimaryKey, O AutoInc)
+        def name                = column[String]("name")
+        
+        def * = id ~ name
+    }
+    
+    object Institution extends Table[(Long, String, String)]("Institutions")
+    {
+        def id                  = column[Long]("id", O PrimaryKey, O AutoInc)
+        def name                = column[String]("name")
+        def url                 = column[String]("url")
+        
+        def * = id ~ name ~ url
+    }
+    
+    object UserRole extends Table[(Long, Long, Long, String)]("UserRole")
+    {
+        def id                  = column[Long]("id", O PrimaryKey, O AutoInc)
+        def user_id             = column[Long]("user_id")
+        def institution_id      = column[Long]("institution_id")
+        def work_location       = column[String]("work_location")
+        
+        def * = id ~ user_id ~ institution_id ~ work_location
+    }
+    
+    object RoleSOTags extends Table[(Long, Long)]("RoleSOTags")
+    {
+        def role_id             = column[Long]("role_id")
+        def tag_id              = column[Long]("tag_id")
+        
+        def * = role_id ~ tag_id
+    }
+    
+    object RoleSectorTags extends Table[(Long, Long)]("RoleSectorTags")
+    {
+        def role_id             = column[Long]("role_id")
+        def tag_id              = column[Long]("tag_id")
+        
+        def * = role_id ~ tag_id
+    }
+    
     object Tags extends Table[(Long, String)]("Tags")
     {
         def id                  = column[Long]("id", O PrimaryKey, O AutoInc)
@@ -24,6 +67,7 @@ object CriticalMassTables
         def * = id ~ name
     }
     
+    // Top tags for a user, including counts
     object UserTags extends Table[(Long, Long, Long)]("UserTags")
     {
         def tag_id              = column[Long]("tag_id")
@@ -33,6 +77,17 @@ object CriticalMassTables
         def * = tag_id ~ user_id ~ count
     }
     
+    // Top tags for a hierarchy area, including counts
+    object TagMap extends Table[(Long, Long, Long)]("TagMap")
+    {
+        def dh_id               = column[Long]("dh_id")
+        def tag_id              = column[Long]("tag_id")
+        def count               = column[Long]("count")
+        
+        def * = dh_id ~ tag_id ~ count
+    }
+    
+    // Users for a hierarchy area
     object UserMap extends Table[(Long, Long)]("UserMap")
     {
         def dh_id               = column[Long]("dh_id")
@@ -142,7 +197,12 @@ class MarkerClusterer( val db : Database )
     
     def run() =
     {
-        class UserTag( val name : String, val count : Long )        
+        // Delete old data
+        ( for ( r <- CriticalMassTables.DataHierarchy ) yield r ).mutate( _.delete )
+        ( for ( r <- CriticalMassTables.TagMap ) yield r ).mutate( _.delete )
+        ( for ( r <- CriticalMassTables.UserMap ) yield r ).mutate( _.delete )
+            
+        class UserTag( val id : Long, val name : String, val count : Long )        
         class UserData( val uid : Long, val reputation : Long, val lon : Double, val lat : Double, val tags : List[UserTag] )
         
         // Pull all the user data out into Scala
@@ -164,9 +224,9 @@ class MarkerClusterer( val db : Database )
                     CriticalMassTables.UserTags innerJoin
                     CriticalMassTables.Tags on (_.tag_id is _.id )
                     if userTag.user_id === uid )
-                    yield tagData.name ~ userTag.count ).list
+                    yield userTag.tag_id ~ tagData.name ~ userTag.count ).list
                     
-                new UserData( uid, rep, lon, lat, userTagData.map( t => new UserTag( t._1, t._2 ) ) )
+                new UserData( uid, rep, lon, lat, userTagData.map( t => new UserTag( t._1, t._2, t._3 ) ) )
             }
             
             allUserData.toList
@@ -286,7 +346,7 @@ class MarkerClusterer( val db : Database )
                     val dh = CriticalMassTables.DataHierarchy
                     
                     val numUsers = u.users.size
-                    var tagSummary = immutable.Map[String, Double]()
+                    var tagSummary = immutable.Map[(String, Long), Double]()
                     for ( user <- u.users ) yield
                     {
                         val totalCount = user.tags.foldLeft(0L)( _ + _.count ).toDouble
@@ -295,20 +355,23 @@ class MarkerClusterer( val db : Database )
                         {
                             for ( tag <- user.tags )
                             {
-                                val oldScore = tagSummary.getOrElse(tag.name, 0.0)
-                                val newScore = (tag.count.toDouble / totalCount.toDouble)
+                                val key = (tag.name, tag.id)
+                                val oldScore = tagSummary.getOrElse(key, 0.0)
+                                //val newScore = 100.0 * (tag.count.toDouble / totalCount.toDouble)
+                                val newScore = scala.math.log( tag.count.toDouble )
                                 
-                                tagSummary += (tag.name -> (newScore+oldScore))
+                                tagSummary += (key -> (newScore+oldScore))
                             }
                         }
                     }
                     
-                    val topTags = tagSummary.toList.sortWith( _._2 > _._2 ).take(5)
+                    val sorted = tagSummary.toList.sortWith( _._2 > _._2 ).take(30)
+                    val topAveTags = sorted.take(5)
                     val maxRepUser = u.users.sortWith( _.reputation > _.reputation ).head
                     val maxRep = maxRepUser.reputation.toInt
                     val maxRepUid = maxRepUser.uid
                     
-                    val label = "%d: %s".format( numUsers, topTags.map(_._1).mkString(" ") )
+                    val label = "%d: %s".format( numUsers, topAveTags.map(_._1._1).mkString(" ") )
                     
                     // Load this dh point plus all the relevant users
                     db withTransaction
@@ -324,6 +387,10 @@ class MarkerClusterer( val db : Database )
                             CriticalMassTables.UserMap insert ( (dhId, user.uid) )
                         }
                         
+                        for ( ((tagName, tagId), count) <- sorted )
+                        {
+                            CriticalMassTables.TagMap insert( (dhId, tagId, count.toLong) )
+                        }
                     }
                 }
             }
@@ -359,130 +426,6 @@ class UserScraper( val db : Database )
                 mostRecentUser.user_id
             }
             
-            if ( true )
-            {
-                val ukUsers = for ( Join(user, loc) <- CriticalMassTables.Users
-                    innerJoin CriticalMassTables.Locations on(_.location is _.name)
-                    if ( loc.longitude >= -12.5 && loc.longitude <= 2.7 &&
-                         loc.latitude >= 49.9 && loc.latitude <= 59.7 &&
-                         loc.radius < 100000.0 && user.reputation >= 2L ) ) yield user.display_name ~ loc.longitude ~ loc.latitude
-
-                var count = 0
-                for ( (name, lon, lat) <- ukUsers.list )
-                {
-                    println( "{ name : \"%s\", lon : \"%f\", lat : \"%f\" },".format( name, lon, lat ) )
-                    count += 1
-                }
-                println( count )
-                
-                assert( false )
-            }
-            
-            if ( false )
-            {
-                // Fetch all locations
-                val locations = for ( u <- CriticalMassTables.Users ) yield u.location
-                
-                val allLocs = locations.list
-                val allNonEmptyLocs = allLocs.filter( _ != "" )
-                val uniques = allNonEmptyLocs.toSet
-                
-                //println( uniques.toList )
-                println( allLocs.size, allNonEmptyLocs.size, uniques.size )
-                
-                for ( (addr, count) <- uniques.toList.zipWithIndex )
-                {
-                    val checkTable = for ( l <- CriticalMassTables.Locations if l.name === addr ) yield l.name
-                    
-                    if ( checkTable.list.isEmpty )
-                    {
-                        val locationJ = Dispatch.pullJSON( "http://where.yahooapis.com/geocode", List(
-                            ("flags", "J"),
-                            ("q", addr),
-                            ("appid", yahooAPIKey) ) )
-                            
-                        val locations = (locationJ \ "ResultSet" \ "Results").children.map( _.extract[YahooLocation] ).sortWith( _.radius < _.radius )
-                        
-                        println( "%d: %s".format( count, addr) )
-                        if ( !locations.isEmpty )
-                        {
-                            val l = locations.head
-                            println( "    %s".format( l ) )
-                            
-                            CriticalMassTables.Locations insert (
-                                addr,
-                                l.longitude.toDouble,
-                                l.latitude.toDouble,
-                                l.radius.toDouble )
-                        }
-                        else
-                        {
-                            // Enter a null location
-                            CriticalMassTables.Locations insert (
-                                addr,
-                                0.0,
-                                0.0,
-                                -1.0 )
-                        }
-                    }
-                }
-                
-                // Now fetch tag stats for each user
-                val ukUsers = for ( Join(user, loc) <- CriticalMassTables.Users
-                    innerJoin CriticalMassTables.Locations on(_.location is _.name)
-                    if ( loc.longitude >= -12.5 && loc.longitude <= 2.7 &&
-                         loc.latitude >= 49.9 && loc.latitude <= 59.7 &&
-                         loc.radius < 100000.0 && user.reputation >= 2L ) ) yield user.user_id ~ user.display_name
-                         
-                for ( (uid, name) <- ukUsers.list )
-                {
-                    val checkTable = for ( t <- CriticalMassTables.UserTags if t.user_id === uid ) yield t.user_id
-                    
-                    if ( checkTable.list.isEmpty )
-                    {
-                        val json = SODispatch.pullJSON( "http://api.stackexchange.com/2.0/users/%d/tags".format(uid), List(
-                            ("site", "stackoverflow"),
-                            ("pagesize", "100"),
-                            ("order", "desc"),
-                            ("sort", "popular"),
-                            ("key", stackOverflowKey) ) )
-                            
-                        var tags = (json \ "items").children.map( _.extract[UserTagCounts] )
-                        
-                        if ( tags.isEmpty )
-                        {
-                            tags = List( new UserTagCounts( "notag", 0, false, false, uid, false ) )
-                        }
-                        
-                        println( name, tags )
-                        threadLocalSession withTransaction
-                        {
-                            for ( tag <- tags )
-                            {
-                                val checkTag = (for ( t <- CriticalMassTables.Tags if t.name === tag.name ) yield t.id).list
-                                
-                                val tagId = if ( checkTag.isEmpty )
-                                {
-                                    CriticalMassTables.Tags.name insert (tag.name)
-                                    
-                                    val scopeIdentity = SimpleFunction.nullary[Long]("scope_identity")
-                                    Query(scopeIdentity).first
-                                }
-                                else checkTag.head
-                                
-                                CriticalMassTables.UserTags insert (tagId, uid, tag.count)
-                            }
-                        }
-                            
-                        //println( "%s -> %s".format(name, location) )
-                        
-                        Thread.sleep(200)
-                    }
-                }
-                
-                assert(false)
-            }
-            
             // Get most recent user id from db
             val startUserId =
             {
@@ -491,6 +434,7 @@ class UserScraper( val db : Database )
                 users.list.head.getOrElse( -1L ) + 1
             }
             
+            // Scrape in additional users from SO and add to db
             for ( i <- startUserId until maxUserId by 100L )
             {
                 val j = (i until i+100L)
@@ -524,6 +468,96 @@ class UserScraper( val db : Database )
                 println( "                       ", count )
                 Thread.sleep(500)
             }
+            
+            if ( true )
+            {
+                // Fetch all locations left un-geocoded and geocode via Yahoo
+                val locations = for ( Join(u, l) <- CriticalMassTables.Users leftJoin CriticalMassTables.Locations on(_.location is _.name) if ((l.name isNull) && (u.location != "")) ) yield u.location
+                
+                val allLocs = locations.list
+                val allNonEmptyLocs = allLocs.filter( _ != "" )
+                val uniques = allNonEmptyLocs.toSet
+                
+                println( allLocs.size, allNonEmptyLocs.size, uniques.size )
+                
+                for ( (addr, count) <- uniques.toList.zipWithIndex )
+                {
+                    val locationJ = Dispatch.pullJSON( "http://where.yahooapis.com/geocode", List(
+                        ("flags", "J"),
+                        ("q", addr),
+                        ("appid", yahooAPIKey) ) )
+                        
+                    val locations = (locationJ \ "ResultSet" \ "Results").children.map( _.extract[YahooLocation] ).sortWith( _.radius < _.radius )
+                    
+                    println( "%d: %s".format( count, addr) )
+                    if ( !locations.isEmpty )
+                    {
+                        val l = locations.head
+                        println( "    %s".format( l ) )
+                        
+                        CriticalMassTables.Locations insert (
+                            addr,
+                            l.longitude.toDouble,
+                            l.latitude.toDouble,
+                            l.radius.toDouble )
+                    }
+                    else
+                    {
+                        // Enter a null location
+                        CriticalMassTables.Locations insert (
+                            addr,
+                            0.0,
+                            0.0,
+                            -1.0 )
+                    }
+                }
+            }
+                
+            // Now fetch tag stats for each user left without tags
+            val allUntaggedHighRepUsers = (for ( Join(user, tags) <-
+                CriticalMassTables.Users leftJoin
+                CriticalMassTables.UserTags on(_.user_id is _.user_id) if (tags.user_id isNull) && user.reputation > 120L ) yield user.user_id ~ user.display_name).list
+                
+            println( "number of untagged users remaining to scrape: ", allUntaggedHighRepUsers.size )
+                     
+            for ( (uid, name) <- allUntaggedHighRepUsers )
+            {
+                val json = SODispatch.pullJSON( "http://api.stackexchange.com/2.0/users/%d/tags".format(uid), List(
+                    ("site", "stackoverflow"),
+                    ("pagesize", "100"),
+                    ("order", "desc"),
+                    ("sort", "popular"),
+                    ("key", stackOverflowKey) ) )
+                    
+                var tags = (json \ "items").children.map( _.extract[UserTagCounts] )
+                
+                if ( tags.isEmpty )
+                {
+                    tags = List( new UserTagCounts( "notag", 0, false, false, uid, false ) )
+                }
+                
+                println( "Tags for: %s".format(name) )
+                threadLocalSession withTransaction
+                {
+                    for ( tag <- tags )
+                    {
+                        val checkTag = (for ( t <- CriticalMassTables.Tags if t.name === tag.name ) yield t.id).list
+                        
+                        val tagId = if ( checkTag.isEmpty )
+                        {
+                            CriticalMassTables.Tags.name insert (tag.name)
+                            
+                            val scopeIdentity = SimpleFunction.nullary[Long]("scope_identity")
+                            Query(scopeIdentity).first
+                        }
+                        else checkTag.head
+                        
+                        CriticalMassTables.UserTags insert (tagId, uid, tag.count)
+                    }
+                }
+                
+                Thread.sleep(200)
+            }
         }
     }
 }
@@ -540,14 +574,24 @@ object Main extends App
         {
             db withSession
             {
-                (CriticalMassTables.Users.ddl ++ CriticalMassTables.Locations.ddl ++ CriticalMassTables.Tags.ddl ++ CriticalMassTables.UserTags.ddl ++ CriticalMassTables.DataHierarchy.ddl) create
-                //(CriticalMassTables.DataHierarchy.ddl) create
+                (   CriticalMassTables.Users.ddl ++
+                    CriticalMassTables.Locations.ddl ++
+                    CriticalMassTables.Tags.ddl ++
+                    CriticalMassTables.UserTags.ddl ++
+                    CriticalMassTables.DataHierarchy.ddl ++ 
+                    CriticalMassTables.TagMap.ddl ++
+                    CriticalMassTables.SectorTags.ddl ++
+                    CriticalMassTables.Institution.ddl ++
+                    CriticalMassTables.UserRole.ddl ++
+                    CriticalMassTables.RoleSOTags.ddl ++
+                    CriticalMassTables.RoleSectorTags.ddl ) create
             }
         }
+        val qs = new UserScraper(db)
+        qs.run()
         val mc = new MarkerClusterer(db)
         mc.run()
-        //val qs = new UserScraper(db)
-        //qs.run()
+        
     }
 }
        
