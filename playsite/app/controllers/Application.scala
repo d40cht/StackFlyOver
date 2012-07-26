@@ -165,13 +165,14 @@ object CriticalMassTables
                 age ~ accept_rate ~ website_url ~ location ~ badge_gold ~ badge_silver ~ badge_bronze
     }
 
-    val dbUri="jdbc:h2:file:./stack_users;DB_CLOSE_DELAY=-1"
+    val dbUri="jdbc:h2:tcp://localhost/stack_users;DB_CLOSE_DELAY=-1"
 }
 
 case class SupplementaryData(
     val workLocation : String,
     val institutionName : String,
     val institutionURL : String,
+    val institutionDepartment : String,
     val soTags : String,
     val sectorTags : String,
     val anonymize : Boolean )
@@ -185,7 +186,7 @@ object Application extends Controller
     
     case class Pos( val name : String, val lon : Double, val lat : Double )
     case class UserData( val accessToken : String, val expiry : Int, val uid : Int, val name : String )
-    case class UserRole( val institutionName : String, val url : String, val location : String, val soTags : List[String], val sectorTags : List[String], val anonymize : Boolean )
+    case class UserRole( val institutionName : String, val url : String, val department : String, val location : String, val soTags : List[String], val sectorTags : List[String], val anonymize : Boolean )
     
     val stackOverFlowKey = "5FUHVgHRGHWbz9J5bEy)Ng(("
     val stackOverFlowSecretKey = "aL1DlUG5A7M96N48t2*k0w(("
@@ -238,6 +239,7 @@ object Application extends Controller
             "WorkLocation"      -> text,
             "InstitutionName"   -> text,
             "InstitutionURL"    -> text,
+            "InstitutionDepartment"	-> text,
             "SOTags"            -> text,
             "SectorTags"        -> text,
             "Anonymize"         -> boolean
@@ -354,7 +356,7 @@ object Application extends Controller
                     on (_.tag_id is _.id)
                     if roleTags.role_id === rid ) yield tags.name ).list
                 
-                new UserRole( instname, insturl, loc, soTags, sectorTags, false )   
+                new UserRole( instname, insturl, loc, "no dept", soTags, sectorTags, false )   
             }
 
             Ok(views.html.userhome(user, res.toList))
@@ -565,7 +567,7 @@ object Application extends Controller
         val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
         db withSession
         {
-            val similar = ( for ( t <- CriticalMassTables.Institution if t.name like q.toLowerCase() + "%" ) yield t.id ~ t.name ).take(10).list
+            val similar = ( for ( t <- CriticalMassTables.Institution if t.name like q + "%" ) yield t.id ~ t.name ).take(10).list
             
             Ok(compact(render(similar.map( x => ("id" -> x._1) ~ ("name" -> x._2) ))))
         }
