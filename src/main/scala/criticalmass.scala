@@ -24,23 +24,24 @@ object CriticalMassTables
         def * = id ~ name
     }
     
-    object Institution extends Table[(Long, String, String)]("Institutions")
+    object Institution extends Table[(Long, String)]("Institutions")
     {
         def id                  = column[Long]("id", O PrimaryKey, O AutoInc)
         def name                = column[String]("name")
-        def url                 = column[String]("url")
         
-        def * = id ~ name ~ url
+        def * = id ~ name
     }
     
-    object UserRole extends Table[(Long, Long, Long, String)]("UserRole")
+    object UserRole extends Table[(Long, Long, Long, String, String, String)]("UserRole")
     {
         def id                  = column[Long]("id", O PrimaryKey, O AutoInc)
         def user_id             = column[Long]("user_id")
         def institution_id      = column[Long]("institution_id")
-        def work_location       = column[String]("work_location")
+        def department          = column[String]("department")
+        def url                 = column[String]("url")
+        def location            = column[String]("location")
         
-        def * = id ~ user_id ~ institution_id ~ work_location
+        def * = id ~ user_id ~ institution_id ~ department ~ url ~ location
     }
     
     object RoleSOTags extends Table[(Long, Long)]("RoleSOTags")
@@ -569,6 +570,7 @@ object Main extends App
     {
         val dbName = "stack_users"
         val db = Database.forURL("jdbc:h2:tcp://localhost/%s;DB_CLOSE_DELAY=-1".format(dbName), driver = "org.h2.Driver")
+        //val db = Database.forURL("jdbc:h2:file:%s;DB_CLOSE_DELAY=-1".format(dbName), driver = "org.h2.Driver")
         
         if ( !new java.io.File("%s.h2.db".format(dbName)).exists() )
         {

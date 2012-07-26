@@ -52,7 +52,7 @@ object CriticalMassTables
         def id                  = column[Long]("id", O PrimaryKey, O AutoInc)
         def name                = column[String]("name")
         
-        def * = id ~ name ~ url
+        def * = id ~ name
     }
     
     object UserRole extends Table[(Long, Long, Long, String, String, String)]("UserRole")
@@ -274,7 +274,7 @@ object Application extends Controller
                             else
                             {
                                 val i = CriticalMassTables.Institution
-                                (i.name ~ i.url) insert ((data.institutionName, data.institutionURL))
+                                i.name insert ((data.institutionName))
                                 
                                 Query(scopeIdentity).first
                             }
@@ -282,7 +282,7 @@ object Application extends Controller
                             val roleId =
                             {
                                 val r = CriticalMassTables.UserRole
-                                (r.user_id ~ r.institution_id ~ r.work_location) insert ((currUser.uid.toLong, institutionId, data.workLocation))
+                                (r.user_id ~ r.institution_id ~ r.department ~ r.url ~ r.location) insert ((currUser.uid.toLong, institutionId, data.institutionDepartment, data.institutionURL, data.workLocation))
                                 
                                 Query(scopeIdentity).first
                             }
@@ -340,9 +340,9 @@ object Application extends Controller
                 CriticalMassTables.Institution
                 on (_.institution_id is _.id)
                 if role.user_id === user.uid.toLong )
-                yield role.id ~ role.work_location ~ institution.name ~ institution.url ).list
+                yield role.id ~ institution.name ~ role.department ~ role.url ~ role.location ).list
 
-            val res = for ( (rid, loc, instname, insturl) <- roles ) yield
+            val res = for ( (rid, instname, dept, insturl, loc) <- roles ) yield
             {
                 val soTags = ( for ( Join(roleTags, tags) <-
                     CriticalMassTables.RoleSOTags innerJoin
@@ -356,7 +356,7 @@ object Application extends Controller
                     on (_.tag_id is _.id)
                     if roleTags.role_id === rid ) yield tags.name ).list
                 
-                new UserRole( instname, insturl, loc, "no dept", soTags, sectorTags, false )   
+                new UserRole( instname, insturl, loc, dept, soTags, sectorTags, false )   
             }
 
             Ok(views.html.userhome(user, res.toList))
@@ -534,19 +534,6 @@ object Application extends Controller
         }
     }
     
-    def locationBySuffix( q : String ) = Action
-    {
-        import org.scalaquery.ql.extended.H2Driver.Implicit._
-        
-        val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
-        db withSession
-        {
-            val similar = ( for ( t <- CriticalMassTables.Locations if t.name like q.toLowerCase() + "%" ) yield t.name ~ t.name ).take(10).list
-            
-            Ok(compact(render(similar.map( x => ("id" -> x._1) ~ ("name" -> x._2) ))))
-        }
-    }
-    
     def workSectorBySuffix( q : String ) = Action
     {
         import org.scalaquery.ql.extended.H2Driver.Implicit._
@@ -571,6 +558,57 @@ object Application extends Controller
             
             Ok(compact(render(similar.map( x => ("id" -> x._1) ~ ("name" -> x._2) ))))
         }
+    }
+    
+    def instLocationBySuffix( instId : Long, q : String ) = Action
+    {
+        import org.scalaquery.ql.extended.H2Driver.Implicit._
+        
+        if ( instId > 0 )
+        {
+            val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
+            db withSession
+            {
+                val similar = ( for ( role <- CriticalMassTables.UserRole if role.institution_id === instId ) yield role.location ).list.toSet
+                
+                Ok(compact(render(similar.toList.map( x => ("id" -> x) ~ ("name" -> x) ))))
+            }
+        }
+        else Ok(compact(render(List())))
+    }
+    
+    def instDepartmentBySuffix( instId : Long, q : String ) = Action
+    {
+        import org.scalaquery.ql.extended.H2Driver.Implicit._
+        
+        if ( instId > 0 )
+        {
+            val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
+            db withSession
+            {
+                val similar = ( for ( role <- CriticalMassTables.UserRole if role.institution_id === instId ) yield role.department ).list.toSet
+                
+                Ok(compact(render(similar.toList.map( x => ("id" -> x) ~ ("name" -> x) ))))
+            }
+        }
+        else Ok(compact(render(List())))
+    }
+    
+    def instURLBySuffix( instId : Long, q : String ) = Action
+    {
+        import org.scalaquery.ql.extended.H2Driver.Implicit._
+        
+        if ( instId > 0 )
+        {
+            val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
+            db withSession
+            {
+                val similar = ( for ( role <- CriticalMassTables.UserRole if role.institution_id === instId ) yield role.url ).list.toSet
+                
+                Ok(compact(render(similar.toList.map( x => ("id" -> x) ~ ("name" -> x) ))))
+            }
+        }
+        else Ok(compact(render(List())))
     }
     
     
