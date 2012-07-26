@@ -1,0 +1,35 @@
+@(user : controllers.Application.UserData, roles : List[controllers.Application.UserRole])
+
+@main("Roles for: @user.name") {
+    <h1>Roles for: @user.name</h1>
+   
+    <table>
+    <tr><th>Institution</th><th>Location</th><th>Stack overflow tags</th><th>Institution sector tags</th><th>Actions</th></tr>
+    @roles.map( r => {
+        <tr>
+            <td>
+            	<a href={r.url}>{r.institutionName}</a>
+            </td>
+            <td>{r.location}</td>
+            <td>
+                <ul class="token-input-list-facebook">
+                {
+                    r.soTags.map( tag => <li class="token-input-token-facebook"><p>{tag}</p></li> )
+                }
+                </ul>
+            </td>
+            <td>
+                <ul class="token-input-list-facebook">
+                {
+                    r.sectorTags.map( tag => <li class="token-input-token-facebook"><p>{tag}</p></li> )
+                }
+                </ul>
+            </td>
+            <td>
+                <a href="">delete</a>
+                <a href="">edit</a>
+            </td>
+        </tr>
+    } )
+    </table>
+}

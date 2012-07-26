@@ -183,6 +183,7 @@ object Application extends Controller
     
     case class Pos( val name : String, val lon : Double, val lat : Double )
     case class UserData( val accessToken : String, val expiry : Int, val uid : Int, val name : String )
+    case class UserRole( val institutionName : String, val url : String, val location : String, val soTags : List[String], val sectorTags : List[String], val anonymize : Boolean )
     
     val stackOverFlowKey = "5FUHVgHRGHWbz9J5bEy)Ng(("
     val stackOverFlowSecretKey = "aL1DlUG5A7M96N48t2*k0w(("
@@ -205,7 +206,8 @@ object Application extends Controller
             "InstitutionName"   -> text,
             "InstitutionURL"    -> text,
             "SOTags"            -> text,
-            "SectorTags"        -> text
+            "SectorTags"        -> text,
+            "Anonymize"         -> boolean
         )(SupplementaryData.apply)(SupplementaryData.unapply)
     )
     
@@ -258,7 +260,7 @@ object Application extends Controller
                                 val tagId = if ( isId(tag) ) tag.toLong
                                 else
                                 {
-                                    CriticalMassTables.SectorTags.name insert tag
+                                    CriticalMassTables.SectorTags.name insert tag.toLowerCase
                                     
                                     Query(scopeIdentity).first
                                 }
@@ -281,6 +283,43 @@ object Application extends Controller
         val currUser = Cache.getAs[UserData]("user").get
         Ok(views.html.refineuser(currUser, userForm))
     }
+    
+    def userHome() = Action
+    {
+        val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
+        val user = Cache.getAs[UserData]("user").get
+        
+        db withSession
+        {
+            // Get roles with location and two types of tags
+            val roles = ( for ( Join(role, institution) <-
+                CriticalMassTables.UserRole innerJoin
+                CriticalMassTables.Institution
+                on (_.institution_id is _.id)
+                if role.user_id === user.uid.toLong )
+                yield role.id ~ role.work_location ~ institution.name ~ institution.url ).list
+
+            val res = for ( (rid, loc, instname, insturl) <- roles ) yield
+            {
+                val soTags = ( for ( Join(roleTags, tags) <-
+                    CriticalMassTables.RoleSOTags innerJoin
+                    CriticalMassTables.Tags
+                    on (_.tag_id is _.id)
+                    if roleTags.role_id === rid ) yield tags.name ).list
+                    
+                val sectorTags = ( for ( Join(roleTags, tags) <-
+                    CriticalMassTables.RoleSectorTags innerJoin
+                    CriticalMassTables.SectorTags
+                    on (_.tag_id is _.id)
+                    if roleTags.role_id === rid ) yield tags.name ).list
+                
+                new UserRole( instname, insturl, loc, soTags, sectorTags )   
+            }
+
+            Ok(views.html.userhome(user, res.toList))
+        }
+    }
+
     
     def mapData( loc : String ) = Action
     {
@@ -433,8 +472,19 @@ object Application extends Controller
         // TODO: If this is their first login, ask for more details
         // namely finer location, company name
         
-        Redirect(routes.Application.refineUser)
-        //Redirect(routes.Application.index)
+        val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
+        db withSession
+        {
+            val checkRoles = ( for ( r <- CriticalMassTables.UserRole if r.user_id === meuid.toLong ) yield r.id ).list
+            if ( checkRoles.isEmpty )
+            {
+                Redirect(routes.Application.refineUser)
+            }
+            else
+            {
+                Redirect(routes.Application.userHome)
+            }
+        }
     }
     
     def locationBySuffix( q : String ) = Action
