@@ -2,42 +2,64 @@
 
 @import controllers.Application.UserData
 
-@main("Welcome: @user.name") {
+@main("Welcome: "+user.name) {
     <h1>Welcome: @user.name</h1>
     
 
+    <div style="float:left;width:60%">
     <p>To help make this site more useful, please enter a few extra details to continue.</p>
     
     @helper.form(action=routes.Application.refineUserAccept) {
-        @helper.inputText(refineForm("WorkLocation"), '_label -> "Address of your workplace (a city name is specific enough):")
         @helper.inputText(refineForm("InstitutionName"), '_label -> "Name of your employer/institution:")
+        <div id="instDetails">
         @helper.inputText(refineForm("InstitutionURL"), '_label -> "Url of your employer/institution, e.g. http://www.stackoverflow.com:")
+        @helper.inputText(refineForm("InstitutionDepartment"), '_label -> "Department of your employer/institution, e.g. Software engineering")
+        @helper.inputText(refineForm("WorkLocation"), '_label -> "Address of your workplace (a city name is specific enough):")
         @helper.inputText(refineForm("SOTags"), '_label -> "Stack overflow tags relevant to your work, e.g. C++, Django etc:")
         @helper.inputText(refineForm("SectorTags"), '_label -> "Industry sector tags, e.g. Telecoms, Retail etc:")
         @helper.checkbox(refineForm("Anonymize"), '_label -> "Do not publically link your user details to this role:")
         
-        <input type="submit" value="submit"/>
+        <input type="submit" value="Submit"/>
+	</div>
     }
+    </div>
+
+
+    <div style="float:right;width:30%">
+	<h4>How to Tag (to paraphrase SO):</h4>
+
+        <p>A tag is a keyword or label that categorizes your experience with with other similar people's experience.</p>
+
+	<ul>
+		<li>favor existing popular tags; avoid creating new tags</li>
+		<li>use common abbreviations</li>
+		<li>don't include synonyms</li>
+		<li>combine multiple words into single-words with dashes</li>
+		<li>maximum of 5 tags, 25 chars per tag</li>
+		<li>tag characters: [a-z 0-9 + # - .]</li>
+		<li>delimit tags by semi-colon</li>
+	<ul>
+    </div>
     
 <script type="text/javascript">
     $(document).ready(function()
     {
-        $("#WorkLocation").tokenInput("/locationBySuffix", { theme: "facebook", allowNewItems:true, tokenLimit:1, minChars:2 } );
-    } );
-    
-    $(document).ready(function()
-    {
-        $("#InstitutionName").tokenInput("/institutionBySuffix", { theme: "facebook", allowNewItems:true, tokenLimit:1, minChars:2 } );
-    } );
-    
-    $(document).ready(function()
-    {
-        $("#SOTags").tokenInput("/tagBySuffix", { theme: "facebook", minChars:2 } );
-    } );
-    
-    $(document).ready(function()
-    {
-        $("#SectorTags").tokenInput("/workSectorBySuffix", { theme: "facebook", allowNewItems:true, minChars:2 } );
+        var institutionName = null;
+        // Add a callback function in to un-grey out the department, location and url fields upon filling in institution
+        // may need to pass an additional parameter through as part of the url to then narrow searches on url/loc/dept
+        $("#InstitutionName").tokenInput("/institutionBySuffix", { theme: "facebook", allowNewItems:true, tokenLimit:1, minChars:2,
+            onAdd: function(token)
+            {
+                $("#InstitutionURL").tokenInput("/instURLBySuffix?inst="+token, { theme: "facebook", allowNewItems:true, tokenLimit:1 } );	
+                $("#InstitutionDepartment").tokenInput("/instDeptBySuffix?inst="+token, { theme: "facebook", allowNewItems:true, tokenLimit:1 } );	
+                $("#WorkLocation").tokenInput("/instLocBySuffix?inst="+token, { theme: "facebook", allowNewItems:true, tokenLimit:1, minChars:2 } );
+                $("#SOTags").tokenInput("/tagBySuffix", { theme: "facebook", minChars:1 } );
+                $("#SectorTags").tokenInput("/workSectorBySuffix", { theme: "facebook", allowNewItems:true, minChars:1 } );
+
+                $("#instDetails").show();
+            }  } );
+
+	$("#instDetails").hide();
     } );
 </script>
 }
