@@ -187,7 +187,7 @@ object Application extends Controller
     case class Pos( val name : String, val lon : Double, val lat : Double )
     case class UserData( val accessToken : String, val expiry : Int, val uid : Int, val name : String )
     {
-        def isAdmin = uid == 415313
+        def isAdmin = (uid == 415313)
     }
 
     case class UserRole( val institutionName : String, val url : String, val department : String, val location : String, val soTags : List[String], val sectorTags : List[String], val anonymize : Boolean )
@@ -201,13 +201,17 @@ object Application extends Controller
         def get( key : String ) = Cache.get( uuid+key )
         def getAs[T]( key : String )(implicit app: Application, m: ClassManifest[T]) = Cache.getAs[T]( uuid+key )(app, m)
         def set( key : String, value : Any ) = Cache.set( uuid+key, value )
+        def contains( key : String ) = Cache.get(key) != null
     }
     
     
     // An action wrapped to pass through the cache for this session
     object SessionCacheAction
     {
-        def apply[T]( block : (Request[AnyContent], SessionCache) => SimpleResult[T] ) =
+        //def apply[T]( block : (Request[AnyContent], SessionCache) => SimpleResult[T] ) : SimpleResult[T] = apply(requireLogin=false)(block)
+        
+        
+        def apply[T]( requireLogin : Boolean, requireAdmin : Boolean = false )( block : (Request[AnyContent], SessionCache) => SimpleResult[T] ) =
         {
             Action( request =>
             {
@@ -219,13 +223,41 @@ object Application extends Controller
                 }
                 
                 val sessionCache = new SessionCache( uuid )
-                block(request, sessionCache).withSession( session + ("uuid" -> uuid ) )
+                
+                var redirect = false
+                if ( requireLogin )
+                {
+                    if ( sessionCache.contains("user") )
+                    {
+                        if ( requireAdmin )
+                        {
+                            val user = sessionCache.getAs[UserData]("user")
+                            if ( !user.isAdmin )
+                            {
+                                redirect = true
+                            }
+                        }
+                    }
+                    else
+                    {
+                        redirect = true
+                    }
+                }
+                
+                if ( !redirect )
+                {
+                    block(request, sessionCache).withSession( session + ("uuid" -> uuid ) )
+                }
+                else
+                {
+                    Redirect(routes.Application.index)
+                }
             } )
         }
     }
 
     
-    def index = SessionCacheAction
+    def index = SessionCacheAction(requireLogin=false)
     {
         (request, sessionCache) =>
         
@@ -235,6 +267,10 @@ object Application extends Controller
         {
             Ok(views.html.index(sessionCache.getAs[UserData]("user")))
         }
+    }
+    
+    def admin = SessionCacheAction(requireLogin=false, requireAdmin=true)
+    {
     }
     
     
@@ -250,7 +286,7 @@ object Application extends Controller
         )(SupplementaryData.apply)(SupplementaryData.unapply)
     )
     
-    def refineUserAccept = SessionCacheAction
+    def refineUserAccept = SessionCacheAction(requireLogin=true)
     {
         (requestEx, sessionCache) =>
         
@@ -311,7 +347,7 @@ object Application extends Controller
                                 CriticalMassTables.RoleSectorTags insert ((roleId, tagId))
                             }
                             
-                            Redirect(routes.Application.index)
+                            Redirect(routes.Application.userHome)
                         }
                     }
                 }
@@ -321,7 +357,7 @@ object Application extends Controller
     
     
         
-    def refineUser() = SessionCacheAction
+    def refineUser() = SessionCacheAction(requireLogin=true)
     {
         (request, sessionCache) =>
         
@@ -329,7 +365,7 @@ object Application extends Controller
         Ok(views.html.refineuser(currUser, userForm))
     }
     
-    def userHome() = SessionCacheAction
+    def userHome() = SessionCacheAction(requireLogin=true)
     {
         (request, sessionCache) =>
         
@@ -466,15 +502,15 @@ object Application extends Controller
         }
     }
     
-    def logout() = SessionCacheAction
+    def logout() = SessionCacheAction(requireLogin=true)
     {
         (request, sessionCache) =>
         
-        sessionCache.set("user", None)
+        sessionCache.set("user", null)
         Redirect(routes.Application.index)
     }
     
-    def authenticate( code : String ) = SessionCacheAction
+    def authenticate( code : String ) = SessionCacheAction(requireLogin=false)
     {
         (request, sessionCache) =>
         
