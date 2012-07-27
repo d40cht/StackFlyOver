@@ -1,0 +1,19 @@
+@(user : Option[controllers.Application.UserData], roles : List[(String, String)])
+
+@main("Site admin", user) {
+    <h1>Site admin</h1>
+   
+    <h4>User added roles</h4>
+    <table>
+    <tr><th>User name</th><th>Role url</th></tr>
+    @roles.map( r => {
+        <tr>
+            <td>{r._1}</td>
+            <td><a href={r._2}>{r._2}</a></td>
+        </tr>
+    } )
+    </table>
+
+
+    <a href="/">Home</a>
+}
