@@ -82,6 +82,8 @@ object CriticalMassTables
     {
         def dh_id               = column[Long]("dh_id")
         def institution_id      = column[Long]("institution_id")
+
+        def * = dh_id ~ institution_id
     }
     
     // Top tags for a hierarchy area, including counts
