@@ -4,6 +4,7 @@
 
 # Home page
 GET     /                           controllers.Application.index
+GET     /admin                      controllers.Application.admin
 GET     /refineUser                 controllers.Application.refineUser
 POST    /refineUserAccept           controllers.Application.refineUserAccept
 GET     /mapData                    controllers.Application.mapData( loc : String )

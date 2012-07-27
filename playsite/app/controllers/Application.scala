@@ -2,6 +2,7 @@ package controllers
 
 import play.api._
 import play.api.mvc._
+import play.api.db._
 
 import org.scalaquery.session.Database
 import org.scalaquery.session._
@@ -165,7 +166,7 @@ object CriticalMassTables
                 age ~ accept_rate ~ website_url ~ location ~ badge_gold ~ badge_silver ~ badge_bronze
     }
 
-    val dbUri="jdbc:h2:tcp://localhost/stack_users;DB_CLOSE_DELAY=-1"
+    //val dbUri="jdbc:h2:tcp://localhost/stack_users;DB_CLOSE_DELAY=-1"
 }
 
 case class SupplementaryData(
@@ -204,13 +205,18 @@ object Application extends Controller
         def contains( key : String ) = Cache.get(key) != null
     }
     
+    private def withDbSession[T]( block : => T ) : T =
+    {
+        val db = Database.forDataSource(DB.getDataSource())
+
+        db.withSession(block)
+    }
+    
+    
     
     // An action wrapped to pass through the cache for this session
     object SessionCacheAction
     {
-        //def apply[T]( block : (Request[AnyContent], SessionCache) => SimpleResult[T] ) : SimpleResult[T] = apply(requireLogin=false)(block)
-        
-        
         def apply[T]( requireLogin : Boolean, requireAdmin : Boolean = false )( block : (Request[AnyContent], SessionCache) => SimpleResult[T] ) =
         {
             Action( request =>
@@ -227,20 +233,14 @@ object Application extends Controller
                 var redirect = false
                 if ( requireLogin )
                 {
-                    if ( sessionCache.contains("user") )
+                    val user = sessionCache.getAs[UserData]("user")
+                    user match
                     {
-                        if ( requireAdmin )
+                        case Some(ud) =>
                         {
-                            val user = sessionCache.getAs[UserData]("user")
-                            if ( !user.isAdmin )
-                            {
-                                redirect = true
-                            }
+                            if ( requireAdmin && ! ud.isAdmin ) redirect = true
                         }
-                    }
-                    else
-                    {
-                        redirect = true
+                        case _ => redirect = true
                     }
                 }
                 
@@ -261,16 +261,20 @@ object Application extends Controller
     {
         (request, sessionCache) =>
         
-        val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
-        
-        db withSession
-        {
-            Ok(views.html.index(sessionCache.getAs[UserData]("user")))
-        }
+        Ok(views.html.index(sessionCache.getAs[UserData]("user")))
     }
     
     def admin = SessionCacheAction(requireLogin=false, requireAdmin=true)
     {
+        (request, sessionCache) =>
+        
+        withDbSession
+        {
+            val res = (for ( Join(role, user) <-
+                CriticalMassTables.UserRole innerJoin
+                CriticalMassTables.Users on (_.user_id is _.user_id) ) yield user.display_name ~ role.url).list
+            Ok(views.html.admin(sessionCache.getAs[UserData]("user"), res))
+        }
     }
     
     
@@ -299,10 +303,9 @@ object Application extends Controller
                 {
                     println( "Received user data: " + data.toString )
                     
-                    val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
-                    db withSession
+                    withDbSession
                     {
-                        db withTransaction
+                        threadLocalSession withTransaction
                         {
                             def scopeIdentity = SimpleFunction.nullary[Long]("scope_identity")
                             
@@ -369,10 +372,9 @@ object Application extends Controller
     {
         (request, sessionCache) =>
         
-        val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
         val user = sessionCache.getAs[UserData]("user").get
         
-        db withSession
+        withDbSession
         {
             // Get roles with location and two types of tags
             val roles = ( for ( Join(role, institution) <-
@@ -406,15 +408,13 @@ object Application extends Controller
     
     def mapData( loc : String ) = Action
     {
-        val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
-        
         val Array( swlat, swlon, nelat, nelon, zoom ) = loc.split(",").map(_.toDouble)
         println( swlat, swlon, nelat, nelon, zoom )
         
         
         // If logged in, additionally join on the institution table and give
         // local insitution summaries, e.g. institution to location, SO rep, SO tags, Sector tags
-        db withSession
+        withDbSession
         {
             val points = for 
             {
@@ -435,9 +435,7 @@ object Application extends Controller
         import org.scalaquery.ql.Ordering.Desc
         import org.scalaquery.ql.extended.H2Driver.Implicit._
         
-        val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
-        
-        db withSession
+        withDbSession
         {
             println( "Marker users for: " + dh_id.toString )
             val users = (for
@@ -487,9 +485,7 @@ object Application extends Controller
         import org.scalaquery.ql.Ordering.Desc
         import org.scalaquery.ql.extended.H2Driver.Implicit._
         
-        val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
-        
-        db withSession
+        withDbSession
         {
             val topTags = (for (Join(tagMap, tags) <-
                 CriticalMassTables.TagMap innerJoin
@@ -567,8 +563,7 @@ object Application extends Controller
         // TODO: If this is their first login, ask for more details
         // namely finer location, company name
         
-        val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
-        db withSession
+        withDbSession
         {
             val checkRoles = ( for ( r <- CriticalMassTables.UserRole if r.user_id === meuid.toLong ) yield r.id ).list
             if ( checkRoles.isEmpty )
@@ -586,8 +581,7 @@ object Application extends Controller
     {
         import org.scalaquery.ql.extended.H2Driver.Implicit._
         
-        val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
-        db withSession
+        withDbSession
         {
             val similar = ( for ( t <- CriticalMassTables.SectorTags if t.name like q.toLowerCase() + "%" ) yield t.id ~ t.name ).take(10).list
             
@@ -603,8 +597,7 @@ object Application extends Controller
         val lowerSFn = SimpleFunction[String]("lower")
         def lowerFn(c : Column[String]) = lowerSFn(Seq(c))
         
-        val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
-        db withSession
+        withDbSession
         {
             val similar = ( for ( t <- CriticalMassTables.Institution if lowerFn(t.name) like q.toLowerCase() + "%" ) yield t.id ~ t.name ).take(10).list
             
@@ -620,8 +613,7 @@ object Application extends Controller
         
         if ( instId > 0 )
         {
-            val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
-            db withSession
+            withDbSession
             {
                 val similar = ( for ( role <- CriticalMassTables.UserRole if role.institution_id === instId ) yield role.location ).list.toSet
                 
@@ -637,8 +629,7 @@ object Application extends Controller
         
         if ( instId > 0 )
         {
-            val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
-            db withSession
+            withDbSession
             {
                 val similar = ( for ( role <- CriticalMassTables.UserRole if role.institution_id === instId ) yield role.department ).list.toSet
                 
@@ -654,8 +645,7 @@ object Application extends Controller
         
         if ( instId > 0 )
         {
-            val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
-            db withSession
+            withDbSession
             {
                 val similar = ( for ( role <- CriticalMassTables.UserRole if role.institution_id === instId ) yield role.url ).list.toSet
                 
@@ -666,12 +656,12 @@ object Application extends Controller
     }
     
     
+    
     def tagBySuffix( q : String ) = Action
     {
         import org.scalaquery.ql.extended.H2Driver.Implicit._
         
-        val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
-        db withSession
+        withDbSession
         {
             val similar = ( for ( t <- CriticalMassTables.Tags if t.name like q.toLowerCase() + "%" ) yield t.id ~ t.name ).take(10).list
             
