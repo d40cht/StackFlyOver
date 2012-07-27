@@ -2,25 +2,10 @@
 
 @import controllers.Application.UserData
 
-@main("StackNative: StackOverflow users on a map") {
-    <div style="position:absolute;top:1%;right:1%">
-        @user match {
-            case None => {
-                <span>
-                    <a href="https://stackexchange.com/oauth?client_id=498&redirect_uri=http://www.stacknative.com/authenticate">
-                       Sign in 
-                    </a>
-                    with your SO account for employer details and more features.
-                <span>
-            }
-            case Some(u) => {
-                <span> <a href="@routes.Application.userHome">@u.name</a>: <a href="@routes.Application.logout">Logout</a> </span>
-            }
-        }
-    </div>
-
+@main("StackNative: StackOverflow highlights on a map", user) {
     <h1>StackNative: StackOverflow highlights on a map</h1>
     
+    <p>Welcome to StackNative, the free and collaboratively edited-site that shows StackOverflow users and their employers on a map. This site aims to make it easier for developers to find places and companies where other great developers work. You can contribute by signing in (with your SO account) and adding your employer details and work location, and a little bit of information about what you do.</p>
 
     <p>Zoom in to see more detail. Stars denote high-scoring individuals in that area (click to see who's top). Hover over each icon to see the top five tags in that cluster.</p>
     

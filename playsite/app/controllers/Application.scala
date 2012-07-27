@@ -186,6 +186,10 @@ object Application extends Controller
     
     case class Pos( val name : String, val lon : Double, val lat : Double )
     case class UserData( val accessToken : String, val expiry : Int, val uid : Int, val name : String )
+    {
+        def isAdmin = uid == 415313
+    }
+
     case class UserRole( val institutionName : String, val url : String, val department : String, val location : String, val soTags : List[String], val sectorTags : List[String], val anonymize : Boolean )
     
     val stackOverFlowKey = "5FUHVgHRGHWbz9J5bEy)Ng(("
@@ -356,7 +360,7 @@ object Application extends Controller
                     on (_.tag_id is _.id)
                     if roleTags.role_id === rid ) yield tags.name ).list
                 
-                new UserRole( instname, insturl, loc, dept, soTags, sectorTags, false )   
+                new UserRole( instname, insturl, dept, loc, soTags, sectorTags, false )   
             }
 
             Ok(views.html.userhome(user, res.toList))
@@ -399,6 +403,7 @@ object Application extends Controller
         
         db withSession
         {
+            println( "Marker users for: " + dh_id.toString )
             val users = (for
             {
                 Join(userMap, users) <-
@@ -409,6 +414,8 @@ object Application extends Controller
             } yield users.reputation ~ users.display_name ~ users.user_id ~ users.location)
             
             val topN = (users take 100).list
+
+            println( "Got %d users".format(topN.size) )
             
             // Inefficient - cache in Users tables
             val userTags = for ( u <- topN ) yield
@@ -419,6 +426,8 @@ object Application extends Controller
                     if userTags.user_id === u._3) yield tag.name).take(5).list.mkString(" ")
                 topTags
             }
+
+            println( "Got tags" )
             
             
 
@@ -428,9 +437,12 @@ object Application extends Controller
                 ("location" -> x._4) ~
                 ("tags" -> t) }
     
+            println( "Zipped users and tags" )
             
-            val json = ("aaData" -> userTableData)
-            Ok(compact(render(json)))
+            val json = compact(render("aaData" -> userTableData))
+
+            println( "Built json" )
+            Ok(json)
         }
     }
     
@@ -549,20 +561,26 @@ object Application extends Controller
     
     def institutionBySuffix( q : String ) = Action
     {
+        import org.scalaquery.ql.Column
         import org.scalaquery.ql.extended.H2Driver.Implicit._
+        
+        val lowerSFn = SimpleFunction[String]("lower")
+        def lowerFn(c : Column[String]) = lowerSFn(Seq(c))
         
         val db = Database.forURL(CriticalMassTables.dbUri, driver = "org.h2.Driver")
         db withSession
         {
-            val similar = ( for ( t <- CriticalMassTables.Institution if t.name like q + "%" ) yield t.id ~ t.name ).take(10).list
+            val similar = ( for ( t <- CriticalMassTables.Institution if lowerFn(t.name) like q.toLowerCase() + "%" ) yield t.id ~ t.name ).take(10).list
             
             Ok(compact(render(similar.map( x => ("id" -> x._1) ~ ("name" -> x._2) ))))
         }
-    }
-    
+    }   
+ 
     def instLocationBySuffix( instId : Long, q : String ) = Action
     {
         import org.scalaquery.ql.extended.H2Driver.Implicit._
+
+        println( instId, q )
         
         if ( instId > 0 )
         {

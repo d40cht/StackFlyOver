@@ -1,4 +1,4 @@
-@(title: String)(content: Html)
+@(title: String, user : Option[controllers.Application.UserData])(content: Html)
 
 <!DOCTYPE html>
 
@@ -36,6 +36,25 @@
     
     </head>
     <body style="height:100%; padding-left:1%; padding-right:1%">
+
+    <div style="position:absolute;top:1%;right:1%">
+        @user match {
+            case None => {
+                <span>
+                    <a href="https://stackexchange.com/oauth?client_id=498&redirect_uri=http://www.stacknative.com/authenticate">
+                       Sign in 
+                    </a>
+                    with your SO account for employer details and more features.
+                <span>
+            }
+            case Some(u) => {
+                <span> <a href="@routes.Application.userHome">@u.name</a>: <a href="@routes.Application.logout">Logout</a> </span>
+            }
+        }
+    </div>
+
+
+
         @content
     </body>
 </html>

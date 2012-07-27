@@ -77,6 +77,12 @@ object CriticalMassTables
         
         def * = tag_id ~ user_id ~ count
     }
+
+    object InstitutionMap extends Table[(Long, Long)]("InstitutionMap")
+    {
+        def dh_id               = column[Long]("dh_id")
+        def institution_id      = column[Long]("institution_id")
+    }
     
     // Top tags for a hierarchy area, including counts
     object TagMap extends Table[(Long, Long, Long)]("TagMap")
@@ -202,6 +208,7 @@ class MarkerClusterer( val db : Database )
         ( for ( r <- CriticalMassTables.DataHierarchy ) yield r ).mutate( _.delete )
         ( for ( r <- CriticalMassTables.TagMap ) yield r ).mutate( _.delete )
         ( for ( r <- CriticalMassTables.UserMap ) yield r ).mutate( _.delete )
+        ( for ( r <- CriticalMassTables.InstitutionMap ) yield r ).mutate( _.delete )
             
         class UserTag( val id : Long, val name : String, val count : Long )        
         class UserData( val uid : Long, val reputation : Long, val lon : Double, val lat : Double, val tags : List[UserTag] )
