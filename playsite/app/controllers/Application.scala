@@ -205,7 +205,7 @@ object Application extends Controller
         def getAs[T]( key : String )(implicit app: Application, m: ClassManifest[T]) = Cache.getAs[T]( uuid+key )(app, m)
         def set( key : String, value : Any ) = Cache.set( uuid+key, value )
         def contains( key : String ) = Cache.get( uuid+key) != None
-        def remove( key : String )(implicit app: Application) = Cache.set( uuid+key, null, 0 )
+        def remove( key : String )(implicit app: Application) = Cache.set( uuid+key, None, 1 )
     }
     
     private def withDbSession[T]( block : => T ) : T =
