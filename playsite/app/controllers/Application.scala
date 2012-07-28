@@ -166,7 +166,6 @@ object CriticalMassTables
                 age ~ accept_rate ~ website_url ~ location ~ badge_gold ~ badge_silver ~ badge_bronze
     }
 
-    //val dbUri="jdbc:h2:tcp://localhost/stack_users;DB_CLOSE_DELAY=-1"
 }
 
 case class SupplementaryData(
@@ -199,10 +198,14 @@ object Application extends Controller
     
     class SessionCache( val uuid : String )
     {
+        import play.api.cache.CacheAPI
+        import play.api.cache.CachePlugin
+        
         def get( key : String ) = Cache.get( uuid+key )
         def getAs[T]( key : String )(implicit app: Application, m: ClassManifest[T]) = Cache.getAs[T]( uuid+key )(app, m)
         def set( key : String, value : Any ) = Cache.set( uuid+key, value )
-        def contains( key : String ) = Cache.get(key) != null
+        def contains( key : String ) = Cache.get( uuid+key) != None
+        def remove( key : String )(implicit app: Application) = Cache.set( uuid+key, null, 0 )
     }
     
     private def withDbSession[T]( block : => T ) : T =
@@ -502,7 +505,7 @@ object Application extends Controller
     {
         (request, sessionCache) =>
         
-        sessionCache.set("user", null)
+        sessionCache.remove("user")
         Redirect(routes.Application.index)
     }
     
