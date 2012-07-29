@@ -205,13 +205,21 @@ class MarkerClusterer( val db : Database )
     }
     
     def run() =
-    {
-        // Delete old data
-        ( for ( r <- CriticalMassTables.DataHierarchy ) yield r ).mutate( _.delete )
-        ( for ( r <- CriticalMassTables.TagMap ) yield r ).mutate( _.delete )
-        ( for ( r <- CriticalMassTables.UserMap ) yield r ).mutate( _.delete )
-        ( for ( r <- CriticalMassTables.InstitutionMap ) yield r ).mutate( _.delete )
-            
+    {   
+        println( "Deleting old data" )
+        db withSession
+        {
+            println("1")
+            ( for ( r <- CriticalMassTables.DataHierarchy ) yield r ).mutate( _.delete )
+            println("2")
+            ( for ( r <- CriticalMassTables.TagMap ) yield r ).mutate( _.delete )
+            println("3")
+            ( for ( r <- CriticalMassTables.UserMap ) yield r ).mutate( _.delete )
+            println("4")
+            //( for ( r <- CriticalMassTables.InstitutionMap ) yield r ).mutate( _.delete )
+            println("5")
+        }
+                
         class UserTag( val id : Long, val name : String, val count : Long )        
         class UserData( val uid : Long, val reputation : Long, val lon : Double, val lat : Double, val tags : List[UserTag] )
         
@@ -222,9 +230,7 @@ class MarkerClusterer( val db : Database )
             val allUsers = (for ( Join(user, loc) <- 
                 CriticalMassTables.Users innerJoin
                 CriticalMassTables.Locations on(_.location is _.name)
-                    if  loc.longitude >= -12.5 && loc.longitude <= 2.7 &&
-                        loc.latitude >= 49.9 && loc.latitude <= 59.7 &&
-                        loc.radius < 100000.0 && user.reputation >= 2L )
+                    if loc.radius < 100000.0 && user.reputation >= 2L )
                 yield user.display_name ~ user.user_id ~ user.reputation ~ loc.longitude ~ loc.latitude ).list
             
             val userData = mutable.ArrayBuffer[UserData]()
@@ -294,7 +300,7 @@ class MarkerClusterer( val db : Database )
         
         // In metres
         var maxMergeDistance = 0.2
-        for ( level <- 16 to 5 by -1 )
+        for ( level <- 16 to 0 by -1 )
         {
             println( "Merge distance: %f %d".format( maxMergeDistance, mergeSet.size ) ) 
             
@@ -344,7 +350,7 @@ class MarkerClusterer( val db : Database )
                     case None => finished = true
                 }
                 
-                if ( mergeSet.size < 10 ) finished = true
+                if ( mergeSet.size < 50 ) finished = true
             }
             
             println( "  after merge: %d".format( mergeSet.size ) )
@@ -573,13 +579,84 @@ class UserScraper( val db : Database )
 }
 
 
+
+class AboutMeParser
+{
+    val stackOverflowKey = "5FUHVgHRGHWbz9J5bEy)Ng(("
+    
+    case class AboutMe( val user_id : Long, val display_name : String, val reputation : Long, val about_me : Option[String] )    
+
+    val templates = List(
+        "working at",
+        "work at",
+        "work for",
+        "working for",
+        "engineer for", 
+        "engineer at",
+        "developer at",
+        "developer for",
+        "at the university of",
+        "employed at",
+        "technical lead for" )
+
+    
+    def run()
+    {
+        implicit val formats = DefaultFormats
+        
+        for ( i <- 0 until 20 )
+        {
+            println( i )
+            val userPull = SODispatch.pullJSON( "http://api.stackexchange.com/2.0/users", List(
+                ("page", (i+1).toString),
+                ("order", "desc"),
+                ("sort", "reputation"),
+                ("site", "stackoverflow"),
+                ("pagesize", "100"),
+                ("filter", "!9hnGsshlI"),
+                ("key", stackOverflowKey) ) )
+                
+            
+            val users = (userPull \ "items").children.map( _.extract[AboutMe] )
+            
+            val sentenceModel = new opennlp.tools.sentdetect.SentenceModel( new java.io.FileInputStream( "./data/en-sent.bin" ) )
+            val tokenModel = new opennlp.tools.tokenize.TokenizerModel( new java.io.FileInputStream( "./data/en-token.bin" ) )
+            val orgModel = new opennlp.tools.namefind.TokenNameFinderModel( new java.io.FileInputStream("./data/en-ner-organization.bin") )
+            
+            val detector = new opennlp.tools.sentdetect.SentenceDetectorME(sentenceModel)
+            val tokenizer = new opennlp.tools.tokenize.TokenizerME( tokenModel )
+            val orgFinder = new opennlp.tools.namefind.NameFinderME( orgModel )
+            
+            for ( am <- users if am.about_me != None )
+            {
+                val aboutMeText = org.jsoup.Jsoup.parse(am.about_me.get).text()
+                
+                println( am.display_name, am.reputation )
+                for ( s <- detector.sentDetect(aboutMeText) )
+                {
+                    println( "  ", s )
+                    val tokens = tokenizer.tokenize(s)
+                    val spans = orgFinder.find(tokens)
+                    
+                    for ( span <- spans )   
+                    {
+                        println( "  >>  ", tokens.slice(span.getStart(), span.getEnd()).toList )
+                    }
+                }
+                
+                orgFinder.clearAdaptiveData()
+            }
+        }
+    }
+}
+
 object Main extends App
 {
     override def main( args : Array[String] ) =
     {
         val dbName = "stack_users"
-        val db = Database.forURL("jdbc:h2:tcp://localhost/%s;DB_CLOSE_DELAY=-1".format(dbName), driver = "org.h2.Driver")
-        //val db = Database.forURL("jdbc:h2:file:%s;DB_CLOSE_DELAY=-1".format(dbName), driver = "org.h2.Driver")
+        //val db = Database.forURL("jdbc:h2:tcp://localhost/%s;DB_CLOSE_DELAY=-1".format(dbName), driver = "org.h2.Driver")
+        val db = Database.forURL("jdbc:h2:file:%s;DB_CLOSE_DELAY=-1".format(dbName), driver = "org.h2.Driver")
         
         if ( !new java.io.File("%s.h2.db".format(dbName)).exists() )
         {
@@ -598,11 +675,12 @@ object Main extends App
                     CriticalMassTables.RoleSectorTags.ddl ) create
             }
         }
-        val qs = new UserScraper(db)
-        qs.run()
+        //val qs = new UserScraper(db)
+        //qs.run()
         //val mc = new MarkerClusterer(db)
         //mc.run()
-        
+        val ap = new AboutMeParser()
+        ap.run()
     }
 }
        
