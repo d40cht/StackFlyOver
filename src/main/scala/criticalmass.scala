@@ -586,27 +586,19 @@ class AboutMeParser
     
     case class AboutMe( val user_id : Long, val display_name : String, val reputation : Long, val about_me : Option[String] )    
 
-    val templates = List(
-        "working at",
-        "work at",
-        "work for",
-        "working for",
-        "engineer for", 
-        "engineer at",
-        "developer at",
-        "developer for",
-        "at the university of",
-        "employed at",
-        "technical lead for" )
+    // bzcat aboutmes.txt.bz2 | egrep -i "(developer|engineer|architect|manager|work|working|scientist|consultant|employed|lead) (at|for)" | wc
 
-    
+    // http://nlp.stanford.edu/software/stanford-dependencies.shtml
     def run()
     {
         implicit val formats = DefaultFormats
         
-        for ( i <- 0 until 20 )
+        val output = new java.io.FileWriter("aboutmes.txt")
+        var descCount = 0
+        var totalCount = 0
+        for ( i <- 0 until 8000 )
         {
-            println( i )
+            println( "********* " + i + ": " + descCount + ", " + totalCount + " ********" )
             val userPull = SODispatch.pullJSON( "http://api.stackexchange.com/2.0/users", List(
                 ("page", (i+1).toString),
                 ("order", "desc"),
@@ -618,8 +610,21 @@ class AboutMeParser
                 
             
             val users = (userPull \ "items").children.map( _.extract[AboutMe] )
+            totalCount += users.size
             
-            val sentenceModel = new opennlp.tools.sentdetect.SentenceModel( new java.io.FileInputStream( "./data/en-sent.bin" ) )
+            for ( am <- users if am.about_me != None )
+            {
+                val aboutMeText = org.jsoup.Jsoup.parse(am.about_me.get).text().replace("\n", " ")
+                output.write( am.user_id + " " + am.reputation + " " + aboutMeText + "\n" )
+                descCount += 1
+            }
+            
+            
+            // Sentence detect using opennlp then pass through to stanford parser using:
+            //java -cp "./*:" edu.stanford.nlp.parser.lexparser.LexicalizedParser -sentences newline -outputFormat "oneline" edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz -
+            //Or man-up and envelope it programatically.
+            
+            /*val sentenceModel = new opennlp.tools.sentdetect.SentenceModel( new java.io.FileInputStream( "./data/en-sent.bin" ) )
             val tokenModel = new opennlp.tools.tokenize.TokenizerModel( new java.io.FileInputStream( "./data/en-token.bin" ) )
             val orgModel = new opennlp.tools.namefind.TokenNameFinderModel( new java.io.FileInputStream("./data/en-ner-organization.bin") )
             
@@ -645,8 +650,11 @@ class AboutMeParser
                 }
                 
                 orgFinder.clearAdaptiveData()
-            }
+            }*/
+            
+            Thread.sleep(5000)
         }
+        output.close()
     }
 }
 
