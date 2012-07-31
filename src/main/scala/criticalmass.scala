@@ -658,6 +658,66 @@ class AboutMeParser
     }
 }
 
+
+class Munge
+{
+    def run()
+    {
+        val lines = scala.io.Source.fromFile( new java.io.File("./aboutmes.txt") ).getLines
+        
+        val relevantRe = "(developer|engineer|architect|manager|work|working|scientist|consultant|employed|lead) (at|for)".r
+        for ( l <- lines )
+        {
+            val els = l.split(" ")
+            val uid = els(0)
+            val rep = els(1)
+            val rest = els.drop(2).mkString(" ")
+            
+            val parsed = org.jsoup.Jsoup.parseBodyFragment(rest)
+            if ( !rest.trim.isEmpty && !relevantRe.findAllIn(parsed.text).isEmpty )
+            {
+                import scala.collection.JavaConversions._
+                import org.jsoup.nodes.{Node, TextNode, Element}
+                import org.jsoup.parser.{Tag}
+                
+                val simple = new Element(Tag.valueOf("p"), "")
+                var currText = ""
+                def removeButHref( n : Node ) : Unit =
+                {
+                    n match
+                    {
+                        case tn : TextNode =>
+                        {
+                            currText += tn.getWholeText
+                        }
+                        case el : Element =>
+                        {
+                            if ( el.tag.getName == "a" )
+                            {
+                                simple.appendText( currText )
+                                currText = ""
+                                simple.appendChild(el)
+                                
+                            }
+                            else
+                            {
+                                n.childNodes.toList.foreach( x => removeButHref(x) )
+                            }
+                        }
+                        case _ =>
+                        {
+                            n.childNodes.toList.foreach( x => removeButHref(x) )
+                        }
+                    }
+                }
+                removeButHref( parsed.body )
+                simple.appendText( currText )
+                println( simple )
+            }
+        }
+    }
+}
+
 object Main extends App
 {
     override def main( args : Array[String] ) =
@@ -687,8 +747,11 @@ object Main extends App
         //qs.run()
         //val mc = new MarkerClusterer(db)
         //mc.run()
-        val ap = new AboutMeParser()
-        ap.run()
+        //val ap = new AboutMeParser()
+        //ap.run()
+        
+        val m = new Munge()
+        m.run()
     }
 }
        
