@@ -666,7 +666,7 @@ class Munge
         val lines = scala.io.Source.fromFile( new java.io.File("./aboutmes.txt") ).getLines
         
         val relevantRe = "(developer|engineer|architect|manager|work|working|scientist|consultant|employed|lead) (at|for)".r
-        for ( l <- lines )
+        for ( l <- lines if !l.trim.isEmpty )
         {
             val els = l.split(" ")
             val uid = els(0)
@@ -674,7 +674,8 @@ class Munge
             val rest = els.drop(2).mkString(" ")
             
             val parsed = org.jsoup.Jsoup.parseBodyFragment(rest)
-            if ( !rest.trim.isEmpty && !relevantRe.findAllIn(parsed.text).isEmpty )
+            val justText : String = parsed.text
+            if ( !rest.trim.isEmpty && !relevantRe.findAllIn(justText.toLowerCase).isEmpty )
             {
                 import scala.collection.JavaConversions._
                 import org.jsoup.nodes.{Node, TextNode, Element}
@@ -695,6 +696,13 @@ class Munge
                             if ( el.tag.getName == "a" )
                             {
                                 simple.appendText( currText )
+                                val lastWords = currText.split(" ").takeRight(6).mkString(" ")
+                                if ( !relevantRe.findAllIn(lastWords.toLowerCase()).isEmpty )
+                                {
+                                    val res = <result>{lastWords}<data uid={uid} rep={rep} name={el.text} href={el.attr("href")}></data></result>
+                                    
+                                    println( res.toString )
+                                }
                                 currText = ""
                                 simple.appendChild(el)
                                 
@@ -712,7 +720,7 @@ class Munge
                 }
                 removeButHref( parsed.body )
                 simple.appendText( currText )
-                println( simple )
+                //println( simple )
             }
         }
     }
