@@ -419,15 +419,31 @@ object Application extends Controller
         // local insitution summaries, e.g. institution to location, SO rep, SO tags, Sector tags
         withDbSession
         {
-            val points = for 
+            def getPoints( swlat : Double, swlon : Double, nelat : Double, nelon : Double, zoom : Double ) =
             {
-                dh <- CriticalMassTables.DataHierarchy if
-                dh.level === (zoom.toInt) &&
-                dh.longitude >= swlon && dh.longitude <= nelon &&
-                dh.latitude >= swlat && dh.latitude <= nelat
-            } yield dh.count ~ dh.longitude ~ dh.latitude ~ dh.label ~ dh.maxRep ~ dh.maxRepUid ~ dh.id
+                import org.scalaquery.ql.extended.H2Driver.Implicit._
+                ( for 
+                {
+                    dh <- CriticalMassTables.DataHierarchy if
+                    dh.level === (zoom.toInt) &&
+                    dh.longitude >= swlon && dh.longitude <= nelon &&
+                    dh.latitude >= swlat && dh.latitude <= nelat
+                } yield dh.count ~ dh.longitude ~ dh.latitude ~ dh.label ~ dh.maxRep ~ dh.maxRepUid ~ dh.id ).take(100)
+            }
             
-            val json = render( points.list.map( x => ("name" -> x._4) ~ ("lon" -> x._2.toString) ~ ("lat" -> x._3.toString) ~ ("count" -> x._1) ~ ("maxRep" -> x._5 ) ~ ("maxRepUid" -> x._6 ) ~ ("dh_id" -> x._7) ) )
+            val points = if ( swlon > nelon )
+            {
+                getPoints( swlat, swlon, nelat, nelon, zoom ).list
+            }
+            else
+            {
+                val p1 = getPoints( swlat, swlon, nelat, 180.0, zoom )
+                val p2 = getPoints( swlat, 180.0, nelat, nelon, zoom )
+                p1.list ++ p2.list
+            }
+            
+            
+            val json = render( points.map( x => ("name" -> x._4) ~ ("lon" -> x._2.toString) ~ ("lat" -> x._3.toString) ~ ("count" -> x._1) ~ ("maxRep" -> x._5 ) ~ ("maxRepUid" -> x._6 ) ~ ("dh_id" -> x._7) ) )
             
             Ok(compact(json))
         }
