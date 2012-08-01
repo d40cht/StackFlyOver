@@ -13,6 +13,27 @@ import org.scalaquery.ql.{Join, SimpleFunction, Query}
 import net.liftweb.json._
 import net.liftweb.json.JsonDSL._
 
+object Global extends GlobalSettings {
+
+  override def onStart(app: Application) {
+    Logger.info("Application has started")
+    
+    implicit val ipapp = app
+    // Clear out any jobs from a previous run...
+    val db = Database.forDataSource(DB.getDataSource())
+    db.withSession
+    {
+        ( for ( r <- CriticalMassTables.Jobs ) yield r ).mutate( _.delete )
+    }
+  }  
+  
+  override def onStop(app: Application) {
+    Logger.info("Application shutdown...")
+  }  
+    
+}
+
+
 object Dispatch
 {
     import dispatch._
@@ -199,13 +220,7 @@ object Application extends Controller
     
     
     object JobRegistry
-    {
-        def initialise =
-        {
-            // Clear out any jobs from a previous run...
-            ( for ( r <- CriticalMassTables.Jobs ) yield r ).mutate( _.delete )
-        }
-        
+    {        
         def getJobs = withDbSession
         {
             ( for ( r <- CriticalMassTables.Jobs ) yield r.name ~ r.progress ~ r.status ).list
@@ -226,8 +241,10 @@ object Application extends Controller
             Akka.future
             {
                 // Call the work function, passing in a callback to update progress and status
+                println( "Call work function with " + uuid )
                 workFn( (progress : Double, status : String ) =>
                 {
+                    println( "Update callback: " + uuid + ", " + status )
                     withDbSession
                     {
                         val job = ( for ( r <- CriticalMassTables.Jobs if r.job_id === uuid ) yield r.progress ~ r.status )
@@ -239,6 +256,7 @@ object Application extends Controller
                     }
                 } )
                 
+                println( "Work complete. Deleting job." )
                 // Set status to complete
                 ( for ( r <- CriticalMassTables.Jobs if r.job_id === uuid ) yield r ).mutate( _.delete )
             }
