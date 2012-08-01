@@ -726,6 +726,52 @@ class Munge
     }
 }
 
+// Add company data:
+// scala.io.Source.fromFile(new java.io.File("companiessanitised.txt")).getLines.filter(!_.trim.isEmpty).map( l => org.jsoup.Jsoup.parseBodyFragment(l).select("data") ).map( x => (x.attr("uid"), x.attr("href"), x.attr("name")) ).toList.filter( !_._1.trim.isEmpty )
+// UserRole: id ~ user_id ~ institution_id ~ department ~ url ~ location => (dept = "", location = user_location)
+// Institution def * = id ~ name
+class UserRoleEntry( db : Database )
+{
+    def run() =
+    {
+        val data = scala.io.Source.fromFile(new java.io.File("companiessanitised.txt")).getLines.filter(!_.trim.isEmpty).map( l => org.jsoup.Jsoup.parseBodyFragment(l).select("data") ).map( x => (x.attr("uid"), x.attr("href"), x.attr("name")) ).toList.filter( !_._1.trim.isEmpty )
+        
+        db withSession
+        {
+            for ( (uid, url, name) <- data )
+            {
+                val companyId =
+                {
+                    val res = (for (c <- CriticalMassTables.Institution if c.name === name ) yield c.id ).list
+                    assert( res.size <= 1 )
+                    if ( res.isEmpty )
+                    {
+                        CriticalMassTables.Institution.name insert (name)
+                        
+                        val scopeIdentity = SimpleFunction.nullary[Long]("scope_identity")
+                        Query(scopeIdentity).first
+                    }
+                    else
+                    {
+                        res.head
+                    }
+                }
+                
+                val userLocation =
+                {
+                    val res = (for (u <- CriticalMassTables.Users if u.user_id === uid.toLong) yield u.location).list
+                    assert( res.size <= 1 )
+                    res.head
+                }
+                
+                val urt = CriticalMassTables.UserRole
+                
+                (urt.user_id ~ urt.institution_id ~ urt.department ~ urt.url ~ urt.location) insert (uid.toLong, companyId, "", url, userLocation)
+            }
+        }
+    }
+}
+
 object Main extends App
 {
     override def main( args : Array[String] ) =
@@ -758,8 +804,11 @@ object Main extends App
         //val ap = new AboutMeParser()
         //ap.run()
         
-        val m = new Munge()
-        m.run()
+        //val m = new Munge()
+        //m.run()
+        
+        val ur = new UserRoleEntry(db)
+        ur.run()
     }
 }
        
