@@ -262,15 +262,17 @@ object Application extends Controller
                         }
                         println( "Here4" )
                     } )
+                    
+                    println( "Work complete. Deleting job." )
+                    // Set status to complete
+                    ( for ( r <- CriticalMassTables.Jobs if r.job_id === uuid ) yield r ).mutate( _.delete )
                 }
                 catch
                 {
                     case e => { println( "Exception in async job: " + e.toString ); throw e }
                 }
                 
-                println( "Work complete. Deleting job." )
-                // Set status to complete
-                ( for ( r <- CriticalMassTables.Jobs if r.job_id === uuid ) yield r ).mutate( _.delete )
+                
             }
             
             uuid
