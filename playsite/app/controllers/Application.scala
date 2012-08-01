@@ -348,7 +348,7 @@ object Application extends Controller
         Ok(views.html.index(sessionCache.getAs[UserData]("user")))
     }
     
-    def admin = SessionCacheAction(requireLogin=false, requireAdmin=true)
+    def admin = SessionCacheAction(requireLogin=true, requireAdmin=true)
     {
         (request, sessionCache) =>
         
@@ -528,17 +528,17 @@ object Application extends Controller
                     dh.level === (zoom.toInt) &&
                     dh.longitude >= swlon && dh.longitude <= nelon &&
                     dh.latitude >= swlat && dh.latitude <= nelat
-                } yield dh.count ~ dh.longitude ~ dh.latitude ~ dh.label ~ dh.maxRep ~ dh.maxRepUid ~ dh.id ).take(100)
+                } yield dh.count ~ dh.longitude ~ dh.latitude ~ dh.label ~ dh.maxRep ~ dh.maxRepUid ~ dh.id )//.take(100)
             }
             
-            val points = if ( swlon > nelon )
+            val points = if ( swlon < nelon )
             {
                 getPoints( swlat, swlon, nelat, nelon, zoom ).list
             }
             else
             {
                 val p1 = getPoints( swlat, swlon, nelat, 180.0, zoom )
-                val p2 = getPoints( swlat, 180.0, nelat, nelon, zoom )
+                val p2 = getPoints( swlat, -180.0, nelat, nelon, zoom )
                 p1.list ++ p2.list
             }
             

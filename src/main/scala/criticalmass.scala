@@ -777,8 +777,8 @@ object Main extends App
     override def main( args : Array[String] ) =
     {
         val dbName = "stack_users"
-        //val db = Database.forURL("jdbc:h2:tcp://localhost/%s;DB_CLOSE_DELAY=-1".format(dbName), driver = "org.h2.Driver")
-        val db = Database.forURL("jdbc:h2:file:%s;DB_CLOSE_DELAY=-1".format(dbName), driver = "org.h2.Driver")
+        val db = Database.forURL("jdbc:h2:tcp://localhost/%s;DB_CLOSE_DELAY=-1".format(dbName), driver = "org.h2.Driver")
+        //val db = Database.forURL("jdbc:h2:file:%s;DB_CLOSE_DELAY=-1".format(dbName), driver = "org.h2.Driver")
         
         if ( !new java.io.File("%s.h2.db".format(dbName)).exists() )
         {
@@ -797,8 +797,8 @@ object Main extends App
                     CriticalMassTables.RoleSectorTags.ddl ) create
             }
         }
-        //val qs = new UserScraper(db)
-        //qs.run()
+        val qs = new UserScraper(db)
+        qs.run()
         //val mc = new MarkerClusterer(db)
         //mc.run()
         //val ap = new AboutMeParser()
