@@ -6,6 +6,8 @@
 GET     /                           controllers.Application.index
 GET     /admin                      controllers.Application.admin
 GET     /refineUser                 controllers.Application.refineUser
+GET     /exampleJob                 controllers.Application.exampleJob
+GET     /listJobs                   controllers.Application.listJobs
 POST    /refineUserAccept           controllers.Application.refineUserAccept
 GET     /mapData                    controllers.Application.mapData( loc : String )
 GET     /authenticate               controllers.Application.authenticate( code : String )
