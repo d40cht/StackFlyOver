@@ -240,32 +240,26 @@ object Application extends Controller
             Akka.future
             {
                 // Call the work function, passing in a callback to update progress and status
-                println( "Call work function with " + uuid )
                 try
                 {
                     workFn( (progress : Double, status : String ) =>
                     {
-                        
-                        println( "Update callback: " + uuid + ", " + status )
                         withDbSession
                         {
-                            println( "Here1" )
                             val job = ( for ( r <- CriticalMassTables.Jobs if r.job_id === uuid ) yield r )
                             
-                            println( "Here2" )
                             job.mutate ( m =>
                             {
                                 m.row = m.row.copy(_3 = progress, _4 = status )
                             } )
-                            
-                            println( "Here3" )
                         }
-                        println( "Here4" )
                     } )
                     
-                    println( "Work complete. Deleting job." )
                     // Set status to complete
-                    ( for ( r <- CriticalMassTables.Jobs if r.job_id === uuid ) yield r ).mutate( _.delete )
+                    withDbSession
+                    {
+                        ( for ( r <- CriticalMassTables.Jobs if r.job_id === uuid ) yield r ).mutate( _.delete )
+                    }
                 }
                 catch
                 {
