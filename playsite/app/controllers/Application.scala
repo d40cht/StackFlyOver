@@ -247,13 +247,18 @@ object Application extends Controller
                     println( "Update callback: " + uuid + ", " + status )
                     withDbSession
                     {
+                        println( "Here1" )
                         val job = ( for ( r <- CriticalMassTables.Jobs if r.job_id === uuid ) yield r.progress ~ r.status )
                         
+                        println( "Here2" )
                         job.mutate ( m =>
                         {
                             m.row = m.row.copy(_1 = progress, _2 = status )
                         } )
+                        
+                        println( "Here3" )
                     }
+                    println( "Here4" )
                 } )
                 
                 println( "Work complete. Deleting job." )
