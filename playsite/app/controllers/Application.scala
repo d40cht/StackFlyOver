@@ -1,5 +1,3 @@
-package controllers
-
 import play.api._
 import play.api.mvc._
 import play.api.db._
@@ -12,48 +10,6 @@ import org.scalaquery.ql.{Join, SimpleFunction, Query}
 
 import net.liftweb.json._
 import net.liftweb.json.JsonDSL._
-
-object Global extends GlobalSettings {
-
-  override def onStart(app: Application) {
-    Logger.info("Application has started")
-    
-    implicit val ipapp = app
-    // Clear out any jobs from a previous run...
-    val db = Database.forDataSource(DB.getDataSource())
-    db.withSession
-    {
-        ( for ( r <- CriticalMassTables.Jobs ) yield r ).mutate( _.delete )
-    }
-  }  
-  
-  override def onStop(app: Application) {
-    Logger.info("Application shutdown...")
-  }  
-    
-}
-
-
-object Dispatch
-{
-    import dispatch._
-    
-    lazy val h = new Http
-    
-    def pullJSON( baseUrl : String, params : List[(String, String)] ) =
-    {
-        import java.net.URLEncoder.encode
-        
-        val fullUrl = baseUrl + "?" + params.map( x => encode(x._1, "utf-8") + "=" + encode(x._2, "utf-8") ).mkString("&")
-        val u = url( fullUrl )
-        val res = h(u as_str)   
-        val j = JsonParser.parse(res)
-        
-        
-        
-        j
-    }
-}
 
 object CriticalMassTables
 {
@@ -199,7 +155,50 @@ object CriticalMassTables
 }
 
 
+object Global extends GlobalSettings {
 
+  override def onStart(app: Application) {
+    Logger.info("Application has started")
+    
+    implicit val ipapp = app
+    // Clear out any jobs from a previous run...
+    val db = Database.forDataSource(DB.getDataSource())
+    db.withSession
+    {
+        ( for ( r <- CriticalMassTables.Jobs ) yield r ).mutate( _.delete )
+    }
+  }  
+  
+  override def onStop(app: Application) {
+    Logger.info("Application shutdown...")
+  }  
+    
+}
+
+
+package controllers
+{
+
+object Dispatch
+{
+    import dispatch._
+    
+    lazy val h = new Http
+    
+    def pullJSON( baseUrl : String, params : List[(String, String)] ) =
+    {
+        import java.net.URLEncoder.encode
+        
+        val fullUrl = baseUrl + "?" + params.map( x => encode(x._1, "utf-8") + "=" + encode(x._2, "utf-8") ).mkString("&")
+        val u = url( fullUrl )
+        val res = h(u as_str)   
+        val j = JsonParser.parse(res)
+        
+        
+        
+        j
+    }
+}
 
 
 case class SupplementaryData(
@@ -793,4 +792,6 @@ object Application extends Controller
         }
     }
   
+}
+
 }
