@@ -241,24 +241,32 @@ object Application extends Controller
             {
                 // Call the work function, passing in a callback to update progress and status
                 println( "Call work function with " + uuid )
-                workFn( (progress : Double, status : String ) =>
+                try
                 {
-                    println( "Update callback: " + uuid + ", " + status )
-                    withDbSession
+                    workFn( (progress : Double, status : String ) =>
                     {
-                        println( "Here1" )
-                        val job = ( for ( r <- CriticalMassTables.Jobs if r.job_id === uuid ) yield r.progress ~ r.status )
                         
-                        println( "Here2" )
-                        job.mutate ( m =>
+                        println( "Update callback: " + uuid + ", " + status )
+                        withDbSession
                         {
-                            m.row = m.row.copy(_1 = progress, _2 = status )
-                        } )
-                        
-                        println( "Here3" )
-                    }
-                    println( "Here4" )
-                } )
+                            println( "Here1" )
+                            val job = ( for ( r <- CriticalMassTables.Jobs if r.job_id === uuid ) yield r.progress ~ r.status )
+                            
+                            println( "Here2" )
+                            job.mutate ( m =>
+                            {
+                                m.row = m.row.copy(_1 = progress, _2 = status )
+                            } )
+                            
+                            println( "Here3" )
+                        }
+                        println( "Here4" )
+                    } )
+                }
+                catch
+                {
+                    case e => { println( "Exception in async job: " + e.toString ); throw e }
+                }
                 
                 println( "Work complete. Deleting job." )
                 // Set status to complete
