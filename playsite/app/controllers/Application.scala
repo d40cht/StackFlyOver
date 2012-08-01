@@ -250,12 +250,12 @@ object Application extends Controller
                         withDbSession
                         {
                             println( "Here1" )
-                            val job = ( for ( r <- CriticalMassTables.Jobs if r.job_id === uuid ) yield r.progress ~ r.status )
+                            val job = ( for ( r <- CriticalMassTables.Jobs if r.job_id === uuid ) yield r )
                             
                             println( "Here2" )
                             job.mutate ( m =>
                             {
-                                m.row = m.row.copy(_1 = progress, _2 = status )
+                                m.row = m.row.copy(_3 = progress, _4 = status )
                             } )
                             
                             println( "Here3" )
