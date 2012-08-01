@@ -1,0 +1,1195 @@
+<result>work as a security consultant at<data name="Daimler TSS GmbH" rep="162510" href="http://www.daimler-tss.com/" uid="53114"></data></result>
+<result>at UC Davis. Currently working at<data name="AppHarbor" rep="136265" href="http://appharbor.com" uid="33708"></data></result>
+<result> Lead developer at<data name="Orcina Ltd." rep="125184" href="http://www.orcina.com" uid="505088"></data></result>
+<result>Cambridge, MA.  Currently employed at<data name="Demiurge Studios" rep="100963" href="http://www.demiurgestudios.com" uid="9530"></data></result>
+<result>Front-end engineer at<data name="mobile.de" rep="100400" href="http://mobile.de" uid="70393"></data></result>
+<result>Javascript nerd. Front-end Engineer at<data name="SoundCloud" rep="100221" href="http://soundcloud.com" uid="9021"></data></result>
+<result>. Software engineer at<data name="Amazon.com" rep="80041" href="http://www.amazon.com" uid="222908"></data></result>
+<result>Technical Lead for<data name="Trafigura" rep="76465" href="http://www.trafigura.com" uid="12960"></data></result>
+<result>August of 2010. I work for<data name="Palantir Technologies" rep="72339" href="http://www.palantir.com" uid="276101"></data></result>
+<result>.NET Consultant in Sweden working for<data name="Diversify" rep="61388" href="http://www.diversify.se" uid="93623"></data></result>
+<result>Lead (LAMP) developer at<data name="GripMedia" rep="60163" href="http://gripmedia.com/" uid="2297"></data></result>
+<result>Senior Consultant at<data name="SQL Sentry" rep="46812" href="http://sqlsentry.net" uid="61305"></data></result>
+<result> Now I'm an engineer at<data name="Cardpool" rep="40947" href="http://www.cardpool.com/" uid="105570"></data></result>
+<result>Me:  I currently work for<data name="Anytime Fitness" rep="40395" href="http://www.anytimefitness.com/" uid="2598"></data></result>
+<result>working as a Software Engineer at<data name="Parallocity" rep="38206" href="http://www.parallocity.com/" uid="165520"></data></result>
+<result>Development lead at<data name="blinkbox" rep="37175" href="http://www.blinkbox.com" uid="13552"></data></result>
+<result>May 2011. I'm currently employed at<data name="UTC Aerospace Systems" rep="31891" href="http://utcaerospacesystems.com/" uid="572"></data></result>
+<result>I'm a developer for<data name="mySociety" rep="31631" href="http://mysociety.org" uid="223092"></data></result>
+<result>Lead developer at<data name="pixbits.com" rep="30812" href="http://pixbits.com" uid="121747"></data></result>
+<result>Working at<data name="empuxa" rep="29849" href="http://empuxa.com" uid="127059"></data></result>
+<result>I'm currently a software developer at<data name="Rapid Sheet Metal" rep="29493" href="http://rapidsheetmetal.com/" uid="298053"></data></result>
+<result>I'm Support Lead at<data name="JetBrains" rep="29230" href="http://www.jetbrains.com" uid="104891"></data></result>
+<result>Team lead for the<data name="TopLink" rep="28089" href="http://otn.oracle.com/middleware/toplink/overview/index.html" uid="383861"></data></result>
+<result>asmock, dynamic mocking framework for ActionScript:<data name="http://asmock.sourceforge.net/" rep="28042" href="http://asmock.sourceforge.net/" uid="3603"></data></result>
+<result>Currently a Software Engineer at<data name="PeopleMatter" rep="27803" href="http://www.peoplematter.com" uid="497356"></data></result>
+<result>. I'm a developer for<data name="Simple Injector" rep="27289" href="http://simpleinjector.net" uid="264697"></data></result>
+<result>.net programmer  Manager at Avenir<data name="http://www.avenir.no" rep="25995" href="http://www.avenir.no" uid="86611"></data></result>
+<result>  Senior Developer at<data name="Joyer" rep="25716" href="http://joyer.com.au/" uid="15537"></data></result>
+<result>towards JavaScript. I currently work at<data name="Genesys" rep="25393" href="http://genesyslab.com" uid="23501"></data></result>
+<result>I'm a Software Developer at<data name="The Motley Fool" rep="23747" href="http://fool.com" uid="16587"></data></result>
+<result>. I currently work at<data name="IAR Systems" rep="23689" href="http://www.iar.com" uid="13051"></data></result>
+<result>  I work at:<data name="http://www.thinkspeed.com" rep="23449" href="http://www.thinkspeed.com" uid="163203"></data></result>
+<result>I work at<data name="Sophos" rep="22973" href="http://www.sophos.com" uid="3978"></data></result>
+<result>Currently working for<data name="Mobiata" rep="22931" href="http://mobiata.com" uid="60261"></data></result>
+<result>I am a Technical Architect for<data name="Visiblox" rep="22526" href="http://www.visiblox.com/" uid="249933"></data></result>
+<result>I'm a consultant at<data name="Kentor" rep="22413" href="http://www.kentor.se" uid="280222"></data></result>
+<result>I'm a Senior Software Engineer at<data name="Basho Technologies" rep="22351" href="http://www.basho.com" uid="302916"></data></result>
+<result>jQuery and CSS. Currently working at<data name="Dictionary.com" rep="21902" href="http://dynamo.dictionary.com" uid="353802"></data></result>
+<result>a web designer / developer for<data name="Grove Made" rep="21748" href="http://www.grovemade.com" uid="267887"></data></result>
+<result>Mobile developer working at<data name="NASA Trained Monkeys" rep="20161" href="http://www.nasatrainedmonkeys.com" uid="119895"></data></result>
+<result>com   Web Developer at<data name="Rockpool" rep="20119" href="http://www.rockpooldigital.com" uid="22224"></data></result>
+<result>and training.  Currently working for<data name="Open Library" rep="19886" href="http://openlibrary.org" uid="229602"></data></result>
+<result>Software developer for<data name="Inedo" rep="19714" href="http://inedo.com" uid="44765"></data></result>
+<result>software problems.   Work for<data name="BTI" rep="19308" href="http://www.bti360.com" uid="297762"></data></result>
+<result>from Lithuania. Currently I work at<data name="Victor Chandler International" rep="18667" href="http://victorchandler.com/" uid="41761"></data></result>
+<result>Professional and enthusiast currently working at<data name="Yelp" rep="18286" href="http://www.yelp.com" uid="517815"></data></result>
+<result> and the lead developer for<data name="Ultimate Computer Services, Inc" rep="18059" href="http://ultimatecomputerservicesinc.com" uid="427309"></data></result>
+<result>/ Mac OS Developer for Hire.<data name="iCarbon Skins" rep="18045" href="http://zfer.us/6JkzN" uid="171206"></data></result>
+<result>developer, working as a consultant for<data name="Reveal IT" rep="17466" href="http://revealit.dk" uid="127549"></data></result>
+<result>Software Engineer for<data name="Hudl" rep="17270" href="http://www.hudl.com/" uid="29995"></data></result>
+<result>BlackBerry, Android, iPhone. Currently working at<data name="ArtfulBits" rep="17212" href="http://www.artfulbits.com" uid="67407"></data></result>
+<result>Software Architect at<data name="Cryptomathic" rep="17011" href="http://www.cryptomathic.com" uid="5542"></data></result>
+<result>I'm a consultant for<data name="Corporate Technology Solutions, Inc" rep="16949" href="http://www.consult-cts.com" uid="74757"></data></result>
+<result>as a Senior Software Engineer at<data name="Steria" rep="16902" href="http://www.steria.no/" uid="303476"></data></result>
+<result>Developer at Groupon<data name="Groupon" rep="16639" href="http://www.groupon.com" uid="82156"></data></result>
+<result>developer living in London, working for<data name="Zopa" rep="16176" href="http://uk.zopa.com/" uid="6369"></data></result>
+<result>work as a Software Engineer at<data name="Grockit" rep="15850" href="http://www.grockit.com/" uid="62082"></data></result>
+<result>I currently work at<data name="Red Gate" rep="15845" href="http://www.red-gate.com/" uid="128645"></data></result>
+<result>I'm a senior developer at<data name="Chase IT Services" rep="15481" href="http://www.chaseits.co.uk/" uid="12744"></data></result>
+<result>Pythonista/Djangonaut working for<data name="Memset Hosting" rep="15188" href="http://www.memset.com" uid="113962"></data></result>
+<result>Software Developer at<data name="Bloxx Ltd." rep="14362" href="http://bloxx.com" uid="113938"></data></result>
+<result>Software Developer at<data name="Microsoft" rep="14198" href="http://www.microsoft.com" uid="1551"></data></result>
+<result>Android developer at<data name="Touch Lab" rep="14006" href="http://www.touchlab.co" uid="248994"></data></result>
+<result>(mongodb, ravendb).  Technology Lead at<data name="Paralect" rep="13559" href="http://www.paralect.com/" uid="508601"></data></result>
+<result>SharePoint Consultant for<data name="OBS" rep="13308" href="http://www.obs.com.au" uid="6651"></data></result>
+<result>Technical Lead for Mary Kay, Inc.<data name="Mary Kay, Inc" rep="13114" href="www.marykay.com" uid="3244"></data></result>
+<result>)   Developer at<data name="NBusy" rep="13099" href="http://www.nbusy.com/" uid="628273"></data></result>
+<result>and its sub projects Developer at<data name="Cryptzone" rep="13099" href="http://www.cryptzone.com/" uid="628273"></data></result>
+<result>then, I have been working for<data name="DeltaWare Systems" rep="&lt;p&gt;Since" href="http://www.deltaware.com/" uid=""></data></result>
+<result>Apps &amp; Mobile Developer for<data name="Fresh Consulting" rep="12910" href="http://freshconsulting.com" uid="71"></data></result>
+<result>Engineer at Google. <data name="Google" rep="12809" href="http://www.google.com" uid="181765"></data></result>
+<result>in New Zealand, and work for<data name="GreenButton" rep="12336" href="http://www.greenbutton.com/" uid="10311"></data></result>
+<result>I'm a web-developer for<data name="Verve Studios, Co" rep="12209" href="http://www.vervestudios.co" uid="160173"></data></result>
+<result>I'm Lead Developer at<data name="www.meduniverse.se" rep="11824" href="http://www.meduniverse.se" uid="101811"></data></result>
+<result>am working for Mozilla on their<data name="Pancake" rep="11802" href="https://mozillalabs.com/en-US/pancake/" uid="56837"></data></result>
+<result>Experienced user experience developer working for<data name="Microsoft" rep="11603" href="http://microsoft.com" uid="566791"></data></result>
+<result>website, and API integrations. Working at<data name="Typeoneerror" rep="11584" href="http://typeoneerror.com" uid="53653"></data></result>
+<result>Developer currently employed at<data name="Cloud9 IDE" rep="11255" href="http://c9.io" uid="107642"></data></result>
+<result>a Software Engineer at Microsoft that<data name="Microsoft" rep="11243" href="http://www.microsoft.com" uid="130515"></data></result>
+<result>I work at Microsoft as the<data name="Microsoft" rep="11233" href="http://www.microsoft.com" uid="94610"></data></result>
+<result>Software developer at Google, Irvine<data name="Google" rep="11222" href="http://www.google.com" uid="1574"></data></result>
+<result> I'm an Android Engineer at<data name="Cogniance" rep="11181" href="http://cogniance.com/" uid="247013"></data></result>
+<result>Software developer for<data name="Outpost Central" rep="11147" href="http://outpostcentral.com" uid="10431"></data></result>
+<result>I'm a software engineer at<data name="Nik Software" rep="11080" href="http://www.niksoftware.com" uid="134877"></data></result>
+<result>I'm a software engineer at<data name="FactSet Research Systems" rep="10647" href="http://www.factset.com" uid="46821"></data></result>
+<result>Profesional software developer working for<data name="ExecView" rep="10588" href="http://www.execview.com/" uid="253257"></data></result>
+<result>other stuff.  Currently working for<data name="Litmus" rep="10539" href="http://litmusapp.com" uid="225"></data></result>
+<result> lead developer at<data name="Mosaic" rep="10264" href="http://www.emosaic.co.uk/" uid="461813"></data></result>
+<result>. Developer at<data name="pingg" rep="10200" href="http://www.pingg.com" uid="210"></data></result>
+<result>A software developer for<data name="Data Research Group" rep="9727" href="http://datarg.com" uid="65611"></data></result>
+<result>I work for<data name="Lendio" rep="9577" href="http://lendio.com" uid="20178"></data></result>
+<result>Senior Developer at SwiftKnowledge, Inc.<data name="SwiftKnowledge" rep="9473" href="" uid="24380"></data></result>
+<result>I work as an engineer for<data name="Pololu Robotics &amp; Electronics" rep="9420" href="http://www.pololu.com" uid="28128"></data></result>
+<result>Software Engineer at Qintara, Inc.<data name="Qintara, Inc" rep="9200" href="" uid="491243"></data></result>
+<result>I work for<data name="TL Tech" rep="9155" href="http://tltech.com" uid="86060"></data></result>
+<result>I work for<data name="Xamarin" rep="9067" href="http://xamarin.com" uid="116899"></data></result>
+<result>I'm a core developer for the<data name="Django project" rep="9004" href="http://djangoproject.com/" uid="114917"></data></result>
+
+<result>I'm a web developer working at<data name="Adverticum" rep="8961" href="http://adverticum.com/" uid="221213"></data></result>
+<result>Senior Developer at<data name="CollabNet Inc" rep="8941" href="http://www.collab.net" uid="2094"></data></result>
+<result>as a Software Design Engineer at<data name="Chronus" rep="8888" href="http://www.chronus.com/" uid="252398"></data></result>
+<result>Senior Software Engineer at<data name="Adicio.com" rep="8598" href="http://adicio.com" uid="529967"></data></result>
+
+<result>Software developer currently working for<data name="Plain Healthcare" rep="8432" href="http://www.plain.co.uk/" uid="127440"></data></result>
+<result>in Macomb, MI. I work for<data name="Detroit Labs" rep="8327" href="http://www.detroitlabs.com" uid="105431"></data></result>
+<result>working as a Web Developer at<data name="Bunch" rep="8291" href="http://www.joinbunch.com/" uid="123695"></data></result>
+<result>I work for<data name="Building Blocks" rep="8263" href="http://www.building-blocks.com" uid="4950"></data></result>
+<result>Lead Developer for<data name="row27" rep="8225" href="http://www.row27.com" uid="221745"></data></result>
+<result>Research Engineer at<data name="iZotope" rep="8195" href="http://izotope.com" uid="208339"></data></result>
+<result>I am a software developer at<data name="Logos Bible Software" rep="8183" href="http://www.logos.com/" uid="23633"></data></result>
+<result>I'm the lead front-end developer at<data name="BlogFrog" rep="8169" href="http://theblogfrog.com" uid="111375"></data></result>
+<result>Project Manager at<data name="Red Gate" rep="8153" href="http://www.red-gate.com/" uid="5536"></data></result>
+<result>the consulting company I work for,<data name="GeoNorth, LLC" rep="8090" href="http://www.geonorth.com" uid="808921"></data></result>
+<result>medical image segmentation. Currently working at<data name="Semmle Limited" rep="8042" href="http://www.semmle.com" uid="499449"></data></result>
+<result>as a Software developer at the<data name="Tel Aviv team of Yahoo!" rep="7938" href="http://advertising.yahoo.com/article/dapper.html" uid="51197"></data></result>
+<result>Rails developer at Groupon in Chicago.<data name="Groupon" rep="7765" href="http://www.groupon.com" uid="106"></data></result>
+<result>San Francisco, CA. I work for<data name="Change.org" rep="7696" href="http://www.change.org/" uid="242493"></data></result>
+<result>Tech Lead for<data name="http://www.bigstockphoto.com" rep="7576" href="http://www.bigstockphoto.com" uid="151269"></data></result>
+<result>developer at OneWhitePixel.  Sometimes at<data name="OneWhitePixel" rep="7568" href="http://onewhitepixel.com" uid="412364"></data></result>
+<result>was the Tech Lead for Yahoo!<data name="SearchMonkey" rep="7526" href="http://developer.yahoo.com/searchmonkey/" uid="90025"></data></result>
+<result>Software Development Manager at<data name="e-channel search" rep="7525" href="http://www.e-channel.com.au" uid="204467"></data></result>
+<result>Software Developer at<data name="techwire.dp.ua" rep="7500" href="http://techwire.dp.ua" uid="181671"></data></result>
+<result>Consultant at<data name="Sogeti" rep="7341" href="http://www.sogeti.com" uid="2676"></data></result>
+<result>SF hacker working at<data name="freebase.com" rep="7301" href="http://freebase.com" uid="101"></data></result>
+<result>I'm a software engineer at<data name="Twitter" rep="7077" href="https://twitter.com/" uid="68054"></data></result>
+<result>I'm a Software Developer working at<data name="Slimming World" rep="6963" href="http://www.slimmingworld.com/" uid="39277"></data></result>
+<result>Agile software developer at<data name="Codeweavers" rep="6877" href="http://www.codeweavers.net/" uid="102482"></data></result>
+<result> Mobile developer at<data name="KerniX Software" rep="6717" href="http://www.kernix.com" uid="55093"></data></result>
+<result>Computer Science and software developer at<data name="Sana Software" rep="6584" href="http://sana-software.com/" uid="332100"></data></result>
+<result>Software engineer at<data name="Brandlogic" rep="6564" href="http://brandlogic.com/" uid="1414"></data></result>
+<result>Founder and lead developer at<data name="onFoot IT" rep="6554" href="http://onfoot.biz" uid="5049"></data></result>
+<result>a biodiversity tech-dude working for a<data name="Biodiversity Record Centre" rep="6528" href="http://sxbrc.org.uk/" uid="1944"></data></result>
+<result>worked as a software engineer for<data name="LoudDoor" rep="6385" href="http://www.louddoor.com" uid="350278"></data></result>
+<result> Senior Software Architect at<data name="Redpoint Technologies" rep="6360" href="http://www.redpointtech.com" uid="78101"></data></result>
+<result>work for Google Australia on the<data name="Google" rep="6294" href="https://developers.google.com/appengine/" uid="368821"></data></result>
+<result>Semantic Web framework for .Net called<data name="dotNetRDF" rep="6267" href="http://www.dotnetrdf.org" uid="107591"></data></result>
+<result>a System Test Lead working for<data name="Syniverse Technologies" rep="6109" href="http://www.syniverse.com/home" uid="970195"></data></result>
+<result>programmer with Delphi background, working at<data name="www.wem.hr" rep="6092" href="http://www.wem.hr" uid="351383"></data></result>
+<result>Enthusiastic developer at<data name="NCR" rep="5978" href="http://www.radiantsystems.com/" uid="1235565"></data></result>
+<result>  Release Manager for<data name="RVM" rep="5811" href="https://rvm.io/" uid="497756"></data></result>
+<result> Now a Product Manager at<data name="Rocket Software" rep="5803" href="http://goo.gl/Ya82e" uid="153407"></data></result>
+<result>Software Developer at<data name="Orange11" rep="5780" href="http://www.orange11.nl/" uid="633239"></data></result>
+<result>Software  developer at NCR Corp..<data name="NCR Corp" rep="5771" href="http://www.ncr.com" uid="337522"></data></result>
+<result>  I currently work for<data name="Heroku" rep="5754" href="https://www.heroku.com" uid="66752"></data></result>
+<result>I'm a software developer at<data name="CTS America" rep="5752" href="http://www.cts-america.com" uid="71200"></data></result>
+<result>. Principal developer for<data name="FaultTrack" rep="5728" href="http://www.dcomproductions.com/faulttrack/" uid="52589"></data></result>
+
+<result> Senior Enterprise Java Developer at<data name="Last.fm" rep="5720" href="http://last.fm" uid="74772"></data></result>
+<result>I work for<data name="Inkling" rep="5720" href="http://www.inkling.com/" uid="785065"></data></result>
+<result> I'm currently an engineer at<data name="TRW Conekt" rep="5448" href="http://www.conekt.co.uk/" uid="106092"></data></result>
+<result>I'm am the lead developer at<data name="ZoomBim" rep="5410" href="http://www.zoombim.nl" uid="532870"></data></result>
+<result>Software Engineer at<data name="RED Digital Cinema" rep="5408" href="http://www.red.com" uid="27314"></data></result>
+<result>Self-taught programmer since 2006, working at<data name="Stremor" rep="5300" href="http://www.stremor.com" uid="176075"></data></result>
+<result>I work at<data name="Hex-Rays" rep="5295" href="http://www.hex-rays.com" uid="422797"></data></result>
+<result> Working at<data name="Colygon" rep="5249" href="http://www.colygon.com" uid="181108"></data></result>
+<result>System Engineer for Edgenet and a<data name="Edgenet" rep="5245" href="www.edgenet.com" uid="1233"></data></result>
+<result>I work at<data name="Bullhorn" rep="5171" href="http://bull.hn/l/QGL/" uid="7679"></data></result>
+<result>JavaScript/Java/Groovy developer for<data name="Spredfast" rep="5125" href="http://spredfast.com" uid="12034"></data></result>
+<result>Software Engineering and currently working at<data name="BT (British Telecommunications)" rep="5104" href="http://www.bt.com/" uid="228656"></data></result>
+<result>I'm a developer at<data name="GitHub" rep="5088" href="http://github.com" uid="515514"></data></result>
+<result>a mathematician and programmer working at<data name="Wolfram Research" rep="5085" href="http://www.wolfram.com/" uid="594376"></data></result>
+<result> I am currently working at<data name="Futurice" rep="5022" href="http://www.futurice.com/" uid="176312"></data></result>
+<result>Front-end web developer at<data name="Yandex" rep="4999" href="http://www.yandex.com/" uid="885556"></data></result>
+<result>Developer at<data name="Cogmed" rep="4959" href="http://www.cogmed.com" uid="131068"></data></result>
+<result>PHP, Python/Django, etc. I work for<data name="GradeCam" rep="4931" href="http://www.gradecam.com" uid="229998"></data></result>
+<result>Developer at PHP Fog / AppFog<data name="PHP Fog / AppFog" rep="4910" href="http://www.appfog.com/" uid="78685"></data></result>
+<result>During the day I work for<data name="tick-TS" rep="4887" href="http://www.tick-ts.de/" uid="1813"></data></result>
+<result>I'm a developer at MetaLab.<data name="http://metalabdesign.com" rep="4874" href="http://metalabdesign.com" uid="60783"></data></result>
+<result>a software engineer, working for the<data name="Intelligent Sensing and Systems Laboratory" rep="4855" href="http://www.csiro.au/science/TasICTCentre.html" uid="214149"></data></result>
+<result> and I now work at<data name="Atlassian" rep="4820" href="http://www.atlassian.com/" uid="83446"></data></result>
+<result>Twitter: @_danmcclain  Rails Developer at<data name="DockYard" rep="4817" href="http://dockyard.com" uid="53587"></data></result>
+<result>I'm operations manager for<data name="Anchor Systems" rep="4783" href="http://www.anchor.com.au/" uid="60003"></data></result>
+<result>open source technologies. Currently working at<data name="Cubox" rep="4713" href="http://cuboxlabs.com/people/#Alfonso-Cora" uid="512507"></data></result>
+<result>2011, I have been working for<data name="Tabula" rep="4641" href="http://tabula.com" uid="127335"></data></result>
+<result>Fanger,  I'm a webdeveloper at<data name="NoProtocol" rep="4627" href="http://www.noprotocol.nl" uid="19165"></data></result>
+<result>I am a principal engineer at<data name="Razorgator" rep="4624" href="http://www.razorgator.com/" uid="498609"></data></result>
+<result>working as a software engineer at<data name="IMpulse (BD) Ltd." rep="4595" href="http://www.impulsebdltd.com/" uid="245679"></data></result>
+<result>I am a software architect at<data name="EZchip Semiconductors ltd" rep="4530" href="http://www.ezchip.com" uid="60232"></data></result>
+<result>Paul Lammertsma, a software engineer at<data name="CrimsonBase" rep="4443" href="http://crimsonbase.com/" uid="154306"></data></result>
+<result>  Senior Developer at<data name="appendTo" rep="4430" href="http://appendto.com" uid="648"></data></result>
+<result>as Senior Mobile Software Engineer at<data name="Betfair" rep="4224" href="http://www.betfair.com" uid="33121"></data></result>
+<result>am the Lead Software Engineer for<data name="Geostellar" rep="4110" href="http://www.geostellar.com" uid="493749"></data></result>
+<result>Project Manager at<data name="ASL Environmental Sciences" rep="4062" href="http://aslenv.com/" uid="14946"></data></result>
+<result>I work for<data name="Opstera" rep="4045" href="http://www.opstera.com" uid="375911"></data></result>
+<result>house in Cardiff. I work for<data name="Box UK" rep="4024" href="http://boxuk.com" uid="5343"></data></result>
+<result>I'm a Lead Developer at<data name="Metova, Inc." rep="4007" href="http://www.metova.com" uid="291827"></data></result>
+<result>lot more. Currently i'm working at<data name="Nevigo" rep="3989" href="http://www.nevigo.de/" uid="824750"></data></result>
+<result>You can see my work at<data name="Onjara.com" rep="3951" href="http://www.onjara.com" uid="296108"></data></result>
+<result>I'm a consultant working for<data name="Redpill Linpro" rep="3924" href="http://www.redpill-linpro.com/" uid="148608"></data></result>
+<result>Senior Webdeveloper at<data name="Sixtyseven" rep="3901" href="http://www.sixtyseven.com" uid="292230"></data></result>
+<result>Developer at<data name="Amaze" rep="3898" href="http://www.amaze.com/" uid="1002729"></data></result>
+<result>currently a Principal Program Manager for<data name="Microsoft" rep="3897" href="http://www.microsoft.com" uid="125523"></data></result>
+<result>a web / software engineer for<data name="Wilson Cooke" rep="3886" href="http://www.wilson-cooke.co.uk/" uid="698179"></data></result>
+<result>Happy iPhone/Web developer for<data name="UserADgents" rep="3874" href="http://www.useradgents.com" uid="526547"></data></result>
+<result>Founder and passionate software developer at<data name="flexbit.at" rep="3837" href="http://www.flexbit.at/" uid="222479"></data></result>
+<result>as TDD. Intern PHP developer at<data name="SensioLabs" rep="3833" href="http://sensiolabs.com/" uid="604041"></data></result>
+<result>. Working for AikiLab and on<data name="Open Clipart Library" rep="3830" href="http://openclipart.org" uid="387194"></data></result>
+<result>employed as a remote consultant for<data name="Heuristic Solutions, Inc" rep="3827" href="http://www.heuristics.net" uid="23632"></data></result>
+<result>AI Lead at<data name="newBrandAnalytics" rep="3823" href="http://newbrandanalytics.com" uid="4979"></data></result>
+<result>Working at<data name="Scorto.com" rep="3810" href="http://www.scorto.com/" uid="496825"></data></result>
+<result>seven as a customer-facing consultant at<data name="MathWorks" rep="3804" href="http://www.mathworks.com" uid="169781"></data></result>
+<result>Application Developer at<data name="The University of Liverpool" rep="3778" href="http://www.liv.ac.uk" uid="713558"></data></result>
+<result>Web developer at<data name="pixolith" rep="3771" href="http://www.piyolith.de" uid="17896"></data></result>
+<result>Software Engineer for the<data name="Michigan Local Technical Assistance Program" rep="3766" href="http://www.michiganltap.org/" uid="123723"></data></result>
+<result>Software Developer at<data name="Amyuni Technologies" rep="3758" href="http://www.amyuni.com" uid="501196"></data></result>
+<result>I'm a front-end engineer for<data name="DIY.org" rep="3738" href="https://diy.org" uid="147471"></data></result>
+<result> I'm a .NET consultant for<data name="Brainbridge" rep="3718" href="http://ict-staffing.brainbridge.be/" uid="83528"></data></result>
+<result>work at<data name="LOCKSS" rep="I" href="http://www.lockss.org" uid=""></data></result>
+<result>as a standalone developer for a<data name="computer services company" rep="3642" href="http://www.millennium.ltd.uk/" uid="369247"></data></result>
+<result>I'm a software developer at<data name="Nimbis Services" rep="3627" href="http://nimbisservices.com" uid="742"></data></result>
+<result> most. Currently Partner/Developer at<data name="Creasoup" rep="3610" href="http://www.creasoup.com" uid="84042"></data></result>
+<result>Product and technology lead at<data name="Ganxy" rep="3575" href="https://ganxy.com/" uid="168143"></data></result>
+<result>IS-A:   developer at<data name="Relevance, Inc." rep="3566" href="http://thinkrelevance.com/" uid="63009"></data></result>
+<result>Developer at<data name="MahiFX" rep="3558" href="http://mahifx.com" uid="158847"></data></result>
+<result>Linux...  I currently work for<data name="Vast" rep="3548" href="http://www.vast.com" uid="4433"></data></result>
+<result>I'm the software engineer at<data name="Bake Crafters" rep="3543" href="http://bakecrafters.com" uid="387347"></data></result>
+<result>  Senior Software Engineer at<data name="Near Infinity" rep="3542" href="http://www.nearinfinity.com" uid="98048"></data></result>
+<result>and software developer working for the<data name="AEB GmbH" rep="3539" href="http://www.aeb.de/" uid="52837"></data></result>
+<result>employed at<data name="EPCC" rep="Currently" href="http://www.epcc.ed.ac.uk" uid=""></data></result>
+<result>on Rails and iOS developer at<data name="Extendi" rep="3477" href="http://www.extendi.it" uid="232053"></data></result>
+<result>Magento developer at<data name="Line Digital" rep="3475" href="http://www.line.uk.com" uid="445330"></data></result>
+<result>Architect at the Everything Project (<data name="http://everything.me" rep="3454" href="http://everything.me" uid="1239701"></data></result>
+<result>Senior Software Developer for<data name="Capital ID" rep="3443" href="http://www.capitalid.nl" uid="201482"></data></result>
+<result>Magento Developer at<data name="Meanbee" rep="3441" href="http://www.meanbee.com" uid="283844"></data></result>
+<result>C++, C#, Java, Python. Employed at<data name="Resoptima" rep="3434" href="http://www.resoptima.com" uid="167251"></data></result>
+<result>work at the software department of<data name="TOPdesk" rep="3396" href="http://www.topdesk.com" uid="3565"></data></result>
+<result>watcher.  Currently Lead Developer at<data name="ShopJimmy.com" rep="3392" href="http://www.shopjimmy.com/" uid="961455"></data></result>
+<result>Software engineer at<data name="http://www.twenga.fr" rep="3372" href="http://www.twenga.fr" uid="675589"></data></result>
+<result>I'm also the Development Manager at<data name="NovaMind" rep="3370" href="http://www.novamind.com" uid="10779"></data></result>
+<result>a .NET developer and architect for<data name="ICF Ironworks" rep="3362" href="http://www.ironworks.com" uid="281472"></data></result>
+<result>Lead Software Engineer at<data name="Electric Bat Interactive" rep="3333" href="http://www.electric-bat.com/" uid="98050"></data></result>
+<result>Montreal, Quebec and I'm working at<data name="Skytech Communication Inc" rep="3310" href="http://www.skytech.com" uid="356451"></data></result>
+<result>I am a software developer at<data name="Sentry Data Systems" rep="3306" href="http://www.sentryds.com" uid="3078"></data></result>
+<result>I work for<data name="Opera Software" rep="3306" href="http://www.opera.com" uid="163549"></data></result>
+<result>. Former Chief Technical Architect at<data name="if.com" rep="3302" href="http://if.com" uid="58594"></data></result>
+<result>data.  I'm currently working for<data name="Navetas" rep="3244" href="http://www.navetas.com" uid="415313"></data></result>
+<result>web developer at Mozilla<data name="Mozilla" rep="3196" href="http://www.mozilla.org" uid="653"></data></result>
+<result>the principal consultant at Mooseware Limited.<data name="Mooseware Limited" rep="3177" href="http://www.mooseware.ca" uid="659653"></data></result>
+<result>I'm the Android Lead at<data name="Two Toasters" rep="3147" href="http://www.twotoasters.com" uid="731174"></data></result>
+<result>I work at<data name="383 Project" rep="3087" href="http://383project.com/" uid="45350"></data></result>
+<result>Web developer at<data name="Attention8" rep="3079" href="http://www.attention8.dk" uid="3287"></data></result>
+<result>Mobile Applications Developer at<data name="Small Planet Digital" rep="3078" href="http://www.smallplanet.com" uid="763080"></data></result>
+<result>Eng. works as software engineer for<data name="Recoset" rep="3061" href="http://www.recoset.com/" uid="112871"></data></result>
+<result>Perl developer and system architect at<data name="Plus Three" rep="3057" href="http://plusthree.com/" uid="12094"></data></result>
+<result>Senior Software Engineer at<data name="Sonru.com" rep="3050" href="http://sonru.com" uid="290338"></data></result>
+<result>Lead Developer for<data name="Prefix" rep="3044" href="http://prefix.co.za/" uid="6681"></data></result>
+<result>Senior Software Engineer at<data name="Evernote" rep="3043" href="http://www.evernote.com/" uid="33837"></data></result>
+<result>Principal consultant for<data name="Readify" rep="3032" href="http://www.readify.net" uid="63179"></data></result>
+<result>Software engineer, currently working for<data name="Euricom" rep="2997" href="http://www.euri.com" uid="893099"></data></result>
+<result> Currently I am employed at<data name="Netbox Blue" rep="2992" href="http://netboxblue.com/" uid="319952"></data></result>
+<result>Development Manager at<data name="Woot.com" rep="2968" href="http://www.woot.com/" uid="247"></data></result>
+<result>. Working as a developer at<data name="NRC" rep="2956" href="http://www.nrc-cnrc.gc.ca/index.html" uid="74865"></data></result>
+<result>Software developer, currently working at<data name="Cubox" rep="2933" href="http://cuboxlabs.com" uid="1492"></data></result>
+<result>. I'm an iOS developer at<data name="Mercury" rep="2932" href="http://www.mercury.io" uid="107183"></data></result>
+<result>Notes, Domino, and XPages consultant at<data name="PHL Consult" rep="2931" href="http://phl-consult.dk/" uid="785061"></data></result>
+<result>I'm CEO and software architect at<data name="X-tensive.com" rep="2923" href="http://www.x-tensive.com" uid="106042"></data></result>
+<result>Mobile Software Developer at CSS-GmbH<data name="http://www.css-web.net" rep="2887" href="http://www.css-web.net" uid="784387"></data></result>
+<result>manager and developer at Neo Technology<data name="http://neo4j.org/" rep="2860" href="http://neo4j.org/" uid="36710"></data></result>
+<result>  Software Engineer at<data name="Vox Media" rep="2808" href="http://www.voxmedia.com/" uid="84380"></data></result>
+<result> and freelance software engineer at<data name="Asthena" rep="2789" href="http://asthena.com" uid="93222"></data></result>
+<result>Product architect at Chronus India -<data name="Chronus India" rep="2777" href="http://chronus.com" uid="427606"></data></result>
+<result>Software engineer at<data name="SEOmoz" rep="2760" href="http://www.seomoz.org/" uid="580412"></data></result>
+<result>games   I work at<data name="ISIC-Arc" rep="2743" href="http://isic.he-arc-arc.ch" uid="27060"></data></result>
+<result>Senior Consultant at<data name="Capgemini" rep="2743" href="http://www.capgemini.com/" uid="27220"></data></result>
+<result> UI Designer/Developer at<data name="Square, Inc." rep="2722" href="http://squareup.com/" uid="101290"></data></result>
+<result>Application Development Consultant at<data name="Centare" rep="2694" href="http://www.centare.com/" uid="52920"></data></result>
+<result> research group. Currently working for<data name="Klarna" rep="2693" href="http://klarna.com" uid="240949"></data></result>
+<result>  Currently working for<data name="ValueMotive.com" rep="2684" href="http://www.valuemotive.com" uid="28841"></data></result>
+<result>working for a small business called<data name="High Plains Technolgies" rep="2658" href="http://www.highplainstech.com/" uid="273723"></data></result>
+<result>Amazon and now am working at<data name="Amazon" rep="2655" href="https://aws.amazon.com/marketplace" uid="116286"></data></result>
+<result>UK, working at Learning Resources International,<data name="www.lri.co.uk" rep="2653" href="http://www.lri.co.uk" uid="141022"></data></result>
+<result>I'm a software developer for<data name="Trada" rep="2639" href="http://trada.com" uid="72113"></data></result>
+<result>Supinfo International University. Working at Sogeti<data name="http://sogeti.com" rep="2620" href="http://sogeti.com" uid="610351"></data></result>
+<result>Software Developer at<data name="Primavera Business Software Solutions SA" rep="2603" href="http://www.primaverabss.com/" uid="3468"></data></result>
+<result>Web developer at<data name="Mozilla" rep="2603" href="http://builder.addons.mozilla.org" uid="101059"></data></result>
+<result>programmer from Poland, currently employed at<data name="Wirtualna Polska S.A." rep="2573" href="http://wp.pl" uid="122460"></data></result>
+<result>and python/django programmer. Currently working at<data name="Nelen &amp; Schuurmans" rep="2568" href="http://www.nelen-schuurmans.nl" uid="27401"></data></result>
+<result>I'm a developer for<data name="DataStax" rep="2568" href="http://datastax.com" uid="341541"></data></result>
+<result>Senior Development Engineer for<data name="MatrixGroup" rep="2561" href="http://www.matrixgroup.com.au" uid="25702"></data></result>
+<result>am currently a software engineer at<data name="EBSCO" rep="2552" href="http://ebscohost.com/" uid="330204"></data></result>
+<result>currently working for a startup (<data name="crowdhired.com" rep="2537" href="https://www.crowdhired.com/" uid="639386"></data></result>
+<result>Senior Engineer at<data name="VMware" rep="2527" href="http://www.vmware.com/" uid="10433"></data></result>
+<result>I am a software/firmware engineer at<data name="Synapse Product Development" rep="2523" href="http://synapse.com" uid="67985"></data></result>
+<result>Senior developer at<data name="Cosm" rep="2523" href="https://cosm.com" uid="658303"></data></result>
+<result>Lead Developer at<data name="Riktam Technologies" rep="2515" href="http://riktamtech.com" uid="598424"></data></result>
+<result>  Who I work for:<data name="Shihiko Studios" rep="2494" href="http://shihikostudios.com" uid="104551"></data></result>
+<result>Senior Design Engineer at<data name="Hot Studio" rep="2492" href="http://www.hotstudio.com/" uid="395379"></data></result>
+<result>R&amp;D Software Engineer at<data name="ViewPlus Technologies, Inc." rep="2466" href="http://www.viewplus.com" uid="311207"></data></result>
+<result>I'm a Software Development Engineer at<data name="Amazon.com" rep="2456" href="http://www.amazon.com/" uid="64056"></data></result>
+<result>linux systems admin and developer for<data name="LabArchives" rep="2454" href="http://www.labarchives.com" uid="176841"></data></result>
+<result>I'm senior system developer at<data name="Pars Online" rep="2445" href="http://www.parsonline.com/en/" uid="9394"></data></result>
+<result>Bloch is Senior Web Developer at<data name="Avendi Media, Inc." rep="2445" href="http://www.avendimedia.com/" uid="337269"></data></result>
+<result>Senior iOS Developer at<data name="emdentec" rep="2436" href="http://www.emdentec.com" uid="1068870"></data></result>
+<result>I work at<data name="Twitter" rep="2430" href="http://www.twitter.com/jobs" uid="84324"></data></result>
+<result>robotics.   I work for<data name="CenterSpace" rep="2427" href="http://www.centerspace.net" uid="185908"></data></result>
+<result>Lead Software Developer at<data name="Vortx, Inc." rep="2417" href="http://www.vortx.com" uid="97363"></data></result>
+<result>I work for<data name="Sencha Inc." rep="2416" href="http://sencha.com" uid="273985"></data></result>
+<result>iOS developer at<data name="Zemingo" rep="2414" href="http://www.zemingo.com" uid="968422"></data></result>
+<result>since 1998.   Working at<data name="Batterii(LLC)" rep="2413" href="http://batterii.com" uid="67393"></data></result>
+<result>job as senior software engineer at<data name="Subtext" rep="2396" href="http://www.subtext.com" uid="51055"></data></result>
+<result>I go.  I work for<data name="Dropico Mobile" rep="2390" href="http://www.dropicomobile.com" uid="831824"></data></result>
+<result>Engineer at<data name="Art &amp; Logic, Inc." rep="2374" href="http://www.artlogic.com/" uid="26829"></data></result>
+<result>as as a compiler engineer at<data name="Freescale Semiconductor" rep="2373" href="http://www.freescale.com/" uid="387981"></data></result>
+<result>Software engineer at<data name="Snapjoy" rep="2355" href="http://www.snapjoy.com" uid="215860"></data></result>
+<result>of England and currently work for<data name="Thap" rep="2354" href="http://www.thap.co.uk" uid="35389"></data></result>
+<result> Mobile Phones, after working at<data name="Nomovok" rep="2347" href="http://www.nomovok.com/" uid="40657"></data></result>
+<result>I'm currently working for<data name="Emmaus Ministies" rep="2343" href="http://streets.org" uid="10608"></data></result>
+<result>from Northeast Ohio. I work for<data name="NimblePros" rep="2341" href="http://nimblepros.com/" uid="22381"></data></result>
+<result>Django user  I work at<data name="canv.as" rep="2341" href="http://canv.as" uid="89373"></data></result>
+<result>Software Technical Lead at<data name="QuadTech" rep="2328" href="http://www.quadtechworld.com" uid="240313"></data></result>
+<result>I'm a frontend engineer at<data name="Namics" rep="2327" href="http://www.namics.com" uid="315260"></data></result>
+<result>I am a developer at<data name="oDesk" rep="2327" href="http://www.odesk.com" uid="496735"></data></result>
+<result>am a software developer working for<data name="Pinnacle of Indiana" rep="2312" href="http://www.pinnacleofindiana.com" uid="13793"></data></result>
+<result>Currently I work for<data name="ant micro" rep="2302" href="http://antmicro.com/" uid="549315"></data></result>
+<result>work at a german company called<data name="EVOCURA" rep="2295" href="http://www.evocura.com" uid="432219"></data></result>
+<result>passionate Software Developer currently working for<data name="Gravitant" rep="2282" href="http://gravitant.com/" uid="174349"></data></result>
+<result>Web developer at Go Interactive (<data name="Go Interactive" rep="2278" href="http://gointeractive.se" uid="133732"></data></result>
+<result>Front-end web developer at<data name="Aereo" rep="2271" href="http://aereo.com" uid="717965"></data></result>
+<result>I'm a developer at<data name="FadingRed" rep="2257" href="http://www.fadingred.com/" uid="98069"></data></result>
+<result>Product Manager at<data name="eSavvy.com.au" rep="2252" href="http://www.eSavvy.com.au" uid="5188"></data></result>
+<result>Frontend web developer for<data name="Fublo" rep="2249" href="http://fublo.net" uid="455137"></data></result>
+<result>as a Software Team Lead for<data name="Lambda Software" rep="2233" href="http://www.lambdasoftware.com.au" uid="155586"></data></result>
+<result>I am a computer engineer at<data name="Banque de France" rep="2230" href="http://acp.banque-france.fr/" uid="94363"></data></result>
+<result>Co-founder and Android/iOS developer at<data name="Appchance" rep="2228" href="http://www.appchance.com" uid="237993"></data></result>
+<result>Rails SQL  I work for<data name="Cyrus Innovation" rep="2203" href="http://www.cyrusinnovation.com" uid="234025"></data></result>
+<result>developer at the R&amp;D departement at<data name="BSB" rep="2202" href="http://www.bsb.com" uid="3432"></data></result>
+<result>code. Currently a software developer at<data name="Appconomy" rep="2200" href="http://appconomy.com" uid="17834"></data></result>
+<result>Working as a consultant at<data name="Avega Group" rep="2184" href="http://www.avegagroup.se/" uid="83283"></data></result>
+<result>name Halcy0n as a developer for<data name="Gentoo" rep="2176" href="http://www.gentoo.org" uid="167985"></data></result>
+<result>Software engineer at Smartesting<data name="Smartesting" rep="2167" href="http://www.smartesting.com/index.php/cms/en/home" uid="373254"></data></result>
+<result>I'm Development Manager at<data name="Inter-Cultura" rep="2155" href="http://www.inter-cultura.com/" uid="639430"></data></result>
+<result>am the lead developer for the<data name="SymPy" rep="2152" href="http://sympy.org" uid="161801"></data></result>
+<result>development. Currently a software developer at<data name="Elvior" rep="2136" href="http://www.elvior.com" uid="150166"></data></result>
+<result>Im a Software Developer at<data name="boldUnderline." rep="2123" href="http://boldunderline.com/" uid="497255"></data></result>
+<result>Consultant for Headspring in Austin, TX<data name="Headspring" rep="2108" href="http://www.headspring.com" uid="29689"></data></result>
+<result>Android developer at<data name="Zoodles" rep="2084" href="http://www.zoodles.com" uid="384831"></data></result>
+<result>Working as a software engineer at<data name="Landshark Labs" rep="2083" href="http://www.landshark.in" uid="932225"></data></result>
+<result>I am a Rails developer at<data name="Pivotal Labs" rep="2076" href="http://pivotallabs.com" uid="500959"></data></result>
+<result>ASP.NET (C#) developer at<data name="OpenOne" rep="2069" href="http://www.openone.cz/homepage.htm?lang=en" uid="291379"></data></result>
+<result>UI designer and frontend developer at<data name="ELE.ME" rep="2053" href="http://ele.me" uid="966437"></data></result>
+<result>Software Engineer at Centare<data name="Centare" rep="2033" href="http://www.centare.com" uid="78716"></data></result>
+<result> I now work for the<data name="Florida Institute for Human and Machine Cognition" rep="2005" href="http://ihmc.us" uid="411216"></data></result>
+<result> I am currently employed at<data name="Westlake Design" rep="1945" href="http://westlakedesign.com" uid="187825"></data></result>
+<result>Lead engineer at<data name="AccelerEyes" rep="1941" href="http://www.accelereyes.com" uid="535516"></data></result>
+<result>Currently a Software Engineer at<data name="Arista Networks" rep="1935" href="http://www.aristanetworks.com" uid="322229"></data></result>
+<result>and TFS Practice Technical Lead at<data name="Imaginet" rep="1921" href="http://www.imaginet.com" uid="250290"></data></result>
+<result> And now I work for<data name="Twilio" rep="1914" href="http://www.twilio.com/" uid="41752"></data></result>
+<result>Software developer at<data name="CustomSure" rep="1911" href="http://www.customersure.com" uid="100213"></data></result>
+<result>employed as Principal Consultant at Indivirtual<data name="Indivirtual" rep="1905" href="http://www.indivirtual.nl" uid="9967"></data></result>
+<result>Microsoft Dynamics AX software consultant at<data name="BKD Technologies" rep="1904" href="http://www.bkdtechnologies.com/AX/" uid="535"></data></result>
+<result>Software engineer at<data name="CROZ" rep="1879" href="http://www.croz.net" uid="196134"></data></result>
+<result>JavaScript Engineer at<data name="Nokia HTML5 Maps" rep="1871" href="http://m.maps.nokia.com" uid="236135"></data></result>
+<result>C# Developer at<data name="Trek Bicycle Corporation" rep="1867" href="http://trekbikes.com" uid="140328"></data></result>
+<result>I work for<data name="Atlantic Business Technologies" rep="1863" href="http://www.atlanticbt.com" uid="439030"></data></result>
+<result>Software developer for<data name="http://www.rubicon.eu" rep="1829" href="http://www.rubicon.eu" uid="12452"></data></result>
+<result>I'm a Senior UI Developer for<data name="TransLoc, Inc" rep="1829" href="http://www.transloc.com" uid="105771"></data></result>
+<result>Software Engineer at Google. Formerly the<data name="Google" rep="1815" href="http://www.google.com" uid="343108"></data></result>
+<result>Software Developer for<data name="Rosetta Stone Labs" rep="1814" href="http://jobs.rosettastone.com/jobs-by-title-location.aspx" uid="89218"></data></result>
+<result>Co-founder and developer at<data name="Appcorn" rep="1797" href="http://www.appcorn.se" uid="323114"></data></result>
+<result>developer at<data name="ThirdFrameStudios" rep="&lt;li&gt;senior" href="http://www.3fs.si" uid=""></data></result>
+<result> These days I'm working at<data name="Xamarin" rep="1780" href="http://www.xamarin.com" uid="87117"></data></result>
+<result>living in Austin. I work at<data name="Mutual Mobile" rep="1771" href="http://mutalmobile.com/" uid="101318"></data></result>
+<result> Senior Software Developer at<data name="Sensus" rep="1764" href="http://www.sensus.com/" uid="509939"></data></result>
+<result>Currently working at<data name="Rocket Pack" rep="1760" href="http://rocketpack.fi" uid="2451"></data></result>
+<result>UI designer and developer for<data name="Rhythm &amp; Hues Studios" rep="1750" href="http://www.rhythm.com" uid="216018"></data></result>
+<result>architect and developer currently working for<data name="GSoft Group" rep="1748" href="http://www.gsoft-group.com" uid="95032"></data></result>
+<result>at home  Software developer at<data name="ComTrade" rep="1729" href="http://comtrade.com/" uid="408643"></data></result>
+<result>in Oxford, UK and working for<data name="20:20" rep="1725" href="http://weare2020.com" uid="79419"></data></result>
+<result>am a software developer working for<data name="Arista Networks" rep="1723" href="http://www.aristanetworks.com/" uid="174963"></data></result>
+<result>I work at<data name="IJsfontein" rep="1718" href="http://www.ijsfontein.nl" uid="224734"></data></result>
+<result>Avid web developer at<data name="Liquid Web" rep="1718" href="http://liquidweb.com" uid="1373932"></data></result>
+<result>programmer and systems designer working for<data name="Economic Modeling Specialists" rep="1685" href="http://www.economicmodeling.com" uid="262078"></data></result>
+<result>Rails dev working at<data name="taskrabbit.com" rep="1679" href="http://www.taskrabbit.com" uid="661492"></data></result>
+<result>sharepoint developer and currently working at<data name="Gloiretech" rep="1654" href="http://Gloiretech.com" uid="877948"></data></result>
+<result>Mac, iOS and Unix developer at<data name="deliquus.com" rep="1648" href="http://www.deliquus.com/" uid="262660"></data></result>
+<result>business applications.  I'm working at<data name="ITW Consulting" rep="1645" href="http://itwconsulting.com/" uid="194574"></data></result>
+<result>VP Product Manager at<data name="SonarSource" rep="1645" href="http://www.sonarsource.com" uid="976155"></data></result>
+<result>extension developer working for CS-Solutions and<data name="JoomJunk" rep="1641" href="http://www.joomjunk.co.uk" uid="1362108"></data></result>
+<result>Work for:<data name="Singly.com" rep="1634" href="http://www.singly.com/" uid="548075"></data></result>
+<result>Currently working as a consultant for<data name="Lab49" rep="1633" href="http://www.lab49.com" uid="97443"></data></result>
+<result>Hendy Irawan is an engineer at<data name="Bippo Akselerator Indonesia" rep="1631" href="http://www.bippo.co/" uid="122441"></data></result>
+<result>I'm a Senior .NET developer for<data name="ICF Ironworks" rep="1629" href="http://www.ironworks.com" uid="1497479"></data></result>
+<result>work as a Software Developer at<data name="Abe's Market" rep="1620" href="http://www.abesmarket.com" uid="726711"></data></result>
+<result>Android &amp; BlackBerry developer at<data name="Cobi Interactive" rep="1613" href="http://www.cobiinteractive.com" uid="383414"></data></result>
+<result>George is an Architect at<data name="Linknode Ltd" rep="1607" href="http://www.linknode.co.uk" uid="45068"></data></result>
+<result>University, Software Engineering  Working at<data name="Quarantainenet.nl" rep="1599" href="http://www.quarantainenet.nl" uid="149395"></data></result>
+<result>currently a Lead Software Architect at<data name="Dundas Data Visualization Inc" rep="1593" href="http://www.dundas.com" uid="270348"></data></result>
+<result>I am a Software Engineer at<data name="Episodic" rep="1591" href="http://www.episodic.com" uid="130597"></data></result>
+<result>Senior developer &amp; architect for<data name="Bennett Adelson Consulting" rep="1589" href="http://www.bennettadelson.com/" uid="262204"></data></result>
+<result>Android developer at the<data name="everything" rep="1588" href="http://everything.me" uid="930391"></data></result>
+<result>Software developer at<data name="Provoke" rep="1587" href="http://www.provoke.co.nz" uid="167018"></data></result>
+<result>consultant at Xebia, lead of the<data name="Xebia" rep="1577" href="http://next.xebia.com" uid="291244"></data></result>
+<result>work for a software consultancy called<data name="Obtiva" rep="1559" href="http://obtiva.com" uid="2066"></data></result>
+<result>Efran is the community lead for<data name="powershell.it" rep="1552" href="http://powershell.it" uid="904178"></data></result>
+<result>Software Developer at<data name="Itransition" rep="1544" href="http://itransition.com" uid="698718"></data></result>
+<result>Senior software architect at<data name="Systematic Software Engineering, Inc." rep="1532" href="http://www.systematic.com/" uid="501217"></data></result>
+<result>Creative Developer at<data name="Momkai" rep="1509" href="http://www.momkai.com" uid="921964"></data></result>
+<result>Hyderabad, India.  Software Developer at<data name="Riktam Technologies" rep="1505" href="http://www.riktamtech.com" uid="649306"></data></result>
+<result>I am working at<data name="hiddenbrains.com" rep="1504" href="http://www.hiddenbrains.com" uid="874752"></data></result>
+<result>.NET Developer at<data name="Spektrum Media" rep="1485" href="http://spektrummedia.com" uid="67342"></data></result>
+<result>Project Engineer at IronOne Technologies (<data name="www.ironone.com" rep="1474" href="http://www.ironone.com" uid="928441"></data></result>
+<result>  Currently working at<data name="Meliá Hotels International" rep="1470" href="http://es.solmelia.com/home.htm" uid="533941"></data></result>
+<result>Software developer at<data name="Socrata" rep="1464" href="http://www.socrata.com" uid="83769"></data></result>
+<result>Software engineer at<data name="Sun" rep="1457" href="http://www.sun.com/" uid="46220"></data></result>
+<result>positions   Solution Architect at<data name="Ericsson" rep="1445" href="http://www.ericsson.com" uid="271236"></data></result>
+<result>positions   R&amp;D Engineer at<data name="Telefonica R&amp;D" rep="1445" href="http://www.tid.es/en" uid="271236"></data></result>
+<result>Currently a software engineer at<data name="Biomedical Genomics Group" rep="1432" href="http://bg.upf.edu" uid="1078883"></data></result>
+
+<result>cyclist, music/film/art junkie. Engineer at FutureAdvisor<data name="FutureAdvisor" rep="1428" href="https://www.futureadvisor.com" uid="597966"></data></result>
+<result>Indie iOS developer at<data name="iWonderPhone" rep="1427" href="http://iwonderphone.com/" uid="56149"></data></result>
+<result>Web Developer working at<data name="Stendahls" rep="1424" href="http://stendahls.se" uid="255849"></data></result>
+<result>CEO and Webdeveloper at<data name="Incloud" rep="1423" href="http://www.incloud.de" uid="133811"></data></result>
+<result>Research Engineer at<data name="Obeo" rep="1420" href="http://www.obeo.fr/" uid="587220"></data></result>
+<result>A system developer at<data name="Falck Danmark A/S" rep="1417" href="http://www.falck.com" uid="28399"></data></result>
+<result>finally Became a .NET developer at<data name="Ranshuijsen Van Loon
+" rep="1415" href="http://www.renvl.nl" uid="694736"></data></result>
+<result>am also a Developer Lead at<data name="Teleios Systems Ltd" rep="1414" href="http://www.teleios-systems.com" uid="1943"></data></result>
+<result>data exchange  currently working for<data name="Zarafa WebApp" rep="1411" href="http://www.zarafa.com/content/webapp" uid="1237812"></data></result>
+<result>Working at JetBrains as<data name="JetBrains" rep="1408" href="http://www.jetbrains.com/resharper/" uid="1085861"></data></result>
+<result>/ Cappuccino / Web Developer at<data name="Sofa" rep="1401" href="http://www.madebysofa.com" uid="1555903"></data></result>
+<result>Software Developer Consultant working at<data name="InCycle Software" rep="1393" href="http://www.incyclesoftware.com" uid="197000"></data></result>
+<result>I'm a technical lead at<data name="Logos Bible Software" rep="1387" href="http://logos.com/" uid="26628"></data></result>
+<result>Allround developer at<data name="Lunatech Labs" rep="1369" href="http://www.lunatech.com/" uid="4711"></data></result>
+<result>Mobile Developer, working at<data name="Mercury" rep="1367" href="http://mercury.io" uid="713773"></data></result>
+<result>last 8 years. Currently working for<data name="Mater Health Services" rep="1366" href="http://www.mater.org.au" uid="48791"></data></result>
+<result>Software engineer working for<data name="Webyog" rep="1330" href="http://webyog.com/en/" uid="932058"></data></result>
+<result>developer working for Tangent Labs (<data name="http://www.tangentlabs.co.uk" rep="1328" href="http://www.tangentlabs.co.uk" uid="25517"></data></result>
+<result>I'm working at<data name="Springest" rep="1327" href="http://www.springest.com" uid="137053"></data></result>
+<result> Rails developer, working for<data name="Floorplanner.com" rep="1322" href="http://www.floorplanner.com" uid="42431"></data></result>
+<result>now I don't. I work for<data name="Social Cash" rep="I" href="http://www.socialcash.com" uid=""></data></result>
+<result>language.  I currently work for<data name="Entity Group" rep="1303" href="http://www.entity.co.uk" uid="444738"></data></result>
+<result>I am a developer at<data name="Clarity Consulting" rep="1301" href="http://claritycon.com" uid="133701"></data></result>
+<result> Developer at Green Media Agency<data name="http://greenmediaagency.com" rep="1297" href="http://greenmediaagency.com" uid="295228"></data></result>
+<result>Lüthy is a Java developer at<data name="Edorasware.com" rep="1295" href="http://www.edorasware.com" uid="57448"></data></result>
+<result>Software developer for<data name="IMC-Chicago" rep="1294" href="http://www.imc-chicago.com/" uid="1266"></data></result>
+<result>I'm a software engineer at<data name="Oyster.com" rep="1292" href="http://www.oyster.com/" uid="68707"></data></result>
+<result>am a Senior Systems Engineer for<data name="Viewpoint Systems" rep="1290" href="http://www.viewpointusa.com" uid="7561"></data></result>
+<result>Software Development Manager at<data name="iiNet" rep="1285" href="http://www.iinet.net.au/" uid="17328"></data></result>
+<result>I work at<data name="JBoss" rep="1282" href="http://jboss.org" uid="235161"></data></result>
+<result>I am a software developer at<data name="LoopNet, Inc" rep="1279" href="http://www.loopnet.com" uid="75802"></data></result>
+<result>Mikael is a systems architect at<data name="Digia" rep="1262" href="http://www.digia.com" uid="66988"></data></result>
+<result>Work at<data name="Wishpot" rep="1261" href="http://www.wishpot.com" uid="26624"></data></result>
+<result>Software architect and lead developer for<data name="DocFactory" rep="1259" href="http://www.docfactory.com/" uid="688958"></data></result>
+<result> Currently I am working at<data name="Genbil Software" rep="1258" href="http://genbil.com" uid="1225270"></data></result>
+<result>Mobile developer at<data name="Ekito" rep="1257" href="http://www.ekito.fr" uid="334209"></data></result>
+<result>a SCV working for SMARTSTUDY -<data name="http://smartstudy.co.kr" rep="1257" href="http://smartstudy.co.kr" uid="366908"></data></result>
+<result>I am a Systems Engineer at<data name="Omega AS" rep="1250" href="http://omega.no/" uid="170766"></data></result>
+<result>.NET consultant for<data name="Intertech" rep="1244" href="http://www.intertech.com" uid="61532"></data></result>
+<result>A developer at<data name="banters.com" rep="1242" href="http://banters.com/" uid="244355"></data></result>
+<result>I'm a software developer at<data name="Hungama Digital Media Entertainment Pvt. Ltd." rep="1226" href="http://hungama.org/" uid="92487"></data></result>
+<result>work as a consultant/software developer at<data name="ÅF" rep="1219" href="http://www.afconsult.com" uid="16047"></data></result>
+<result>I work for<data name="Appcelerator" rep="1219" href="http://appcelerator.com/" uid="524855"></data></result>
+<result>I am a software engineer at<data name="Google" rep="1208" href="http://www.google.com" uid="255836"></data></result>
+<result>Developer at<data name="Nearshoring Solutions" rep="1203" href="http://nearshoring-solutions.com/" uid="653021"></data></result>
+<result>I am a developer for<data name="Pure Charity" rep="1194" href="http://purecharity.com" uid="1804"></data></result>
+<result>developer currently working for Pageonce (<data name="Pageonce" rep="1189" href="http://www.pageonce.com" uid="258429"></data></result>
+
+
+<result>Senior Software Engineer for<data name="StampinUp" rep="1188" href="http://www.stampinup.com" uid="191347"></data></result>
+<result>(UK).  I currently work for<data name="Ledgard Jepson" rep="1188" href="http://www.ledgardjepson.com" uid="207738"></data></result>
+<result>iOS Developer at<data name="Readmill" rep="1187" href="http://readmill.com" uid="254422"></data></result>
+<result>Front-end Engineer at<data name="JIBE" rep="1184" href="http://www.jibe.com" uid="127769"></data></result>
+<result>Currently working at<data name="Futurice" rep="1177" href="http://www.futurice.com" uid="94956"></data></result>
+<result>iOS Tech Lead for<data name="Panarea Digital" rep="1176" href="http://www.panareadigital.com" uid="454384"></data></result>
+<result>PHP Engineer at<data name="10gen" rep="1173" href="http://www.10gen.com" uid="162228"></data></result>
+<result>Java Enthusiast   Working at<data name="CosmoCode" rep="1172" href="http://www.cosmocode.de" uid="232539"></data></result>
+<result>there). I am currently working at<data name="FinecoBank" rep="1171" href="http://www.fineco.it" uid="304174"></data></result>
+<result>I just started doing work for<data name="Clarion Media" rep="1167" href="http://clarionmedia.com" uid="154619"></data></result>
+<result>full time Software Development Engineer at<data name="CodeSmith Tools, LLC" rep="1163" href="http://www.codesmithtools.com/" uid="199701"></data></result>
+<result>is a Senior Software Engineer at<data name="Red Hat" rep="1163" href="http://redhat.com" uid="202007"></data></result>
+<result>most notably as project lead for<data name="JBoss Forge" rep="1163" href="http://jboss.org/forge" uid="202007"></data></result>
+<result>Myanmar. Currently a Project Manager at<data name="Durosoft" rep="Web" href="http://durosoft.net" uid=""></data></result>
+<result>Ruby on Rails developer, working at<data name="Lunar Logic Polska" rep="1160" href="http://lunarlogicpolska.com" uid="78255"></data></result>
+<result>Currently work for<data name="EPAM" rep="1149" href="http://www.epam.com/" uid="504397"></data></result>
+<result>I currently work at<data name="MIT Lincoln Laboratory" rep="1148" href="http://www.ll.mit.edu" uid="7545"></data></result>
+<result>Lead Python (Django) developer working for<data name="QuoteRoller" rep="1134" href="http://www.quoteroller.com/" uid="1037042"></data></result>
+<result>Senior Developer at<data name="Better Brief" rep="1132" href="http://betterbrief.co.uk/" uid="127522"></data></result>
+<result>I'm development manager at<data name="Blue Bridge Solutions" rep="1128" href="http://www.bluebridgeltd.com" uid="29075"></data></result>
+<result>living in San Francisco working for<data name="Yelp" rep="1120" href="http://yelp.com" uid="132413"></data></result>
+<result>I'm a senior SharePoint developer at<data name="Alcero" rep="1114" href="http://www.alcero.com" uid="236129"></data></result>
+<result>UIS.  Currently, senior developer at<data name="Janssen" rep="1109" href="http://www.janssen.com.co/" uid="354756"></data></result>
+<result>I'm a PHP developer at<data name="Printconcept.com" rep="1077" href="http://www.printconcept.com" uid="80840"></data></result>
+<result>Software Engineer at<data name="TokBox Inc" rep="1072" href="http://www.tokbox.com" uid="227021"></data></result>
+<result>I'm a software developer at<data name="Logos Bible Software" rep="1071" href="http://www.logos.com/" uid="23818"></data></result>
+<result>Ruby lover and Rails developer at<data name="FreeAgent Central" rep="1068" href="http://www.freeagentcentral.com/" uid="4212"></data></result>
+<result>Python coder.   working for<data name="DResearch Fahrzeugelektronik GmbH" rep="1067" href="http://www.dresearch.de" uid="131120"></data></result>
+<result>a consultant and currently working at<data name="Common Vision" rep="1062" href="http://www.commonvision.com.au" uid="187422"></data></result>
+<result>Event manager and technical manager for<data name="Offblast LAN" rep="1060" href="http://www.offblast.si" uid="716007"></data></result>
+<result>applications.   I work for<data name="Ion Torrent" rep="1057" href="http://iontorrent.com" uid="56069"></data></result>
+<result>.NET fan  Working at<data name="Wygwam" rep="1057" href="http://www.wygwam.com" uid="282105"></data></result>
+<result>Lead Developer for<data name="Blue Bay Travel" rep="1043" href="http://bluebaytravel.co.uk" uid="394013"></data></result>
+<result>applications. I work for my company<data name="Cetrasoft" rep="1041" href="http://www.cetrasoft.com" uid="1219460"></data></result>
+<result>things in mobile technology. Working at<data name="SBL" rep="1040" href="http://www.sblsoftware.com/" uid="834747"></data></result>
+<result>. Working for<data name="Institute of molecular genetics" rep="1036" href="http://www.img.cas.cz/main.php" uid="218508"></data></result>
+<result>senior developer at the totally awesome<data name="JFrog" rep="1032" href="http://www.jfrog.com" uid="198825"></data></result>
+<result>software developer for Oracle/MySQL working in<data name="Oracle/MySQL" rep="1023" href="http://www.mysql.com" uid="94484"></data></result>
+<result>IT Manager for<data name="Capricorn Investment Partners" rep="1012" href="http://capinvest.com.au" uid="149259"></data></result>
+<result>I'm a developer at Catalyst Secure.<data name=Catalyst Secure" rep="1002" href="www.catalystsecure.com" uid="1183294"></data></result>
+<result>developer and I'm currently working for<data name="Autopilot Consulting, LLC" rep="998" href="http://www.autopilotllc.com" uid="103075"></data></result>
+<result>LUA.  Now I'm working for<data name="DivMob Ltd" rep="994" href="http://divmob.com" uid="653457"></data></result>
+<result>I'm a fulltime WordPress Developer at<data name="interconnect/it" rep="988" href="http://www.interconnectit.com" uid="57482"></data></result>
+<result>Engineering and currently I work for<data name="JavaGulf" rep="988" href="http://www.javaits.com" uid="385172"></data></result>
+<result>I'm an intern software engineer at<data name="Futureware" rep="988" href="http://www.futureware.com.sa/" uid="385172"></data></result>
+<result>Solutions Architect at<data name="BeneSys, Inc" rep="978" href="http://www.benesysinc.com" uid="4964"></data></result>
+<result>Tridion Developer and Architect, working for<data name="Building Blocks" rep="978" href="http://www.building-blocks.com" uid="1218088"></data></result>
+<result>Adventurous/experimental Ruby developer at<data name="New Bamboo" rep="969" href="http://new-bamboo.co.uk" uid="818057"></data></result>
+<result>graphic designer. Project manager at Viajeros.com.<data name="Viajeros.com" rep="966" href="www.viajeros.com" uid="26481"></data></result>
+<result>developer and team leader, working at<data name="Open Projects" rep="964" href="http://www.openprojects.co.uk" uid="95399"></data></result>
+<result>Technology Evangelist &amp; Community Manager at<data name="FusionCharts" rep="957" href="http://fusioncharts.com/" uid="331609"></data></result>
+<result>Senior Consultant at<data name="two10 degrees" rep="939" href="http://www.two10degrees.com" uid="349014"></data></result>
+<result>Product Manager for<data name="Zendesk" rep="938" href="http://www.zendesk.com" uid="57573"></data></result>
+<result>  Technical architect at a<data name="Windsor Solutions" rep="934" href="http://windsorsolutions.com" uid="113225"></data></result>
+<result> developer, technical lead for<data name="Confluence" rep="927" href="http://www.atlassian.com/software/confluence" uid="143336"></data></result>
+<result>designer working for a company called<data name="A3 Media (UK)" rep="925" href="http://a3mediauk.co.uk" uid="755692"></data></result>
+<result>application developer. I currently work for<data name="Rally" rep="922" href="http://www.rallydev.com/" uid="45476"></data></result>
+<result>Lead Developer at the<data name="Higher Education Coordinating Board" rep="913" href="http://www.hecb.wa.gov/" uid="437456"></data></result>
+<result>SAS Consultant for<data name="PW Consulting" rep="909" href="http://www.pwconsulting.nl" uid="504649"></data></result>
+<result>, employed at<data name="joshsoftware" rep="909" href="http://joshsoftware.com" uid="629873"></data></result>
+<result>Lead Developer for<data name="LiveNote" rep="908" href="http://www.livenote.com" uid="118058"></data></result>
+<result>industry. Currently the applications manager at<data name="Soft Tech America" rep="892" href="http://www.stgroup.com" uid="55487"></data></result>
+
+<result>and learning new stuff. Working at<data name="Kritnu" rep="883" href="http://www.kritnu.com" uid="393539"></data></result>
+<result>A Senior Software Engineer at<data name="Outbrain" rep="882" href="http://www.outbrain.com/" uid="382683"></data></result>
+<result>full time working at Nuffie productions<data name="http://www.nuffie.co.nz/" rep="881" href="http://www.nuffie.co.nz/" uid="515455"></data></result>
+<result>Senior Microsoft Developer at<data name="IHomer" rep="876" href="http://www.ihomer.nl" uid="418170"></data></result>
+<result>Mobile engineer at<data name="Yelp" rep="869" href="http://www.yelp.com/" uid="195691"></data></result>
+<result>2/Richfaces 4/JPA), I'm currently working at<data name="Shura" rep="867" href="http://www.shuratech.com/" uid="474551"></data></result>
+<result>of being the Software Architect for<data name="Taoti Creative" rep="859" href="http://taoti.com/" uid="482256"></data></result>
+<result>a Software Engineer and consultant for<data name="Terenine, inc." rep="859" href="http://terenine.com/" uid="482256"></data></result>
+<result>Developer at Techdinamics Solutions, Inc.<data name="Techdinamics Solutions" rep="856" href="http://www.techdinamics.com/" uid="1202952"></data></result>
+<result>web Architect.  Currently working for<data name="http://www.blogspirit.com/" rep="855" href="http://www.blogspirit.com/" uid="344994"></data></result>
+<result>living in Berlin and working at<data name="SerNet" rep="850" href="https://www.sernet.de/en/" uid="113252"></data></result>
+<result>I'm a volunteer developer for the<data name="Titan Network" rep="849" href="http://cohtitan.com" uid="386178"></data></result>
+<result>Developer for<data name="OneSheep" rep="847" href="http://onesheep.info" uid="96944"></data></result>
+<result>developer for new media start up,<data name="Music Jobs" rep="847" href="http://uk.music-jobs.com/" uid="327928"></data></result>
+<result>Front end developer at the<data name="Norwegian Broadcasting Corporation" rep="840" href="http://nrk.no" uid="149809"></data></result>
+<result>principal software engineer at Intrig (<data name="intrig.com" rep="834" href="http://www.intrig.com" uid="45799"></data></result>
+<result>.NET Developer working for kCura<data name="kCura" rep="831" href="http://kcura.com/corporate/careers" uid="285858"></data></result>
+<result> Technical architect at<data name="Alpharooms.com" rep="827" href="http://www.alpharooms.com" uid="3187"></data></result>
+<result>Euler these days.  Developer for:<data name="Tumblr" rep="826" href="http://www.tumblr.com" uid="482346"></data></result>
+<result>Senior software architect at<data name="Jenzabar" rep="822" href="http://www.jenzabar.com" uid="208288"></data></result>
+<result>a Technical Account Manager/Software Developer at<data name="Swiss Post Solutions" rep="822" href="http://www.swisspostsolutions.com/germany" uid="387405"></data></result>
+<result>work as web manager at the<data name="Institute for Social &amp; Economic Research" rep="820" href="http://www.iser.essex.ac.uk/" uid="227053"></data></result>
+<result>Web/iPhone developer at<data name="Logos Bible Software" rep="816" href="http://www.logos.com" uid="453303"></data></result>
+<result>developer for the open source project<data name="nJupiter" rep="815" href="http://code.google.com/p/njupiter/" uid="350742"></data></result>
+<result>theatre and beautiful code working for<data name="Filter Squad" rep="813" href="http://www.filtersquad.com" uid="158252"></data></result>
+<result>Software developer at<data name="Spartez" rep="811" href="http://www.spartez.com/" uid="504845"></data></result>
+<result>Lead Developer at<data name="SnapshotMedia" rep="806" href="http://snapshotmedia.co.uk/" uid="7496"></data></result>
+<result>Java developer at<data name="Lunatech Research" rep="806" href="http://www.lunatech-research.com/" uid="54591"></data></result>
+<result>of Product and front-end developer at<data name="Starstreet" rep="805" href="https://www.starstreet.com" uid="535467"></data></result>
+<result>Aires (UBA)  Developer at Monits<data name="Monits" rep="803" href="http://www.monits.com" uid="284906"></data></result>
+<result>a software developer currently working for<data name="Artezio" rep="803" href="http://artezio.com" uid="617900"></data></result>
+<result>Product Manager for<data name="PostageApp" rep="801" href="http://postageapp.com" uid="159498"></data></result>
+<result>Web Developer at<data name="Top10" rep="797" href="http://top10.com" uid="5303"></data></result>
+<result>I'm a developer at<data name="The Nerdery" rep="795" href="http://nerdery.com/Py" uid="322748"></data></result>
+<result>R&amp;D engineer at<data name="Exalead" rep="794" href="http://www.exalead.com" uid="93182"></data></result>
+<result>Android Developer at<data name="Mobile Interaction" rep="794" href="http://www.mobileinteraction.se" uid="518949"></data></result>
+<result>Tech lead at<data name="ASOS Marketplace" rep="793" href="http://marketplace.asos.com" uid="3856"></data></result>
+<result>a decade. I currently work for<data name="Lincoln Loop" rep="793" href="http://lincolnloop.com" uid="189481"></data></result>
+<result>a contract developer, currently working for<data name="MusicBrainz" rep="791" href="http://musicbrainz.org" uid="74497"></data></result>
+<result>Senior Software Engineer at<data name="Ephox" rep="775" href="http://www.ephox.com" uid="7546"></data></result>
+<result>Web Developer for<data name="Warren Douglas" rep="772" href="http://www.warrendouglas.com/" uid="2863"></data></result>
+<result>Australia.  I currently work for<data name="Readify" rep="771" href="http://readify.com.au" uid="67731"></data></result>
+<result>Software Architect at<data name="Scienta" rep="769" href="http://Scienta.dk" uid="153738"></data></result>
+<result>is the Actuarial Data Manager at<data name="AFHI" rep="769" href="http://www.afhi.com" uid="1248931"></data></result>
+<result>I work for<data name="Building Blocks" rep="765" href="http://www.building-blocks.com" uid="5587"></data></result>
+<result>iOS developer currently working for a<data name="New I World" rep="763" href="http://newiworld.com/" uid="1144161"></data></result>
+<result>I am a developer for<data name="DealerHosts, Inc." rep="761" href="http://www.dealerhosts.com" uid="94656"></data></result>
+<result>and a part time developer for<data name="BFAC, LLC." rep="761" href="http://www.bfac.com" uid="94656"></data></result>
+<result>I work for<data name="Reachsmart Interactive" rep="760" href="http://reachsmart.com" uid="101203"></data></result>
+<result>I'm a technology enthusiast, working at<data name="Emakina" rep="760" href="http://www.emakina.com" uid="266455"></data></result>
+<result>currently working for<data name="VSoft Technologies" rep="I'm" href="http://www.finalbuilder.com" uid=""></data></result>
+<result>developer at a great company called<data name="Green Gorilla Apps" rep="760" href="http://ggapps.co.uk" uid="1087866"></data></result>
+<result>based in London, currently working for<data name="R/GA" rep="759" href="http://rga.com" uid="1061870"></data></result>
+<result>French Junior .net Developer working for<data name="Winwise" rep="753" href="http://www.winwise.com/" uid="248118"></data></result>
+<result>working as a Django developer at<data name="Rockfish Interactive" rep="752" href="http://www.rockfishinteractive.com/" uid="112785"></data></result>
+<result>hobby as a production manager for<data name="Tonkin" rep="750" href="http://www.tonkinbrands.com/" uid="124085"></data></result>
+<result>I'm a developer for<data name="Logos Bible Software" rep="748" href="http://logos.com" uid="185935"></data></result>
+<result>I'm currently employed at<data name="Novasa" rep="744" href="http://www.novasa.com" uid="144433"></data></result>
+<result>I work for the<data name="Yorba Foundation" rep="738" href="http://yorba.org/" uid="32168"></data></result>
+<result>Computer Engineering. ES Country Manager at<data name="Ibistic Technologies" rep="734" href="http://www.ibistic.com" uid="4683"></data></result>
+<result>work for<data name="Leonidas" rep="I" href="http://www.leonidasoy.com" uid=""></data></result>
+<result>Jake is a Senior Developer for<data name="Readify" rep="725" href="http://readify.net" uid="78448"></data></result>
+<result>iOS Developer at<data name="Endloop Mobile" rep="720" href="http://endloop.ca" uid="1034477"></data></result>
+<result>Software Architect for<data name="Progress FUSE" rep="716" href="http://fusesource.com/" uid="305364"></data></result>
+<result>Software Engineer at AnelArGe, Turkey.<data name="AnelArGe" rep="714" href="http://www.anelarge.com" uid="471214"></data></result>
+<result>// Ninja  currently working at<data name="http://sociablelabs.com/" rep="712" href="http://sociablelabs.com/" uid="933879"></data></result>
+<result>I'm a software engineer for<data name="Acunu" rep="708" href="http://www.acunu.com/" uid="416382"></data></result>
+<result>I am a software developer for<data name="Covenant Eyes" rep="699" href="http://www.covenanteyes.com" uid="503377"></data></result>
+<result>Software developer at<data name="Neo Technology" rep="686" href="http://neotechnology.com/" uid="78921"></data></result>
+<result>Software engineer at<data name="Archos" rep="680" href="http://www.archos.com" uid="810102"></data></result>
+<result>I work for<data name="WikiSquare.de" rep="667" href="http://www.wikisquare.de" uid="450812"></data></result>
+<result>I'm a software developer working at<data name="inConcert" rep="661" href="http://www.inconcertcc.com" uid="44740"></data></result>
+<result>I work at<data name="Heroku" rep="658" href="http://heroku.com" uid="1339184"></data></result>
+<result>I'm an ASP.NET developer working for<data name="TeamAton" rep="657" href="http://teamaton.com" uid="177710"></data></result>
+<result>American Immigrant, Financial Technology Consultant at<data name="Lab49" rep="654" href="http://www.lab49.com" uid="26401"></data></result>
+<result>as a Project Manager for the<data name="Gift Suggestions" rep="652" href="http://www.elgifto.com/HowToUseElgifto.aspx" uid="186148"></data></result>
+<result>on a test automation framework at<data name="Telbit" rep="651" href="http://www.telbit.pt" uid="278888"></data></result>
+<result>I'm the development manager at<data name="Christie Digital" rep="650" href="http://www.christiedigital.com/en-us/pages/default.aspx" uid="992076"></data></result>
+<result>Software developer at<data name="Three Pillar Global Inc." rep="645" href="http://www.threepillarglobal.com/" uid="1300817"></data></result>
+<result>Currently working at<data name="Futurice" rep="639" href="http://www.futurice.com" uid="95369"></data></result>
+<result>Senior Software Developer at<data name="ProgressSoft" rep="639" href="http://www.progressoft.com" uid="126952"></data></result>
+<result>engineer in Hong Kong working for<data name="AsiaClassified.com" rep="635" href="http://asiaclassified.com" uid="54949"></data></result>
+<result>Mobile developer at<data name="KerniX Software" rep="634" href="http://www.kernix.com" uid="1192568"></data></result>
+<result>Senior Developer for<data name="Zetetic" rep="633" href="http://www.zetetic.net/blog/" uid="50798"></data></result>
+<result>I'm a Software Specialist working at<data name="UNIT4 Financiële Intermediairs" rep="633" href="http://www.unit4.nl/fi" uid="578552"></data></result>
+<result>Senior Software Engineer at<data name="Ingenious Med" rep="630" href="http://ingeniousmed.com/" uid="601521"></data></result>
+<result>Software Developer at<data name="cScape" rep="629" href="http://www.cscape.com" uid="128263"></data></result>
+<result>Senior Server Team Engineer at the<data name="National Energy Research Scientific Computing Center" rep="628" href="http://www.nersc.gov/" uid="110223"></data></result>
+<result>Magento developer at<data name="Soczed" rep="628" href="http://www.soczed.com" uid="1288415"></data></result>
+<result>Co-Founder and Senior Developer at<data name="Summersault" rep="617" href="http://www.summersault.com/" uid="254318"></data></result>
+<result>3/5 yrs at #Supinfo. Developer at<data name="TheFootballSocialClub.com" rep="611" href="http://thefootballsocialclub.com" uid="658474"></data></result>
+<result>I'm a developer at<data name="Mavizon" rep="603" href="http://mavizon.com" uid="131441"></data></result>
+<result>Software engineer at<data name="Netmon Inc." rep="600" href="http://www.netmon.ca" uid="254081"></data></result>
+<result>Working at<data name="Arvan Technologies" rep="595" href="http://www.arvan.in" uid="29532"></data></result>
+<result>in LAMP development. Currently working for<data name="Abendago Media Group" rep="587" href="http://www.abendago.com" uid="229787"></data></result>
+<result>Currently Lead Engineer for<data name="Callisto.fm" rep="586" href="http://callisto.fm" uid="259805"></data></result>
+<result>Developer at<data name="BitNami.org" rep="586" href="http://bitnami.org" uid="865641"></data></result>
+<result>Working at<data name="Colygon" rep="583" href="http://www.colygon.com" uid="352674"></data></result>
+<result>These days I'm working at<data name="Naughty Dog" rep="582" href="http://www.naughtydog.com/" uid="101298"></data></result>
+
+
+<result>I work for a<data name="Kimber.com" rep="581" href="http://www.kimber.com" uid="2220"></data></result>
+<result>Web dev working for<data name="Potato London" rep="580" href="http://p.ota.to" uid="420126"></data></result>
+<result>Distinguished Engineer at<data name="Applied Predictive Technologies" rep="571" href="http://www.predictivetechnologies.com" uid="20766"></data></result>
+<result>Web Developer at<data name="Clark/Nikdel/Powell" rep="571" href="http://nikdel.com" uid="814693"></data></result>
+<result>Engineer at<data name="Tumblr" rep="569" href="http://tumblr.com" uid="503916"></data></result>
+<result>Co-founder and developer at<data name="Urban Airship" rep="564" href="http://urbanairship.com" uid="28028"></data></result>
+<result>Freelance designer, developer and consultant for<data name="Fivetwelve" rep="560" href="http://www.five-twelve.co.uk" uid="412237"></data></result>
+<result>I'm a Web Developer working at<data name="K2" rep="559" href="http://www.k2.com/" uid="59731"></data></result>
+<result>Working for<data name="DYG" rep="558" href="http://www.dogusgrubu.com.tr/web/23-92-1-1/dogus_grubu_-_tr/sektorler/medya/dogus_yayin_grubu" uid="868910"></data></result>
+<result> server developer at<data name="Opera Software" rep="551" href="http://www.opera.com/" uid="7332"></data></result>
+<result>iOS developer for<data name="Short List" rep="551" href="http://ShortListApp.com/" uid="148076"></data></result>
+<result>Ruby on Rails Developer at<data name="Undev" rep="551" href="http://new.undev.ru" uid="820520"></data></result>
+<result>Developer at<data name="PanteraCommerce.com" rep="551" href="http://www.panteracommerce.com" uid="846206"></data></result>
+<result>Now work at<data name="KemanaServices" rep="549" href="http://www.kemanaservices.com" uid="515536"></data></result>
+<result>Boston-area Ruby on Rails developer at<data name="OurStage.com" rep="546" href="http://www.ourstage.com" uid="887124"></data></result>
+<result>Senior Developer and Development Manager at<data name="The MathWorks, Inc." rep="546" href="http://www.mathworks.com" uid="887124"></data></result>
+<result>Software developer at<data name="Bouvet ASA" rep="545" href="http://www.bouvet.no" uid="233646"></data></result>
+<result>I'm a designer working at<data name="mySociety" rep="542" href="http://www.mysociety.org/" uid="334376"></data></result>
+<result>casual software developer at Itree (<data name="Itree" rep="542" href="http://www.itree.com.au" uid="1056109"></data></result>
+<result>I am a Software Engineer at<data name="Digi International, Inc." rep="541" href="http://www.digi.com" uid="783978"></data></result>
+<result>Working at<data name="Gandi.net" rep="540" href="http://www.gandi.net/" uid="286182"></data></result>
+<result>html, javascript. Mobile application developer for<data name="Swing by Swing, golf gps" rep="535" href="http://www.swingbyswing.com" uid="65563"></data></result>
+<result>work for<data name="Sundial Software Consulting" rep="I" href="http://sundialsc.com" uid=""></data></result>
+<result>Software Engineer at<data name="SpringSource" rep="531" href="http://springsource.com" uid="28214"></data></result>
+<result> and Project Lead for<data name="Spring Python" rep="531" href="http://springpython.webfactional.com" uid="28214"></data></result>
+<result>Engineer for Android Application development at<data name="Empite Solutions" rep="530" href="http://www.empite.com/" uid="651422"></data></result>
+<result>among others.  I work at<data name="The Open Planning Project" rep="529" href="http://topp.openplans.org" uid="20218"></data></result>
+<result>am a software engineer working for<data name="InsideSales.com" rep="528" href="http://www.insidesales.com/" uid="118153"></data></result>
+<result>senior software engineer at<data name="netcetera" rep="525" href="http://netcetera.com" uid="11506"></data></result>
+<result>am a senior developer working for<data name="CHP Consulting" rep="524" href="http://www.chpconsulting.com/" uid="1152402"></data></result>
+<result>Frankfurt and independent software developer at<data name="ilogue" rep="522" href="http://ilogue.com" uid="708221"></data></result>
+<result>I am developer for<data name="Free SMS" rep="522" href="http://smsfree4all.com" uid="914425"></data></result>
+<result>Front-End Developer at<data name="Viget" rep="519" href="http://viget.com" uid="132918"></data></result>
+<result>Python enthusiast:)  Software Engineer at<data name="http://bitbar.com" rep="518" href="http://bitbar.com" uid="35735"></data></result>
+<result>Web Developer at<data name="Multisnet" rep="518" href="http://multisnet.com" uid="221762"></data></result>
+<result>and musician from Kiev. Working for<data name="CloudMade" rep="517" href="http://cloudmade.com" uid="244789"></data></result>
+<result> I'm a Web Architect for<data name="OverBlog" rep="517" href="http://www.over-blog.com/" uid="346286"></data></result>
+<result>to be a Web Developer for<data name="Voila" rep="517" href="http://www.voila.fr/" uid="346286"></data></result>
+<result>and CG Lover. Working at JetBrains.<data name="JetBrains" rep="516" href="http://www.jetbrains.com" uid="167262"></data></result>
+<result>  Also work for<data name="Telehealth Solutions" rep="515" href="http://www.telehealthsolutions.co.uk" uid="223476"></data></result>
+<result>Scrum Master | Team Lead at<data name="YaraHolding" rep="513" href="http://YaraHolding.com" uid="27946"></data></result>
+<result>Currently work for<data name="LibraryThing.com" rep="508" href="http://www.librarything.com/" uid="34901"></data></result>
+<result>social network for poker players -<data name="PokerDIY.com" rep="507" href="http://www.pokerdiy.com" uid="193512"></data></result>
+<result>  I'm currently working at<data name="Dreamwalk.com.au" rep="506" href="http://dreamwalk.com.au" uid="3847"></data></result>
+<result>I work at<data name="Spozzle" rep="506" href="http://www.spozzle.me" uid="748546"></data></result>
+<result>I'm a developer at<data name="ICF Ironworks" rep="505" href="http://www.ironworks.com/" uid="450847"></data></result>
+<result>Web Developer at<data name="360PSG" rep="500" href="http://360psg.com" uid="229675"></data></result>
+<result>a software developer currently working for<data name="Solostocks" rep="497" href="http://www.solostocks.com/" uid="505943"></data></result>
+<result>many years as an engineer for<data name="Microsoft" rep="495" href="http://microsoft.com/" uid="31011"></data></result>
+<result>more, sleep less! Senior Developer at<data name="HiretheWorld" rep="491" href="https://www.hiretheworld.com/" uid="259698"></data></result>
+<result>growed up · Web Designer/Developer at<data name="Posse" rep="490" href="http://www.posse.com/" uid="586869"></data></result>
+<result> a systems engineer working for<data name="Orchestra" rep="490" href="http://www.orchestra.com/" uid="683548"></data></result>
+<result>I work at<data name="Carnes Media" rep="488" href="http://carnesmedia.com" uid="223519"></data></result>
+<result>application developer and trainer working for<data name="BitCode Technologies Pvt Ltd" rep="488" href="http://www.bitcode.in" uid="601549"></data></result>
+<result>Software Engineer working at<data name="IPL" rep="486" href="http://www.ipl.com" uid="280537"></data></result>
+<result>Currently working for<data name="RiverStar" rep="486" href="http://riverstar.com" uid="1168625"></data></result>
+<result>R&amp;D Developer at<data name="Simpleviewinc.com" rep="485" href="http://www.simpleviewinc.com" uid="435223"></data></result>
+<result>. Lead developer for<data name="Visitlasvegas.com" rep="485" href="http://www.visitlasvegas.com" uid="435223"></data></result>
+<result>a web consultant &amp; developer for<data name="End Point" rep="481" href="http://www.endpoint.com/" uid="1186625"></data></result>
+<result> Senior Software Developer at<data name="Bluegarden" rep="476" href="http://www.bluegarden.no" uid="52390"></data></result>
+<result>Senior JavaScript developer at<data name="Bitovi.com" rep="475" href="http://bitovi.com" uid="244147"></data></result>
+<result>Developer at Search Quality Team, Yandex.<data name="Yandex" rep="475" href="http://www.yandex.com" uid="441154"></data></result>
+<result>Engineer at Yahoo<data name="Yahoo" rep="473" href="http://www.yahoo.com" uid="59607"></data></result>
+<result>board member and web developer for<data name="Sparechangenews.net" rep="470" href="http://sparechangenews.net" uid="196423"></data></result>
+<result>I work at<data name="digiPlant.se" rep="469" href="http://www.digiplant.se" uid="71245"></data></result>
+<result>am a Software Engineer working for<data name="Conversive, Inc." rep="469" href="http://www.conversive.com" uid="112741"></data></result>
+<result>  Lead Magento Developer at<data name="DemacMedia" rep="469" href="http://www.demacmedia.com" uid="801506"></data></result>
+<result>I'm a software developer working for<data name="ATREM S.A" rep="468" href="http://www.atrem.pl/" uid="293933"></data></result>
+<result>Lead software developer for<data name="Techdept" rep="462" href="http://www.techdept.co.uk/" uid="859295"></data></result>
+<result>I work for<data name="Mobiata" rep="461" href="http://www.mobiata.com" uid="490912"></data></result>
+<result>and current Lead Web Developer at<data name="Pipe Dream" rep="459" href="http://bupipedream.com/" uid="316602"></data></result>
+<result>I'm working at Ukraine branch of<data name="WeAreProPeople.com" rep="457" href="http://wearepropeople.com" uid="476640"></data></result>
+<result>Software Engineer at<data name="Atalasoft" rep="456" href="http://www.atalasoft.com" uid="204305"></data></result>
+<result>as a Principal Software Engineer for<data name="Digitas, Inc." rep="455" href="http://digitas.com" uid="203141"></data></result>
+
+
+<result>I am a software developer for<data name="Universal Information Technologies" rep="450" href="http://www.uitweb.co.za" uid="591875"></data></result>
+<result>Senior Web Developer at<data name="Oozou" rep="448" href="http://oozou.com" uid="446243"></data></result>
+<result>Magician in spare time. Developer at<data name="Comm-it" rep="447" href="http://www.comm-it.be" uid="97615"></data></result>
+<result>I am a lead developer at<data name="Rebex" rep="446" href="http://www.rebex.net/" uid="277341"></data></result>
+<result>Android Software Engineer at SAPO<data name="SAPO" rep="437" href="http://mobile.sapo.pt/apps/android" uid="528027"></data></result>
+<result>southern Minnesota. Mostly I work for<data name="Iridesco" rep="436" href="http://iridesco.com" uid="14895"></data></result>
+<result>CSS3, HTML5, scss.  Working at<data name="Ackebrink.se" rep="435" href="http://www.ackebrink.se" uid="231582"></data></result>
+<result>am a full-time PHP/JS developer for<data name="Firmstep Ltd." rep="432" href="http://www.firmstep.com" uid="801702"></data></result>
+<result>my web-site and additionally work for<data name="Computerminds.co.uk" rep="430" href="http://www.computerminds.co.uk" uid="145412"></data></result>
+<result>Software Engineer at<data name="Rally Software" rep="426" href="http://www.rallydev.com/" uid="133837"></data></result>
+<result>a software engineer currently working at<data name="Mukto Software" rep="425" href="http://www.muktosoft.com/" uid="1115956"></data></result>
+<result>almost 3 years. Now working at<data name="QB9" rep="424" href="http://www.qb9.com" uid="575092"></data></result>
+<result>I work for<data name="Cerner" rep="421" href="http://www.cerner.com/" uid="155937"></data></result>
+<result>I work for<data name="Winwise" rep="420" href="http://www.winwise.com" uid="608770"></data></result>
+<result>I'm a Software Developer at<data name="Logos Bible Software" rep="416" href="http://www.logos.com" uid="29715"></data></result>
+<result>Software developer for<data name="Axosoft" rep="416" href="http://axosoft.com/" uid="195479"></data></result>
+<result>am...   Web Developer at<data name="WildFireWeb, Inc." rep="416" href="http://wildfireweb.com/" uid="1112551"></data></result>
+<result>C# developer at<data name="Cordura A/S" rep="414" href="http://cordura.dk/" uid="358341"></data></result>
+<result>the founder and Principal Consultant for<data name="Toftware Consulting" rep="413" href="http://www.toftwareconsulting.com" uid="633169"></data></result>
+<result>Software engineer at<data name="MDLogix" rep="411" href="http://www.mdlogix.com" uid="42633"></data></result>
+<result>, webmaster and developer at<data name="WHRW Binghamton" rep="411" href="http://whrwfm.org" uid="42633"></data></result>
+<result>Lead Android developer for<data name="Any.DO" rep="410" href="http://any.do" uid="697018"></data></result>
+<result>I am a software engineer at<data name="Envitia Ltd" rep="407" href="http://www.envitia.com/home/" uid="439194"></data></result>
+<result>there. I'm a software engineer at<data name="Telefonica R&amp;D" rep="406" href="http://tid.es/en" uid="393583"></data></result>
+<result>work at Microsoft, on NuGet and<data name="Microsoft" rep="406" href="http://nuget.org" uid="807125"></data></result>
+<result>work as a Software Developer at<data name="School of LifeSci Dundee University" rep="403" href="http://www.lifesci.dundee.ac.uk/" uid="59816"></data></result>
+<result>Developer at<data name="Peytz &amp; Co" rep="401" href="http://peytz.dk" uid="133585"></data></result>
+<result>user interface designer and developer for<data name="Sitecore" rep="396" href="http://sitecore.net" uid="1103549"></data></result>
+<result>Currently working at The Obvious Corporation,<data name="http://obvious.com/" rep="395" href="http://obvious.com/" uid="387103"></data></result>
+<result>Engineer for the DotNetNuke® Corporation (<data name="DotNetNuke.com" rep="393" href="http://www.dotnetnuke.com/" uid="152726"></data></result>
+<result>Senior .Net-developer at<data name="ISM-Ukraine" rep="391" href="http://www.ism-ukraine.com" uid="437869"></data></result>
+<result>.NET Application Developer at<data name="Atos" rep="391" href="http://atos.net" uid="624395"></data></result>
+<result>in Zurich. I'm currently working for<data name="Avaloq" rep="390" href="http://www.avaloq.com" uid="549755"></data></result>
+<result>.  I'm currently working at<data name="Boston Scientific" rep="388" href="http://www.bostonscientific.com" uid="167077"></data></result>
+<result>developer for MafiaReturns, The Game (<data name="http://www.mafiareturns.com" rep="388" href="http://www.mafiareturns.com/" uid="833696"></data></result>
+<result>to C#.  I work at<data name="AvWebDesigns" rep="386" href="http://www.avwebdesigns.com/" uid="674033"></data></result>
+<result>employed as a PHP developer at<data name="Youmeet Technology" rep="383" href="http://youmeet.se/" uid="133416"></data></result>
+<result>JavaScript Architect at<data name="FusionCharts" rep="382" href="http://www.fusioncharts.com/" uid="206687"></data></result>
+<result>I am a .NET developer for<data name="ICF Ironworks" rep="382" href="http://www.ironworks.com/Pages/default.aspx" uid="1497154"></data></result>
+<result>   I work at<data name="https://www.syse.no" rep="380" href="https://www.syse.no" uid="1437402"></data></result>
+<result>hire me as a consultant at<data name="tauntmedia.com" rep="379" href="http://www.tauntmedia.com" uid="226756"></data></result>
+<result>I work at Tumblr on Engineering.<data name="Tumblr" rep="376" href="http://www.tumblr.com" uid="377674"></data></result>
+<result>Front end developer for<data name="Moresoda Design Ltd." rep="370" href="http://www.moresoda.co.uk/" uid="1095656"></data></result>
+<result>worked as a ruby/rails developer at<data name="isoHunt" rep="365" href="http://isohunt.com/" uid="118264"></data></result>
+<result>Community Network co-founder, Internet2 consultant for<data name="IDtrust" rep="365" href="http://middleware.internet2.edu/idtrust/" uid="507544"></data></result>
+<result>mobile applications developer. Currently employed at<data name="Atomic Object" rep="362" href="http://atomicobject.com" uid="671533"></data></result>
+<result>work as an application developer at<data name="Vimeo" rep="360" href="http://www.vimeo.com" uid="373916"></data></result>
+<result>a swiss web developer working at<data name="Liip AG" rep="359" href="http://www.liip.ch" uid="163638"></data></result>
+<result>Lead and Web Application Developer at<data name="threespot" rep="357" href="http://www.threespot.com" uid="139683"></data></result>
+<result>I work for<data name="WV" rep="357" href="http://www.wv.gov" uid="825386"></data></result>
+<result>Dynamics CRM developer and architect for<data name="ICF Ironworks" rep="356" href="http://www.ironworks.com" uid="1499527"></data></result>
+<result>l'image, Paris, France.  Working at<data name="Big Youth" rep="354" href="http://bigyouth.fr" uid="1133405"></data></result>
+<result>Webdeveloper at<data name="Internetavdelningen" rep="353" href="http://www.internetavdelningen.se" uid="1021081"></data></result>
+<result>an Open Source Junior Developer at<data name="Digital-Works" rep="353" href="http://www.digitalwks.com" uid="1337431"></data></result>
+<result>Developer at<data name="Unu.edu" rep="352" href="http://unu.edu" uid="1288818"></data></result>
+<result>my spare time. Currently working at<data name="Makerbot" rep="351" href="http://www.makerbot.com" uid="151502"></data></result>
+<result>Sr. Software Engineer at<data name="ESoul Consultancy" rep="351" href="http://www.esoulconsultancy.com/" uid="324859"></data></result>
+<result>Developer at Red Stapler Software, LLC<data name="Red Stapler Software, LLC" rep="351" href="http://redstapler.biz" uid="825011"></data></result>
+<result>.NET Developer at<data name="Bekk Consulting AS" rep="349" href="http://www.bekk.no" uid="6452"></data></result>
+<result>scientific applications. I currently work for<data name="Neuromatters" rep="349" href="http://neuromatters.com/" uid="304620"></data></result>
+<result>I work at<data name="Poznan University of Technologies" rep="349" href="http://www.cs.put.poznan.pl" uid="882200"></data></result>
+<result>Dustin Kirkland the Chief Architect at<data name="Gazzang" rep="348" href="http://www.gazzang.com" uid="482352"></data></result>
+<result>Cucumber and Ruby. I work for<data name="LeanDog" rep="346" href="http://www.leandog.com" uid="215789"></data></result>
+<result>Developer at<data name="Visual Jazz" rep="341" href="http://www.visualjazz.com.au/" uid="290115"></data></result>
+<result>Product Manager and Field Engineer at<data name="VoltDB" rep="340" href="http://www.voltdb.com" uid="77200"></data></result>
+<result>I am the lead developer at<data name="DreamCloud Studios" rep="340" href="http://dreamcloudstudios.com" uid="224235"></data></result>
+<result>  Used to work for<data name="Allakhazam.com" rep="339" href="http://www.allakhazam.com" uid="122320"></data></result>
+<result>Web application engineer at<data name="Freshive" rep="339" href="http://freshive.co.za" uid="688201"></data></result>
+<result>basted in Scotland. I work at<data name="Screenmedia.co.uk" rep="338" href="http://www.screenmedia.co.uk" uid="30916"></data></result>
+<result>Web Developer For<data name="Koodoo Creative" rep="338" href="http://www.koodoocreative.co.uk" uid="265431"></data></result>
+<result>I work as Lead Developer at<data name="Hillsong Church London" rep="337" href="http://www.hillsong.co.uk" uid="157611"></data></result>
+<result>Software Architect at Macadamian Technologies.<data name="Macadamian Technologies" rep="336" href="http://www.macadamian.com" uid="251687"></data></result>
+<result>Android developer at theFactor.e<data name="theFactor.e" rep="335" href="http://tfe.nl" uid="600150"></data></result>
+<result>Currently an engineer at<data name="isocket" rep="331" href="http://isocket.com" uid="583478"></data></result>
+<result>I am the lead developer at<data name="Ascad Networks" rep="331" href="http://www.ascadnetworks.com/" uid="915847"></data></result>
+<result>Front-end Developer at<data name="Bootstrap Software" rep="329" href="http://www.bootsoft.com" uid="236974"></data></result>
+<result>web developer. Currently working at<data name="LetItCast.com" rep="328" href="https://letitcast.com" uid="195571"></data></result>
+<result>Lead developer at Ripplewerkz (Singapore)<data name="http://ripplewerkz.com" rep="328" href="http://ripplewerkz.com" uid="198123"></data></result>
+<result>Matthew is currently Project Lead for<data name="Zend Framework" rep="326" href="http://framework.zend.com/" uid="31459"></data></result>
+<result>as an Android application developer at<data name="Officialgates.com" rep="326" href="http://www.officialgates.com" uid="692350"></data></result>
+<result>Developer, Systems and Support Manager for<data name="REW" rep="325" href="http://realestatewebmasters.com/blogs/rew-steven" uid="219116"></data></result>
+<result>JUG Lead for Chennai<data name="Jugchennai.in" rep="324" href="http://www.jugchennai.in" uid="459197"></data></result>
+<result>Software Engineer at<data name="Streebo Inc." rep="322" href="http://www.streebo.com" uid="732347"></data></result>
+<result>I'm a senior developer at<data name="LMAX" rep="319" href="http://www.lmax.com" uid="184420"></data></result>
+<result>work as a developer for Alliants<data name="http://www.alliants.co.uk" rep="319" href="http://www.alliants.co.uk" uid="1047314"></data></result>
+<result>Android Developer at Digifit.<data name="http://www.digifit.com" rep="316" href="http://www.digifit.com" uid="1154836"></data></result>
+<result>  I work at:<data name="OpSpark Inc." rep="313" href="http://www.opspark.com" uid="98252"></data></result>
+<result>Founding Engineer at<data name="FutureAdvisor" rep="312" href="https://www.futureadvisor.com/" uid="582414"></data></result>
+<result>Jr. Software Developer at<data name="e-Builder" rep="310" href="http://e-builder.net" uid="789893"></data></result>
+<result> Creator and lead developer for<data name="WebEngine" rep="306" href="http://www.webenginestudio.com" uid="181935"></data></result>
+<result>Senior Computer Scientist at<data name="White Oak Technologies" rep="305" href="http://www.woti.com" uid="7542"></data></result>
+<result>worked as a Software Engineer at<data name="Three Rings Design" rep="304" href="http://threerings.net" uid="139109"></data></result>
+<result>work for a small consulting company<data name="PCMS Conseil" rep="302" href="http://www.pcms.com" uid="33318"></data></result>
+<result>on it  I work at<data name="Crittercism" rep="301" href="http://www.crittercism.com" uid="374285"></data></result>
+<result>R&amp;D Developer at SiliconStudio, Author of<data name="SiliconStudio" rep="301" href="http://siliconstudio.com" uid="1356325"></data></result>
+<result>J2EE for development. Currently working for<data name="HCL Technologies" rep="300" href="http://www.hcltech.com/" uid="302340"></data></result>
+<result>Senior Software Developer at<data name="tolingo GmbH" rep="297" href="http://www.tolingo.com" uid="205789"></data></result>
+<result>lisps, etc.  Now work for<data name="Yandex" rep="296" href="http://yandex.com" uid="114188"></data></result>
+<result>industry experience. Currently I work at<data name="Microsoft Bing" rep="296" href="http://www.bing.com" uid="499388"></data></result>
+
+<result>Developer at Duo (<data name="Duo" rep="290" href="http://www.duo.be" uid="503770"></data></result>
+<result>As a software Engineer at<data name="Brainlane" rep="286" href="http://www.brainlane.com" uid="270223"></data></result>
+<result> Plone and Zope developer for<data name="Webmeisterei GmbH" rep="278" href="http://webmeisterei.com" uid="810427"></data></result>
+<result>Agile Engineer at<data name="Pivotal Labs" rep="271" href="http://pivotallabs.com" uid="416725"></data></result>
+<result>Software engineer at<data name="Terracotta, Inc" rep="271" href="http://www.terracotta.org" uid="526781"></data></result>
+<result>Passionate Software Engineer, currently working at<data name="Datameer" rep="261" href="http://datameer.com/" uid="672008"></data></result>
+<result>based in the UK working for<data name="ServerTastic.com" rep="251" href="http://servertastic.com" uid="663037"></data></result>
+<result> and working at<data name="GTD" rep="248" href="http://www.gtd.es/" uid="862946"></data></result>
+<result>Developer at BSkyB.  I share,<data name="BSkyB" rep="245" href="http://corporate.sky.com" uid="934405"></data></result>
+<result>Software Developer at<data name="Quadrox" rep="242" href="http://quadrox.be/" uid="401101"></data></result>
+<result>currently working at Research in Motion.<data name="Research in Motion" rep="242" href="http://www.rim.com" uid="507761"></data></result>
+<result>a web decorator currently working at<data name="liligo.com" rep="239" href="http://www.liligo.com" uid="97637"></data></result>
+<result>Drupal developer for<data name="Jackson River" rep="239" href="http://www.jacksonriver.com/" uid="1083832"></data></result>
+<result>Developer for CRU<data name="CRU" rep="237" href="http://http://www.crugroup.com/" uid="207040"></data></result>
+<result>work for a small,growing company called<data name="Gonzales" rep="237" href="http://gonzales.be" uid="383731"></data></result>
+<result>a Senior Application Development Consultant for<data name="Sparkhound" rep="236" href="http://sparkhound.com/index.asp" uid="1114185"></data></result>
+<result>I am the lead developer at<data name="Two Bulls" rep="225" href="http://two-bulls.com/" uid="246827"></data></result>
+<result> iOS developer at<data name="BitWink" rep="222" href="http://www.bitwink.com" uid="111129"></data></result>
+<result>I work for<data name="PreEmptive Solutions" rep="221" href="http://www.preemptive.com/" uid="1239220"></data></result>
+<result>iOS Developer at<data name="basecom" rep="219" href="http://www.basecom.de" uid="725594"></data></result>
+<result>Sr. Developer at EPS Software<data name="EPS Software" rep="217" href="http://www.eps-software.com" uid="205241"></data></result>
+<result>2.5 Years of Experience Working at<data name="RapidValue IT Services Pvt Ltd" rep="210" href="http://www.rapidvaluesolutions.com" uid="987492"></data></result>
+<result>.NET Trainee Developer at<data name="Automatiza Tecnologia e Automação" rep="210" href="http://www.automatizatec.com.br" uid="1141477"></data></result>
+<result>I'm working at<data name="Jirafe Inc." rep="204" href="http://jirafe.com" uid="186355"></data></result>
+<result>Development Manager at<data name="Oi" rep="204" href="http://oi.co.za" uid="579996"></data></result>
+<result>and I am currently working for<data name="SingTel" rep="203" href="http://www.singtel.com" uid="1340160"></data></result>
+<result> I am currently working for<data name="WiseTREND" rep="202" href="http://www.wisetrend.com" uid="653904"></data></result>
+<result>am the primary Android developer for<data name="roqbot" rep="196" href="http://www.roqbot.com" uid="190737"></data></result>
+<result>Software engineer for<data name="InternMatch.com" rep="196" href="http://www.internmatch.com" uid="862544"></data></result>
+<result>am a supporting developer for the<data name="JMRI" rep="194" href="http://jmri.org" uid="176160"></data></result>
+<result>iOS-Developer at<data name="basecom" rep="194" href="http://www.basecom.de/" uid="909023"></data></result>
+<result>Web Developer for<data name="Salesforce.com" rep="193" href="http://www.salesforce.com" uid="1302167"></data></result>
+<result> I'm a mobile engineer at<data name="Sporcle" rep="191" href="http://www.sporcle.com/" uid="82895"></data></result>
+<result>Lead developer at<data name="Outbox" rep="191" href="http://www.outboxmail.com" uid="1020114"></data></result>
+<result>Portland, Oregon.  I work at<data name="Urban Airship." rep="190" href="http://urbanairship.com/" uid="136883"></data></result>
+<result>Web developer for ksl.com mainly:<data name="ksl.com" rep="188" href="http://local.ksl.com" uid="400387"></data></result>
+<result>Senior Software Engineer at<data name="Vibes Media" rep="187" href="http://www.vibes.com/" uid="40800"></data></result>
+<result>currently work as Web Developer at<data name="AsiaGate" rep="187" href="http://www.asiagate.com/" uid="1292393"></data></result>
+<result>and am the core architect for<data name="gpgAuth" rep="186" href="http://gpgauth.org/projects/gpgauth/" uid="471825"></data></result>
+<result>working at a software house named<data name="goodlogics" rep="186" href="http://www.goodlogics.com" uid="646994"></data></result>
+<result>Developer at<data name="trustpilot.com" rep="185" href="http://www.trustpilot.com" uid="395700"></data></result>
+<result>University of Nebraska-Lincoln. Software Engineer at<data name="Don't Panic Labs" rep="183" href="http://www.dontpaniclabs.com" uid="83766"></data></result>
+<result>am co-founder and lead developer at<data name="Decadium Studios" rep="182" href="http://www.decadium.com" uid="29827"></data></result>
+<result>Developer at Sofa<data name="Madebysofa.com" rep="181" href="http://madebysofa.com" uid="112448"></data></result>
+<result>, Marketing Engineer at<data name="HubSpot" rep="181" href="http://www.hubspot.com/" uid="625840"></data></result>
+<result>I work at Bixly.<data name="Bixly" rep="181" href="http://bixly.com" uid="1127537"></data></result>
+<result>Technical Architect at<data name="Data8" rep="176" href="http://www.data-8.co.uk/" uid="269629"></data></result>
+<result>working doing some sub-contract work for<data name="FreshCode" rep="176" href="http://madefresh.ca/" uid="710827"></data></result>
+<result>I'm an analyst working at<data name="Botego" rep="175" href="http://www.botego.net" uid="447807"></data></result>
+<result>I am a developer working for<data name="Web Networks" rep="174" href="http://www.web.net" uid="437654"></data></result>
+<result>I am a CF developer at<data name="IDS" rep="174" href="http://www.idspage.com" uid="676508"></data></result>
+<result>I'm a business applications developer at<data name="Logos Bible Software" rep="173" href="http://www.logos.com" uid="33735"></data></result>
+<result>Plone developer at<data name="RedTurtle Technology" rep="173" href="http://www.redturtle.it/" uid="681548"></data></result>
+<result>Web developer at<data name="Antistatique.net" rep="171" href="http://www.antistatique.net" uid="53338"></data></result>
+<result>work as a Web/Java developer at<data name="Fifth Element" rep="170" href="http://www.fifthelement.fi" uid="114423"></data></result>
+<result>I'm the lead developer at Trustpilot<data name="Trustpilot" rep="168" href="http://www.trustpilot.co.uk" uid="355714"></data></result>
+<result>Project Manager at<data name="AGS Technologies" rep="168" href="http://www.agstechnologies.com" uid="893394"></data></result>
+<result>software engineer at<data name="Allied Testing LLC" rep="A" href="http://www.alliedtesting.com/" uid=""></data></result>
+<result>I spent on placement working at<data name="SN Systems" rep="167" href="http://www.snsys.com/" uid="254036"></data></result>
+<result>developer at Computer Line Associates (<data name="Computer Line Associates" rep="167" href="http://www.cla-it.com" uid="1409881"></data></result>
+<result>Senior web developer at<data name="Ottoboni" rep="166" href="http://www.ottoboni.se" uid="446730"></data></result>
+<result>Web developer at<data name="Odd Hill" rep="166" href="http://www.oddhill.se/" uid="511939"></data></result>
+<result>Software Engineer for<data name="MyBuilder" rep="165" href="http://www.mybuilder.com" uid="48970"></data></result>
+<result>Senior Web Consultant at<data name="A1 Web Consulting" rep="165" href="http://www.a1webconsulting.com/" uid="307308"></data></result>
+<result>to Stockholm, Sweden to work at<data name="Fi" rep="165" href="http://www.f-i.com" uid="587292"></data></result>
+<result>as a senior software engineer at<data name="Cosential, Inc." rep="164" href="http://www.cosential.com/" uid="1239052"></data></result>
+<result>Software Engineer at<data name="Aatmosi.com/" rep="163" href="http://www.atmosi.com/" uid="453133"></data></result>
+<result>Development to Architecture. Currently working for<data name="Ovations Group" rep="161" href="http://www.ovationsgroup.com" uid="517257"></data></result>
+<result>Graduate software developer for<data name="BSkyB" rep="159" href="http://www.sky.com/" uid="1114123"></data></result>
+<result>a job as iOS engineer at<data name="Touchwonders" rep="159" href="http://www.touchwonders.com" uid="1119889"></data></result>
+<result>I'm an engineer at<data name="WeePee" rep="156" href="http://weepee.org" uid="84628"></data></result>
+<result>Developer at<data name="InterKnowlogy" rep="156" href="http://www.interknowlogy.com" uid="202764"></data></result>
+<result>I work for<data name="Dailybooth" rep="154" href="http://dailybooth.com" uid="99184"></data></result>
+<result>Fulltime independent game developer at<data name="Lost Decade Games" rep="153" href="http://www.lostdecadegames.com/" uid="70740"></data></result>
+<result>Director and technical lead at<data name="Untyped" rep="151" href="http://www.untyped.com" uid="203842"></data></result>
+<result>Bangalore, India.  I work at<data name="C42 Engineering" rep="151" href="http://c42.in" uid="274533"></data></result>
+<result>QA consultant working for<data name="Symbio" rep="151" href="http://www.symbio.com/contact/request-for-services/" uid="313068"></data></result>
+<result>Project Leader and Software Engineer for<data name="10000monkeys.de" rep="151" href="http://10000monkeys.de" uid="960806"></data></result>
+<result>Professionally a Smallworld/GIS developer at<data name="Realworld System" rep="151" href="http://www.realworld-systems.com/" uid="1147751"></data></result>
+<result>I'm a SharePoint Architect for<data name="ICF Ironworks" rep="151" href="http://www.ironworks.com" uid="1487313"></data></result>
+<result>Senior Web Developer at<data name="Modea" rep="150" href="http://www.modea.com/" uid="229985"></data></result>
+<result>a computer nerd currently working at<data name="NYU" rep="150" href="http://cims.nyu.edu/~acase/" uid="386104"></data></result>
+<result>Currently I'm a Community Manager at<data name="Incapsula.com" rep="150" href="http://www.Incapsula.com" uid="1410093"></data></result>
+<result>Danish web developer at<data name="Peytz.dk" rep="149" href="http://peytz.dk" uid="1508691"></data></result>
+<result>a Senior Web Developer at Moneybarn.com.<data name="Moneybarn.com" rep="147" href="http://www.moneybarn.com" uid="192305"></data></result>
+<result>Infrastructure Engineer at<data name="Steria" rep="146" href="http://www.steria.com/" uid="117252"></data></result>
+<result>I'm an architect for<data name="ICF Ironworks" rep="146" href="http://www.ironworks.com" uid="375598"></data></result>
+<result>I'm a web developer for<data name="Unionstreetmedia.com" rep="146" href="http://www.unionstreetmedia.com" uid="692944"></data></result>
+<result>Programmer and web developer at<data name="cmagnet" rep="146" href="http://www.cmagnet.gr/" uid="979010"></data></result>
+<result>I'm a freelancer. I work at<data name="vWorker" rep="146" href="http://www.vworker.com" uid="1521536"></data></result>
+<result>. I also work at<data name="Hai Bison Apps" rep="146" href="http://www.haibison.com" uid="1521536"></data></result>
+<result>algorithms and diagramming. I work for<data name="yWorks" rep="142" href="http://www.yworks.com" uid="351836"></data></result>
+<result>Interactive Developer at<data name="Multplx Ltd." rep="142" href="http://www.multplx.com" uid="1052358"></data></result>
+<result>. Software engineer at<data name="Google" rep="141" href="http://www.google.com/" uid="236574"></data></result>
+<result>I'm a senior PHP developer at<data name="Tui Interactive Media" rep="141" href="http://tui.co.uk/" uid="352187"></data></result>
+<result>extJS. I currently the work for<data name="Webfanatix.co.za" rep="140" href="http://webfanatix.co.za" uid="124222"></data></result>
+<result>I'm a data scientist at<data name="Rangespan" rep="136" href="http://www.rangespan.com" uid="99868"></data></result>
+<result>Software developer at<data name="Kisko Labs" rep="135" href="http://kiskolabs.com" uid="27032"></data></result>
+<result>am a .NET Developer working for<data name="Sogeti" rep="134" href="http://www.us.sogeti.com/" uid="516779"></data></result>
+<result>new stuff.  Currently working at<data name="Sweet Tooth" rep="133" href="http://sweettoothrewards.com" uid="130691"></data></result>
+<result>a Rails Developer, now working at<data name="PIXNET" rep="133" href="http://www.pixnet.net/" uid="611092"></data></result>
+<result>Science student (Cum Laude) employed at<data name="UnitedGames" rep="133" href="http://www.unitedgames.com" uid="890815"></data></result>
+<result> I work at the awesome<data name="Orbit Media Studios" rep="133" href="http://www.orbitmedia.com/" uid="906974"></data></result>
+<result>iOS and Web Developer at<data name="le4studio.com" rep="131" href="http://le4studio.com" uid="319147"></data></result>
+<result>Web and iOS developer at<data name="The Spokesman-Review" rep="131" href="http://www.spokesman.com/" uid="417029"></data></result>
+<result>I work for<data name="Tatemae" rep="131" href="http://www.tatemae.com" uid="608975"></data></result>
+<result>working as a Senior Engineer at<data name="99X Technology" rep="131" href="http://www.99xtechnology.com/" uid="640787"></data></result>
+<result>I work at<data name="CommonPlaces, Inc." rep="131" href="http://www.commonplaces.com" uid="1359718"></data></result>
+<result>iOS and Android. Currently working at<data name="Intrepid Pursuits" rep="131" href="http://www.ipursuits.org/?from=@" uid="1490091"></data></result>
+<result>Interface designer and web developer at<data name="Cloudant" rep="130" href="http://cloudant.com/" uid="7166"></data></result>
+<result>Junior Software Developer at<data name="Quba New Media" rep="130" href="http://www.quba.co.uk" uid="66878"></data></result>
+<result>Senior Software Developer at<data name="Microsoft Xbox" rep="128" href="http://www.xbox.com" uid="550707"></data></result>
+<result>I'm the project manager for the<data name="Hercules" rep="128" href="http://www.hercules-390.org" uid="556018"></data></result>
+<result>Developer at<data name="Social Design House" rep="128" href="http://socialdesignhouse.com/" uid="656011"></data></result>
+<result>Web developer at<data name="Kärnhuset" rep="127" href="http://karnhuset.net" uid="93444"></data></result>
+<result>Frontend Engineer at Flickr.<data name="Flickr" rep="127" href="http://www.flickr.com" uid="290140"></data></result>
+<result>Work: I'm a Senior Consultant at<data name="Readify" rep="126" href="http://www.readify.net/" uid="94697"></data></result>
+<result>Software Engineer at<data name="blip.tv" rep="126" href="http://blip.tv" uid="366467"></data></result>
+<result>Lead Software Engineer at<data name="MASA Group" rep="126" href="http://www.masagroup.net" uid="454743"></data></result>
+<result>Lead Developer at<data name="FusePump" rep="126" href="http://www.fusepump.com/" uid="598726"></data></result>
+<result>Lead Developer at Strategy Star Inc.<data name="www.strategystar.net" rep="126" href="http://www.strategystar.net" uid="977786"></data></result>
+<result>currently Build and Deployment Architect at<data name="thetrainline.com" rep="126" href="http://www.thetrainline.com/" uid="1253233"></data></result>
+<result>I work at<data name="Expected Behavior" rep="124" href="http://www.expectedbehavior.com/" uid="732598"></data></result>
+<result>Common Criteria professional working for<data name="CGI Canada's Security Evaluation and Testing Lab" rep="123" href="http://cgi.com/securitylab" uid="643314"></data></result>
+<result>I'm a software developer at<data name="Finantix" rep="122" href="http://www.finantix.com" uid="41572"></data></result>
+<result>working at oDesk.  See my<data name="oDesk profile" rep="121" href="http://go.smartycode.com/odesk" uid="285069"></data></result>
+<result>Working at Tapptic,<data name="Tapptic" rep="121" href="http://www.tapptic.com" uid="376265"></data></result>
+<result>. I work at the<data name="computational population biology lab" rep="121" href="http://compbio.cs.uic.edu/" uid="531339"></data></result>
+<result>work as a Community Engineer at<data name="Wikia" rep="121" href="http://www.wikia.com/" uid="613823"></data></result>
+<result>SharePoint Consultant at<data name="Zevenseas" rep="121" href="http://www.zevenseas.com/En/Pages/Home.aspx" uid="636283"></data></result>
+<result>I work for<data name="ShieldSeal" rep="121" href="https://shieldseal.com/" uid="1516204"></data></result>
+<result>Senior Software Developer at<data name="KocSistem" rep="120" href="http://www.kocsistem.com.tr" uid="91030"></data></result>
+<result>a graphic designer and front-end-developer for<data name="PinPoint Creative Group" rep="119" href="http://pinpointcreative.com" uid="477313"></data></result>
+<result>Currently working at<data name="Futurice" rep="118" href="http://www.futurice.com" uid="95332"></data></result>
+<result>Software engineer at<data name="The Echo Nest" rep="118" href="http://the.echonest.com" uid="124375"></data></result>
+<result>I'm a web developer for<data name="601am" rep="117" href="http://601am.com" uid="172602"></data></result>
+<result>Developer at<data name="Southgate Labs" rep="116" href="http://southgatelabs.com" uid="637541"></data></result>
+<result>.NET architect and developer working at<data name="Grepton" rep="116" href="http://www.grepton.hu/en" uid="704022"></data></result>
+<result>Senior Software Engineer at<data name="Trialpay" rep="116" href="http://www.trialpay.com" uid="879295"></data></result>
+<result>interface architect / senior developer at<data name="Memorial Health Systems" rep="116" href="https://www.choosememorial.org" uid="1454421"></data></result>
+<result>scientist at the Western Kentucky University<data name="Cyber Defense Laboratory" rep="116" href="http://www.wku.edu/cdl" uid="1454421"></data></result>
+<result>the president / senior developer at<data name="Drighten Research" rep="116" href="http://www.drighten.com" uid="1454421"></data></result>
+<result>a .NET/Java developer and architect for<data name="ICF Ironworks" rep="116" href="http://www.ironworks.com" uid="1504068"></data></result>
+<result>Systems Architect for<data name="idio" rep="115" href="http://www.idioplatform.com/" uid="401150"></data></result>
+<result>Django and GIS developer at<data name="CFPB" rep="113" href="http://www.consumerfinance.gov/" uid="104365"></data></result>
+<result>Lead designer/developer at<data name="PCI Education" rep="113" href="http://www.pcieducation.com" uid="821920"></data></result>
+<result>Web Developer at<data name="Mettl" rep="113" href="http://www.mettl.com" uid="992899"></data></result>
+<result>Java developer for<data name="LMAX" rep="112" href="http://www.lmax.com/" uid="653519"></data></result>
+<result>  Developer at<data name="Codecanyon.net" rep="111" href="http://www.Codecanyon.net" uid="406358"></data></result>
+<result>Senior Web developer at<data name="2General Ltd." rep="111" href="http://2general.com/" uid="587337"></data></result>
+<result>Software engineer at<data name="IndexTank" rep="111" href="http://www.indextank.com" uid="608402"></data></result>
+<result>Fancher is a Systems Engineer at<data name="Leaf Software Solutions" rep="111" href="http://www.leafsoftwaresolutions.com" uid="655251"></data></result>
+<result>I work at<data name="Esri" rep="111" href="http://links.esri.com/flex" uid="756626"></data></result>
+<result>I work for<data name="Speartail" rep="108" href="http://speartail.com" uid="15512"></data></result>
+<result>Software developer at<data name="IDV Solutions" rep="106" href="http://idvsolutions.com" uid="97705"></data></result>
+<result>Hi,  I work at<data name="Mad In Sweden" rep="106" href="http://www.madinsweden.com" uid="233048"></data></result>
+<result>a (Lync) UI Software Developer at<data name="Unify Square" rep="106" href="http://www.unifysquare.com" uid="623043"></data></result>
+<result>Java Developer at<data name="Magus Ltd" rep="106" href="http://www.magus.co.uk/index.html" uid="810369"></data></result>
+<result>Wheaton, IL and I work at<data name="Crossway" rep="104" href="http://crossway.org/" uid="734709"></data></result>
+<result>Software Engineer at<data name="Aloe Software Group" rep="104" href="http://www.aloesoft.com" uid="1361375"></data></result>
+<result>Developer at<data name="Poio" rep="103" href="http://poio.com/" uid="155119"></data></result>
+<result>Senior Software Engineer at<data name="Noobis, Inc" rep="102" href="http://noobis.com" uid="418857"></data></result>
+<result>Hardware Engineer / Software Developer at<data name="Byte-Link" rep="102" href="http://www.byte-link.com" uid="1239858"></data></result>
+<result>Designer and developer at<data name="Different Projects" rep="101" href="http://differentprojects.co.uk" uid="147318"></data></result>
+<result>System Engineer at<data name="Dynamic Network Services Inc." rep="101" href="http://dyn.com" uid="162110"></data></result>
+<result>  working for:<data name="Thin Slices" rep="101" href="http://www.thinslices.com" uid="221238"></data></result>
+<result>I'm an Operations Engineer at<data name="SmugMug" rep="101" href="http://www.smugmug.com/" uid="256452"></data></result>
+<result>I'm doing mostly server work for<data name="Kixeye" rep="101" href="http://kixeye.com" uid="444142"></data></result>
+<result> developer at<data name="Zivtech" rep="101" href="http://zivtech.com" uid="614351"></data></result>
+<result>Senior Programme Manager at<data name="IDBSsoftware" rep="101" href="http://www.idbs.com" uid="626532"></data></result>
+<result> I am a developer for<data name="Keryx" rep="101" href="http://keryxproject.org/" uid="684776"></data></result>
+<result>work as a Solutions Architect for<data name="Acquia" rep="101" href="http://acquia.com/" uid="870667"></data></result>
+<result>I work at Canonical as a<data name="Canonical" rep="101" href="http://www.canonical.com" uid="877177"></data></result>
+<result>I am a software developer at<data name="Protegra" rep="101" href="http://www.protegra.com" uid="892033"></data></result>
+<result>SharePoint and BI consultant at<data name="RDA" rep="101" href="http://www.rdacorp.com" uid="968354"></data></result>
+<result>Lead iOS developer for<data name="AiDC" rep="101" href="http://aidc.mx" uid="1188297"></data></result>
+<result>like my currently work for the<data name="DBLP project" rep="101" href="http://dblp.uni-trier.de" uid="1324913"></data></result>
+<result>years now. I currently work for<data name="Wotif.com" rep="101" href="http://www.wotif.com" uid="1467976"></data></result>
+<result>a senior sysadmin and manager at<data name="Backstop Solutions Group" rep="100" href="http://www.backstopsolutions.com/" uid="127120"></data></result>
+<result>I am a Principal Consultant at<data name="Clarity Consulting" rep="99" href="http://www.claritycon.com" uid="232341"></data></result>
+<result>Currently working at<data name="Sixlogics" rep="98" href="http://www.sixlogics.com" uid="687087"></data></result>
+<result>Novosibirsk city. Currently I'm working at<data name="TallComponents" rep="97" href="http://www.tallcomponents.com/" uid="527869"></data></result>
+<result>of my professional career working for<data name="Rule Financial" rep="97" href="http://www.rulefinancial.com/" uid="676731"></data></result>
+<result>Developer at Enspiral.com<data name="Enspiral.com" rep="97" href="http://www.enspiral.com" uid="908793"></data></result>
+
+<result>Source enthusiast.  I work for<data name="Dmspitic.com" rep="96" href="http://dmspitic.com" uid="124503"></data></result>
+<result>I am an engineer at<data name="SoftArtisans" rep="96" href="http://www.softartisans.com/" uid="127246"></data></result>
+<result>Smith is a Product Manager for<data name="Oracle" rep="96" href="http://www.oracle.com" uid="767933"></data></result>
+<result>He's Ecosystem Development Lead for the<data name="EclipseLink" rep="96" href="http://www.eclipse.org/eclipselink/" uid="767933"></data></result>
+<result>Front-End Engineer at<data name="Mobify" rep="96" href="http://mobify.com" uid="982530"></data></result>
+<result> Currently working at Twixl media.<data name="Twixl media" rep="95" href="http://www.twixlmedia.com" uid="652484"></data></result>
+<result>technologies. I am now working for<data name="GetConnected" rep="95" href="http://http://www.getconnected.it/" uid="757815"></data></result>
+<result>Software Engineer at<data name="Be.Ubi" rep="92" href="http://www.beubi.com" uid="563785"></data></result>
+<result>Web developer at<data name="Fragmentlabs.com" rep="91" href="http://www.fragmentlabs.com" uid="240916"></data></result>
+<result>Software Engineer at<data name="QFive" rep="91" href="http://www.qfive.com" uid="430205"></data></result>
+<result>and work for amazon.com, specifically with<data name="Amazon AWS" rep="91" href="http://aws.amazon.com/" uid="1178974"></data></result>
+<result> Web developer at Schaubroeck nv<data name="http://www.schaubroeck.be" rep="90" href="http://www.schaubroeck.be" uid="693510"></data></result>
+<result> Currently working at ITISmobile (from<data name="MyOrder" rep="89" href="http://myorder.nl" uid="431742"></data></result>
+<result> currently I work for :<data name="Deltatre.it" rep="88" href="http://www.deltatre.it" uid="566629"></data></result>
+<result>Currently software developer at<data name="Propaganda Digital Agency" rep="88" href="http://propaganda.com.tr" uid="1105722"></data></result>
+<result>working at The Brand Crew, Karachi<data name="The Brand Crew" rep="87" href="http://www.thebrandcrew.com" uid="486230"></data></result>
+<result>currently the lead UI developer for<data name="HomeNet Automotive" rep="86" href="http://www.homenetauto.com" uid="412416"></data></result>
+<result>I am a Software Architect at<data name="Mirabeau" rep="86" href="http://www.mirabeau.nl" uid="716594"></data></result>
+<result>Formerly the DNS Operations Manager for<data name="CIRA" rep="86" href="http://www.cira.ca/" uid="951589"></data></result>
+<result>Principle Software Architect at<data name="BoxTone" rep="84" href="http://www.boxtone.com" uid="204110"></data></result>
+<result>Leading .NET Developer at<data name="Oxagile" rep="83" href="http://oxagile.com" uid="437779"></data></result>
+<result>2009. Now I am working at<data name="Carmel Vision" rep="82" href="http://www.carmelvision.com" uid="69172"></data></result>
+<result>and profit.  I work at<data name="Stripe.com/" rep="81" href="http://stripe.com/" uid="93405"></data></result>
+<result>  Engineer at<data name="Panic, Inc" rep="81" href="http://panic.com" uid="262648"></data></result>
+<result>Geek, Instructor, Mentor, Consultant for<data name="Chariot Solutions" rep="81" href="http://chariotsolutions.com" uid="582339"></data></result>
+<result>Developer at<data name="Iimproove.se" rep="81" href="http://improove.se" uid="645360"></data></result>
+<result>from London, Ontario currently working for<data name="Resolution Interactive Media" rep="81" href="http://www.resolutionim.com/" uid="1060328"></data></result>
+<result>Solution Engineer for<data name="FuseSource" rep="78" href="http://fusesource.com/" uid="824832"></data></result>
+<result> and work at<data name="VendAsta" rep="77" href="http://vendasta.com" uid="454704"></data></result>
+<result>employed as a web developer for<data name="Dave Ramsey" rep="76" href="http://www.daveramsey.com" uid="206480"></data></result>
+<result>Developer at<data name="Provoke" rep="76" href="http://provoke.co.nz" uid="400819"></data></result>
+<result>IT Consultant at Netlight Consulting,<data name="www.netlight.se" rep="76" href="http://www.netlight.se" uid="972736"></data></result>
+<result>Owner and developer at GEM Studio:<data name="http://www.gemstudio.hr" rep="74" href="http://www.gemstudio.hr" uid="405845"></data></result>
+<result>Senior Webdeveloper at X-Com.<data name="@spettak" rep="74" href="http://twitter.com/spettak" uid="554806"></data></result>
+<result>Jordan. Working as Operations Manager at<data name="GreenHat" rep="74" href="http://www.greenhat.jo" uid="847979"></data></result>
+<result>works as a C++ Developer for<data name="NTP Software" rep="He" href="http://www.ntpsoftware.com/" uid=""></data></result>
+<result>I'm a backend developer for<data name="MapMyFitness" rep="73" href="http://www.mapmyfitness.com/" uid="102467"></data></result>
+<result>in Corvallis, Oregon. I work at<data name="MetaFilter" rep="72" href="http://www.metafilter.com/" uid="160961"></data></result>
+<result>Electronics Engineer. CEO/Lead Developer for<data name="Pixmat Studios" rep="72" href="http://www.pixmatstudios.com" uid="213210"></data></result>
+<result>Software Engineer for<data name="Doximity" rep="71" href="http://www.doximity.com/" uid="106374"></data></result>
+<result>Computer Science engineer, currently working at<data name="Backelite" rep="71" href="http://www.backelite.com" uid="813212"></data></result>
+<result>senior web developer at the JPC<data name="JPC" rep="71" href="http://www.jpc.capmed.mil/" uid="1181607"></data></result>
+<result>I work for<data name="PubNub" rep="71" href="http://www.pubnub.com" uid="1368439"></data></result>
+<result>employed at an digital agency named<data name="FONQI" rep="70" href="http://fonqi.com" uid="786123"></data></result>
+<result>Front-end developer at<data name="Simon Fraser University" rep="67" href="http://www.sfu.ca" uid="74568"></data></result>
+<result>of Technology. I'm currently working at<data name="Futurice" rep="66" href="http://www.futurice.com" uid="95307"></data></result>
+<result>secrets of nature while working for<data name="454 Life Sciences" rep="66" href="http://www.454.com" uid="272244"></data></result>
+<result>I work for<data name="SOS Children" rep="66" href="http://www.soschildrensvillages.org.uk/" uid="628081"></data></result>
+<result>Co-founder and Software Engineer at<data name="http://plataformatec.com.br" rep="65" href="http://plataformatec.com.br" uid="82806"></data></result>
+<result>Webdesigner, Webdeveloper at<data name="conceptboard" rep="65" href="http://conceptboard.com" uid="150955"></data></result>
+<result>I work for<data name="LeanServer" rep="65" href="http://leanserver.com" uid="847241"></data></result>
+<result>Software developer for<data name="Wirebox" rep="64" href="http://www.wirebox.co.uk/" uid="959664"></data></result>
+<result>Tech lead and iPhone/Rails developer at<data name="Unwire" rep="63" href="http://www.unwire.com/" uid="705741"></data></result>
+<result>lead designer and web developer for<data name="ASPC" rep="62" href="http://aspc.pomona.edu" uid="421355"></data></result>
+<result>I'm a web developer at<data name="developio" rep="62" href="http://develop.io" uid="517339"></data></result>
+<result>is owner and web developer for<data name="Future Wave Designs" rep="62" href="http://futurewavedesigns.com/" uid="784304"></data></result>
+<result>I'm the project manager for a<data name="TM4" rep="61" href="http://www.tm4.org" uid="81688"></data></result>
+<result>I'm a Canadian programmer working for<data name="Voices.com" rep="61" href="http://www.voices.com/" uid="511209"></data></result>
+<result> and Web developer at<data name="Grupo Emídia" rep="61" href="http://www.grupoemidia.com" uid="828614"></data></result>
+<result>iPhone-Developer at Gateway Technolabs Pvt. Ltd.<data name="Gateway Technolabs" rep="61" href="http://www.gatewaytechnolabs.com" uid="862757"></data></result>
+<result>Boston-area software engineer, currently working at<data name="Genomequest.com" rep="61" href="http://genomequest.com" uid="943599"></data></result>
+<result>currently engineer at Smile (Levallois, France)<data name="Smile" rep="61" href="http://www.smile.fr" uid="1171390"></data></result>
+<result>Software Engineer for<data name="Cerner Corporation" rep="61" href="http://www.cerner.com" uid="1344273"></data></result>
+<result>ODBC software consultant currently working for<data name="Easysoft Limited" rep="61" href="http://www.easysoft.com" uid="1458308"></data></result>
+<result>Web Developer at<data name="AgentEvolution.com" rep="60" href="http://agentevolution.com" uid="811249"></data></result>
+<result>.  I'm a developer for<data name="LightBulbApps.net" rep="56" href="http://LightBulbApp.net" uid="491459"></data></result>
+<result>employed as a Back-End Developer for<data name="Firstborn Multimedia" rep="56" href="http://www.firstborn.com" uid="510092"></data></result>
+<result>Software developer at PSTech / CISCO<data name="PSTech" rep="56" href="http://http://www.pstech.rs/index.php" uid="614461"></data></result>
+<result>Work as Software Engineer at<data name="KMS - Technology" rep="56" href="http://www.kms-technology.com/" uid="714940"></data></result>
+<result>Leading developer at<data name="Pixelblast" rep="56" href="http://pixelblast.co.uk/" uid="894280"></data></result>
+<result>working currently as a consultant at<data name="Performance Consultants" rep="56" href="http://www.perfc.com" uid="1182930"></data></result>
+<result>I'm a web developer at<data name="LinkedIn" rep="56" href="http://www.linkedin.com" uid="1487730"></data></result>
+<result>freelancer, web advocate, part-time developer at<data name="Sund &amp; Company" rep="55" href="http://sundcompany.com" uid="144023"></data></result>
+<result> Working for<data name="Magenta Aps" rep="54" href="http://www.magenta-aps.dk/english/" uid="896490"></data></result>
+<result>Software developer at<data name="Ventelo" rep="54" href="http://www.ventelo.no" uid="929493"></data></result>
+<result>Frontend / PHP developer for<data name="Quince" rep="53" href="http://www.quince.nl" uid="24288"></data></result>
+<result>developer at<data name="Coherent Solutions" rep="51" href="http://www.coherentsolutions.com/" uid="202472"></data></result>
+<result>'Myrkraverk' Oskarsson is a developer for<data name="2ndQuadrant" rep="51" href="http://www.2ndquadrant.com" uid="264751"></data></result>
+<result>web developer at<data name="Blenderbox" rep="51" href="http://www.blenderbox.com" uid="426645"></data></result>
+<result>Webdeveloper at<data name="Motivo" rep="51" href="http://motivo.nl" uid="576866"></data></result>
+<result>a Senior Developer for GetMeListed (<data name="www.getmelisted.net" rep="51" href="http://www.getmelisted.net" uid="885094"></data></result>
+<result>Software engineer at<data name="pearltrees.com" rep="48" href="http://www.pearltrees.com" uid="113822"></data></result>
+<result>I am the lead developer at<data name="Twixl media" rep="46" href="http://twixlmedia.com" uid="118188"></data></result>
+<result>DBA and Application Support Engineer for<data name="Resmed" rep="46" href="http://www.Resmed.com/" uid="127671"></data></result>
+<result>Employed at<data name="Aller Media" rep="46" href="http://www.aller.dk/" uid="430885"></data></result>
+<result>Another entrepreneur, working at<data name="Rakutec.com" rep="46" href="http://www.rakutec.com" uid="572493"></data></result>
+<result>Klophaus is a Senior Engineer at<data name="Basho Technologies" rep="46" href="http://basho.com" uid="661014"></data></result>
+<result>web applications.   Working at<data name="Informant" rep="46" href="http://www.informant.com.br" uid="732973"></data></result>
+<result>Graphic Designer and Web Developer at<data name="Studio C88i" rep="46" href="http://www.c88i.com" uid="746046"></data></result>
+<result>of Awesomeness / Systems Engineer for<data name="Voxeo Labs" rep="46" href="http://voxeolabs.com" uid="882030"></data></result>
+<result>Development Manager at<data name="Sovren" rep="46" href="http://www.sovren.com" uid="1090621"></data></result>
+<result>python/zope/plone developer at<data name="http://kombinat.at" rep="46" href="http://kombinat.at" uid="1145447"></data></result>
+<result>Senior web developer at<data name="1tvrus.com" rep="46" href="http://1tvrus.com" uid="1160353"></data></result>
+<result>Developer for<data name="Digijuice" rep="46" href="http://digijuice.co.uk" uid="1368805"></data></result>
+<result>Visual designer and front-end developer at<data name="space150" rep="45" href="http://space150.com/" uid="539769"></data></result>
+<result>Front- and backend developer at<data name="WIS" rep="45" href="http://www.wis.nl" uid="1474739"></data></result>
+<result>Web Developer for<data name="Gavurin" rep="44" href="http://www.gavurin.com" uid="318427"></data></result>
+<result>Working for<data name="prestaconcept" rep="43" href="http://www.prestaconcept.net" uid="536174"></data></result>
+<result>Online Communications Manager for<data name="Oxfam New Zealand" rep="43" href="http://www.oxfam.org.nz/" uid="541260"></data></result>
+<result>Software developer at<data name="Citronium" rep="42" href="http://www.citronium.com" uid="884244"></data></result>
+<result>I'm the Lead Developer for<data name="Mahalo" rep="41" href="http://www.mahalo.com" uid="30575"></data></result>
+<result>, and Co-founder/Lead Developer for<data name="Podiobooks.com" rep="41" href="http://www.podiobooks.com" uid="30575"></data></result>
+<result>lead at CreationPal, the company behind<data name="CreationPal" rep="41" href="http://sportypal.com" uid="110271"></data></result>
+
+<result>I'm founder and chief architect at<data name="Freistil IT" rep="41" href="http://www.freistil-consulting.de" uid="257940"></data></result>
+<result>am a frontend web developer at<data name="inovex GmbH" rep="41" href="http://inovex.de" uid="444143"></data></result>
+<result>Engineer at Monetate<data name="Monetate" rep="41" href="http://www.monetate.com" uid="591152"></data></result>
+<result>Senior Software Engineer / Architect at<data name="Singing Horse Studio" rep="41" href="http://singinghorsestudio.com" uid="596947"></data></result>
+<result>Lead Developer at<data name="Applied Information Sciences" rep="41" href="http://www.appliedis.com" uid="786429"></data></result>
+<result> I work for my company<data name="Solution Rally" rep="41" href="http://www.solutionrally.com" uid="846380"></data></result>
+<result>a PHP developer, currently work at<data name="Premium Web Cart" rep="41" href="http://www.premiumwebcart.com" uid="1266398"></data></result>
+<result>in Xiamen, China, I work at<data name="NodeOne" rep="40" href="http://nodeone.se/" uid="1217865"></data></result>
+<result>Web developer at<data name="Foodia.com" rep="39" href="http://foodia.com" uid="367941"></data></result>
+<result>Technology Director and Principle Consultant for<data name="Turnberry Solutions" rep="38" href="http://turnberrysolutions.com/" uid="63562"></data></result>
+<result> and developer at<data name="apollomusic.dk" rep="38" href="http://www.apollomusic.dk" uid="356394"></data></result>
+<result>Middle-end developer for<data name="Opal Labs" rep="38" href="http://workwithopal.com" uid="672403"></data></result>
+<result>. Currently i am working at<data name="IMS Dhaka Office(M&amp;H Informatics BD)" rep="37" href="http://www.imshealth.com" uid="400960"></data></result>
+<result>I'm a developer at<data name="Monkdevelopment.com/" rep="36" href="http://www.monkdevelopment.com/" uid="372297"></data></result>
+<result>Icelandic programmer working for Autonomy veflausnir.<data name="Autonomy veflausnir" rep="36" href="http://http://www.autonomy.is/" uid="577794"></data></result>
+<result>Lead software developer at<data name="Forma-Pro" rep="36" href="http://www.forma-pro.com/" uid="579025"></data></result>
+<result>ASP.NET/SQL Server developer at<data name="logitravel.com" rep="36" href="http://www.logitravel.com" uid="1034126"></data></result>
+<result>and Chief Mad Computer Scientist at<data name="Agog Labs" rep="36" href="http://www.AgogLabs.com" uid="1060973"></data></result>
+<result>I am an engineer at<data name="SoftArtisans" rep="35" href="http://www.softartisans.com/" uid="139661"></data></result>
+<result>Software Engineer at<data name="Techlogix.com/" rep="35" href="http://techlogix.com/" uid="789261"></data></result>
+<result>Senior developer at<data name="StormGeo As" rep="33" href="http://www.stormgeo.com" uid="217662"></data></result>
+<result>Reserve University, where I work for<data name="The Qube Lab" rep="33" href="http://qubelab.org" uid="235696"></data></result>
+<result>. Developer at Adobe.<data name="Adobe" rep="33" href="https://www.adobe.com" uid="534129"></data></result>
+<result>work for a local design studio<data name="7.sixtwo" rep="33" href="http://www.7sixtwo.com/" uid="613855"></data></result>
+<result>Currently working for<data name="E-kom Promotion s.r.o." rep="33" href="http://www.e-kom.cz" uid="1303784"></data></result>
+<result>Backend developer at<data name="Tamtam.nl" rep="31" href="http://www.tamtam.nl" uid="934451"></data></result>
+<result>Senior QA Automation Engineer at<data name="Eventbrite" rep="28" href="http://eventbrite.com" uid="550558"></data></result>
+<result>MS Dynamics AX developer at<data name="Pulse Business Solutions" rep="28" href="http://pulse.nl" uid="1286170"></data></result>
+<result>Lead developer at<data name="Soofty.com" rep="27" href="http://soofty.com" uid="325829"></data></result>
+<result>Software Engineer at<data name="IBM" rep="26" href="http://www.ibm.com" uid="325115"></data></result>
+<result>Working as a Web Developer at<data name="Buffalo" rep="26" href="http://www.builtbybuffalo.com" uid="336711"></data></result>
+<result>webdeveloper and I'm currently working for<data name="Eduhub" rep="26" href="http://www.eduhub.nl/" uid="626297"></data></result>
+<result>developer at Red Hat / JBoss<data name="Red Hat / JBoss" rep="26" href="http://www.redhat.com/products/jbossenterprisemiddleware/" uid="800087"></data></result>
+<result>Engineer at @thoughtbot. Co-creator of Bourbon<data name="Thoughtbot" rep="26" href="http://www.thoughtbot.com" uid="832696"></data></result>
+<result>Engineer at<data name="Connamara Systems" rep="26" href="http://connamara.com" uid="1076609"></data></result>
+<result>a gig as lead developer for<data name="Polymer Studios" rep="26" href="http://polymerstudios.com" uid="1082197"></data></result>
+<result>Profession: Software engineer at<data name="Logica" rep="26" href="http://logica.nl" uid="1160223"></data></result>
+<result>owner, Developer at<data name="Stuff4sale.eu" rep="26" href="http://www.stuff4sale.eu" uid="1340187"></data></result>
+<result>of 20+ years. Currently working for<data name="2Checkout.com" rep="25" href="http://www.2checkout.com" uid="330906"></data></result>
+<result>Software Architect at Sioux Automation Technology:<data name=" Sioux Automation Technology" rep="25" href="http://www.sioux.eu/en/automation-technology.html" uid="1153347"></data></result>
+<result>.  Currently work for<data name="SEOmoz" rep="23" href="http://www.seomoz.org" uid="173556"></data></result>
+<result>, Russia. Senior software engineer at<data name="CJSC Lanit-Tercom" rep="23" href="http://www.lanit-tercom.com/en" uid="539470"></data></result>
+<result>Android developer for newly founding start-up<data name="ollaa" rep="23" href="http://ollaa.com" uid="559885"></data></result>
+<result>I'm a web developer at<data name="mediaburst" rep="23" href="http://www.mediaburst.co.uk" uid="973023"></data></result>
+<result>working as a Software Engineer at<data name="Service2Media" rep="21" href="http://service2media.com" uid="249668"></data></result>
+<result>Web and blog developer at<data name="SimpleMediaCode.com" rep="21" href="http://simplemediacode.lv" uid="270104"></data></result>
+<result>engineer working at Talis on the<data name="Talis Platform" rep="21" href="http://www.talis.com/platform/" uid="318257"></data></result>
+<result>Interface Developer at LBi London (<data name="LBi London" rep="21" href="http://www.lbi.co.uk" uid="362224"></data></result>
+<result>Support engineer for<data name="WebFaction Webhosting" rep="21" href="http://webfaction.com" uid="514376"></data></result>
+<result>a partner and web developer at<data name="CodeBinders" rep="21" href="http://www.codebinders.com" uid="575242"></data></result>
+<result>IT Engineer. Working at<data name="Itnig Web Services" rep="21" href="http://itnig.net" uid="578342"></data></result>
+<result>Products Support and Development manager at<data name="IPL" rep="21" href="http://www.ipl.com/" uid="596733"></data></result>
+<result>Android and .Net developer working at<data name="Magenic" rep="21" href="http://magenic.com/" uid="618470"></data></result>
+<result>I work for<data name="Schweitzer Engineering Laboratories" rep="21" href="http://www.selinc.com" uid="664607"></data></result>
+<result>I work at AjaxMasters (<data name="Ajaxmasters.com" rep="21" href="http://ajaxmasters.com" uid="759476"></data></result>
+<result>yeah, I'm a software architect at<data name="InGenius" rep="21" href="http://www.ingenius.com" uid="852164"></data></result>
+<result>I am working at<data name="adrodev GmbH" rep="21" href="http://www.adrodev.de/%20%22Adrodev%20GmbH" uid="1381766"></data></result>
+<result>I am a software developer at<data name="Drexel University" rep="18" href="http://www.drexel.edu" uid="2834"></data></result>
+<result>engineer. Founder and Lead Engineer at<data name="Atomic Powered" rep="18" href="http://www.atomicpowered.net" uid="237969"></data></result>
+<result>Vice President and General Manager at<data name="Louisville Web Group" rep="18" href="http://www.louisvillewebgroup.com" uid="370370"></data></result>
+<result>as a System Design Engineer at<data name="Urban E-Learning" rep="18" href="http://www.urbanelearning.com" uid="456770"></data></result>
+<result>MBA &amp; PMP.  Owner/Consultant at<data name="adaptIO LLC" rep="17" href="http://adaptIO.net" uid="931658"></data></result>
+<result>Currently a developer for<data name="Galatium" rep="16" href="http://www.galatium.com" uid="227801"></data></result>
+<result>Founder and developer at<data name="Bust Out Solutions, Inc." rep="16" href="http://bustoutsolutions.com" uid="343362"></data></result>
+<result>am a web developer working for<data name="SHI Elektronische Medien GmbH" rep="16" href="http://www.shi-gmbh.com" uid="818880"></data></result>
+<result>Research scientist at the<data name="Center for Collective Intelligence" rep="16" href="http://cci.mit.edu" uid="974068"></data></result>
+<result>I work at<data name="Mindscape" rep="16" href="https://www.mindscapehq.com/" uid="1144252"></data></result>
+<result>Senior developer at<data name="Fuhshnizzle.com" rep="16" href="http://www.fuhshnizzle.com" uid="1334048"></data></result>
+<result>Development Manager at<data name="Xafir" rep="16" href="http://www.xafir.com" uid="1499046"></data></result>
+<result>the lead PHP/MYSQLI Backend developer for<data name="Appjester." rep="14" href="http://appjester.com/" uid="1105787"></data></result>
+<result> 2009-&gt;2011: Digital Project Manager at<data name="GlobyMundus" rep="14" href="http://glomund.net" uid="1179308"></data></result>
+<result>California, Berkeley  Currently working at<data name="Rewarder.com" rep="13" href="http://rewarder.com" uid="380591"></data></result>
+<result>Django developer at<data name="Wonder" rep="13" href="http://findwonder.com" uid="642388"></data></result>
+<result>Developer at<data name="Unplu.gg" rep="13" href="http://unplu.gg" uid="1067270"></data></result>
+<result>Co-founder and Head Developer at<data name="26Twelve Studio" rep="13" href="http://www.26twelvestudio.com/" uid="1237093"></data></result>
+<result>Data etc). I work at the<data name="Tekla Oyj" rep="11" href="http://tekla.com" uid="96446"></data></result>
+<result>Research &amp; Development Manager at<data name="Cabinet Zulian ICS" rep="11" href="http://www.cabinet-zulian.com" uid="194209"></data></result>
+<result>Software developer for<data name="Cedrom-SNi" rep="11" href="http://cedrom-sni.com/accueil.asp?lang=ang" uid="234642"></data></result>
+<result>I'm a development manager at<data name="Galapagos Mobile" rep="11" href="http://galapagosmobile.com" uid="626031"></data></result>
+<result>I work for<data name="evidentsoftware" rep="11" href="http://www.evidentsoftware.com" uid="630799"></data></result>
+<result>developer at Hand Made Flow (<data name="Hand Made Flow" rep="11" href="http://www.hand-made.pl/" uid="637745"></data></result>
+
+<result>Software developer, working for<data name="Steria" rep="11" href="http://www.steria.com/" uid="665663"></data></result>
+<result>of Database experience. Currently working for<data name="Ingres" rep="11" href="http://www.ingres.com" uid="725600"></data></result>
+<result>years :)  I work at<data name="SSOFB" rep="11" href="http://www.ssofb.co.uk" uid="789137"></data></result>
+<result>I'm Tech Architect at<data name="Government Digital Service" rep="11" href="http://digital.cabinet-office.gov.uk" uid="799757"></data></result>
+<result>/Tech lead for<data name="GOV.UK" rep="11" href="https://www.gov.uk" uid="799757"></data></result>
+<result>Architect at Corbis and Inventor of<data name="Corbis" rep="11" href="http://www.corbisimages.com" uid="941435"></data></result>
+<result>Software Engineer At<data name="Igence Ltd" rep="11" href="http://www.igence.com" uid="976496"></data></result>
+<result>web technologies  Currently working at<data name="SFEIR" rep="11" href="http://www.sfeir.com" uid="1002807"></data></result>
+<result>Working at<data name="Lifete.com.vn" rep="11" href="http://lifetek.com.vn" uid="1069563"></data></result>
+<result>and Ruby on Rails developer at<data name="Bendyworks" rep="11" href="http://bendyworks.com" uid="1112477"></data></result>
+<result>as a junior web developer for<data name="Roi.com.au" rep="11" href="http://www.roi.com.au/" uid="1275237"></data></result>
+<result>am the Community Marketing Manager for<data name="Tendenci" rep="11" href="http://tendenci.org" uid="1334953"></data></result>
+<result>software developer at<data name="SCOOP Software" rep="8" href="http://scoop-gmbh.de" uid="440637"></data></result>
+<result>working at CaprusIt Solutions pvt ltd,hyderabad.<data name="CaprusIt Solutions" rep="8" href="http://www.caprusit.com/" uid="1063905"></data></result>
+<result>out some of my work at<data name="Rparizeau.com" rep="8" href="http://www.rparizeau.com" uid="1212660"></data></result>
+<result> Security Enterprise Architect at<data name="Canadian National Railway" rep="6" href="http://www.cn.ca" uid="301391"></data></result>
+<result>Developer for Chorrillana Estudio<data name="Chorrillana Estudio" rep="6" href="http://chorrillana.cl" uid="313741"></data></result>
+<result>Web Developer at<data name="iXmédia" rep="6" href="http://www.ixmedia.com/" uid="330433"></data></result>
+<result>Web developer for<data name="Uea.ac.uk" rep="6" href="http://www.uea.ac.uk" uid="438924"></data></result>
+<result>town called Gland and work at<data name="Connect-i" rep="6" href="http://connect-i.ch/" uid="674936"></data></result>
+<result>Software Engineer at<data name="TicketSource" rep="6" href="http://www.ticketsource.co.uk" uid="983600"></data></result>
+<result>Science. Currently a Software Developer at<data name="ESi 911" rep="6" href="http://esi911.com" uid="1204740"></data></result>
+<result>Currently a software developer at<data name="8raystech.com" rep="6" href="http://8raystech.com" uid="1248190"></data></result>
+<result>am a associate software engineer at<data name="customerXPs" rep="6" href="http://www.customerxps.com" uid="1315460"></data></result>
+<result>an information architect and developer for<data name="Bold Perspective" rep="6" href="http://boldperspective.com" uid="1408322"></data></result>
+<result>am a .Net developer working for<data name="NimblePros" rep="3" href="http://nimblepros.com" uid="337571"></data></result>

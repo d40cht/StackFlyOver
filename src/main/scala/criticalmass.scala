@@ -666,7 +666,7 @@ class Munge
         val lines = scala.io.Source.fromFile( new java.io.File("./aboutmes.txt") ).getLines
         
         val relevantRe = "(developer|engineer|architect|manager|work|working|scientist|consultant|employed|lead) (at|for)".r
-        for ( l <- lines )
+        for ( l <- lines if !l.trim.isEmpty )
         {
             val els = l.split(" ")
             val uid = els(0)
@@ -674,7 +674,8 @@ class Munge
             val rest = els.drop(2).mkString(" ")
             
             val parsed = org.jsoup.Jsoup.parseBodyFragment(rest)
-            if ( !rest.trim.isEmpty && !relevantRe.findAllIn(parsed.text).isEmpty )
+            val justText : String = parsed.text
+            if ( !rest.trim.isEmpty && !relevantRe.findAllIn(justText.toLowerCase).isEmpty )
             {
                 import scala.collection.JavaConversions._
                 import org.jsoup.nodes.{Node, TextNode, Element}
@@ -695,6 +696,13 @@ class Munge
                             if ( el.tag.getName == "a" )
                             {
                                 simple.appendText( currText )
+                                val lastWords = currText.split(" ").takeRight(6).mkString(" ")
+                                if ( !relevantRe.findAllIn(lastWords.toLowerCase()).isEmpty )
+                                {
+                                    val res = <result>{lastWords}<data uid={uid} rep={rep} name={el.text} href={el.attr("href")}></data></result>
+                                    
+                                    println( res.toString )
+                                }
                                 currText = ""
                                 simple.appendChild(el)
                                 
@@ -712,7 +720,53 @@ class Munge
                 }
                 removeButHref( parsed.body )
                 simple.appendText( currText )
-                println( simple )
+                //println( simple )
+            }
+        }
+    }
+}
+
+// Add company data:
+// scala.io.Source.fromFile(new java.io.File("companiessanitised.txt")).getLines.filter(!_.trim.isEmpty).map( l => org.jsoup.Jsoup.parseBodyFragment(l).select("data") ).map( x => (x.attr("uid"), x.attr("href"), x.attr("name")) ).toList.filter( !_._1.trim.isEmpty )
+// UserRole: id ~ user_id ~ institution_id ~ department ~ url ~ location => (dept = "", location = user_location)
+// Institution def * = id ~ name
+class UserRoleEntry( db : Database )
+{
+    def run() =
+    {
+        val data = scala.io.Source.fromFile(new java.io.File("companiessanitised.txt")).getLines.filter(!_.trim.isEmpty).map( l => org.jsoup.Jsoup.parseBodyFragment(l).select("data") ).map( x => (x.attr("uid"), x.attr("href"), x.attr("name")) ).toList.filter( !_._1.trim.isEmpty )
+        
+        db withSession
+        {
+            for ( (uid, url, name) <- data )
+            {
+                val companyId =
+                {
+                    val res = (for (c <- CriticalMassTables.Institution if c.name === name ) yield c.id ).list
+                    assert( res.size <= 1 )
+                    if ( res.isEmpty )
+                    {
+                        CriticalMassTables.Institution.name insert (name)
+                        
+                        val scopeIdentity = SimpleFunction.nullary[Long]("scope_identity")
+                        Query(scopeIdentity).first
+                    }
+                    else
+                    {
+                        res.head
+                    }
+                }
+                
+                val userLocation =
+                {
+                    val res = (for (u <- CriticalMassTables.Users if u.user_id === uid.toLong) yield u.location).list
+                    assert( res.size <= 1 )
+                    res.head
+                }
+                
+                val urt = CriticalMassTables.UserRole
+                
+                (urt.user_id ~ urt.institution_id ~ urt.department ~ urt.url ~ urt.location) insert (uid.toLong, companyId, "", url, userLocation)
             }
         }
     }
@@ -752,6 +806,9 @@ object Main extends App
         
         //val m = new Munge()
         //m.run()
+        
+        val ur = new UserRoleEntry(db)
+        ur.run()
     }
 }
        

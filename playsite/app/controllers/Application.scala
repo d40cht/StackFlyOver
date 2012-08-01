@@ -165,8 +165,21 @@ object CriticalMassTables
         def * = user_id ~ display_name ~ creation_date ~ last_access_date ~ reputation ~
                 age ~ accept_rate ~ website_url ~ location ~ badge_gold ~ badge_silver ~ badge_bronze
     }
-
+    
+    object Jobs extends Table[(String, String, Double, String)]("Jobs")
+    {
+        def job_id              = column[String]("job_id", O PrimaryKey)
+        def name                = column[String]("name")
+        def progress            = column[Double]("progress")
+        def status              = column[String]("status")
+        
+        def * = job_id ~ name ~ progress ~ status
+    }
 }
+
+
+
+
 
 case class SupplementaryData(
     val workLocation : String,
@@ -184,6 +197,56 @@ object Application extends Controller
     import play.api.data._
     import play.api.data.Forms._
     
+    
+    object JobRegistry
+    {
+        def initialise =
+        {
+            // Clear out any jobs from a previous run...
+            ( for ( r <- CriticalMassTables.Jobs ) yield r ).mutate( _.delete )
+        }
+        
+        def getJobs = withDbSession
+        {
+            ( for ( r <- CriticalMassTables.Jobs ) yield r.name ~ r.progress ~ r.status ).list
+        }
+        
+        def submit( name : String, workFn : ((Double, String) => Unit) => Unit ) =
+        {
+            import play.api.libs.concurrent.Akka
+            
+            // Register job in db
+            val uuid = java.util.UUID.randomUUID().toString
+            withDbSession
+            {
+                CriticalMassTables.Jobs insert (uuid, name, 0.0, "Submitted")
+            }
+            
+            // Submit future
+            Akka.future
+            {
+                // Call the work function, passing in a callback to update progress and status
+                workFn( (progress : Double, status : String ) =>
+                {
+                    withDbSession
+                    {
+                        val job = ( for ( r <- CriticalMassTables.Jobs if r.job_id === uuid ) yield r.progress ~ r.status )
+                        
+                        job.mutate ( m =>
+                        {
+                            m.row = m.row.copy(_1 = progress, _2 = status )
+                        } )
+                    }
+                } )
+                
+                // Set status to complete
+                ( for ( r <- CriticalMassTables.Jobs if r.job_id === uuid ) yield r ).mutate( _.delete )
+            }
+            
+            uuid
+        }
+    }
+
     case class Pos( val name : String, val lon : Double, val lat : Double )
     case class UserData( val accessToken : String, val expiry : Int, val uid : Int, val name : String )
     {
@@ -361,7 +424,26 @@ object Application extends Controller
         )
     }
     
+    def exampleJob = Action
+    {
+        val uuid = JobRegistry.submit( "Test job",
+        { statusFn =>
+            
+            for ( i <- 0 until 10 )
+            {
+                statusFn( i.toDouble / 10.0, "Status: " + i )
+                Thread.sleep(1000)
+            }
+        } )
+        Ok( "Submitted: " + uuid )
+    }
     
+    def listJobs = Action
+    {
+        val jobs = JobRegistry.getJobs
+        
+        Ok(compact(render(jobs.map( x => ("name" -> x._1) ~ ("progress" -> x._2) ~ ("status" -> x._3) ))))
+    }
         
     def refineUser() = SessionCacheAction(requireLogin=true)
     {
