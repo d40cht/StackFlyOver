@@ -70,18 +70,34 @@ class MarkerClusterer( val db : Database )
         println( "Deleting old data" )
         db withSession
         {
-            println("1")
             ( for ( r <- CriticalMassTables.DataHierarchy ) yield r ).mutate( _.delete )
-            println("2")
             ( for ( r <- CriticalMassTables.TagMap ) yield r ).mutate( _.delete )
-            println("3")
             ( for ( r <- CriticalMassTables.UserMap ) yield r ).mutate( _.delete )
-            println("4")
             //( for ( r <- CriticalMassTables.InstitutionMap ) yield r ).mutate( _.delete )
-            println("5")
         }
+        
+        case class Cluster( val lon : Double, val lat : Double, val nameIds : List[Long] )
+        {
+            def dist( other : Cluster ) = distfn( lon, lat, other.lon, other.lat )
+            def merge( other : Cluster) : Cluster =
+            {
+                val size = nameIds.size.toDouble
+                val sizeOther = other.nameIds.size.toDouble
+                val total = size + sizeOther
+                val newLon = (size/total) * lon + (sizeOther/total) * other.lon
+                val newLat = (size/total) * lat + (sizeOther/total) * other.lat
                 
-        class UserTag( val id : Long, val name : String, val count : Long )        
+                new Cluster( newLon, newLat, nameIds ++ other.nameIds ) 
+            }
+            
+            def coords = Array( lon, lat )
+            def tupleCoords = (lon, lat)
+        }
+        
+        val locations = ( for ( ln <- CriticalMassTables.Location if ln.radius >= 0.0 && ln.radius < 100000.0 )
+            yield ln.name_id ~ ln.longitude ~ ln.latitude ).list
+                
+        /*class UserTag( val id : Long, val name : String, val count : Long )        
         class UserData( val uid : Long, val reputation : Long, val lon : Double, val lat : Double, val tags : List[UserTag] )
         
         // Pull all the user data out into Scala
@@ -91,7 +107,7 @@ class MarkerClusterer( val db : Database )
             val allUsers = (for ( Join(user, loc) <- 
                 CriticalMassTables.Users innerJoin
                 CriticalMassTables.Locations on(_.location is _.name)
-                    if loc.radius < 100000.0 && user.reputation >= 2L )
+                    if loc.radius >= 0.0 && loc.radius < 100000.0 && user.reputation >= 2L )
                 yield user.display_name ~ user.user_id ~ user.reputation ~ loc.longitude ~ loc.latitude ).list
             
             val userData = mutable.ArrayBuffer[UserData]()
@@ -113,50 +129,33 @@ class MarkerClusterer( val db : Database )
         
         // Then run kdTree.query( new com.vividsolutions.jts.geom.Envelope( lon1, lat1, lon2, lat2 ) ) to get list
         // of points in range
-        println( "  done" )
+        println( "  done" )*/
+        
+        println( "   pulled in %d locations".format( locations.size ) )
         
         // Run through the google map scales, merging as appropriate
-        class UserCluster( val lon : Double, val lat : Double, val users : List[UserData] )
-        {
-            def this( ud : UserData ) = this( ud.lon, ud.lat, List(ud) )
-            def dist( other : UserCluster ) = distfn( lon, lat, other.lon, other.lat )
-            def merge( other : UserCluster) : UserCluster =
-            {
-                val size = users.size.toDouble
-                val sizeOther = other.users.size.toDouble
-                val total = size + sizeOther
-                val newLon = (size/total) * lon + (sizeOther/total) * other.lon
-                val newLat = (size/total) * lat + (sizeOther/total) * other.lat
-                
-                new UserCluster( newLon, newLat, users ++ other.users ) 
-            }
-            
-            def coords = Array( lon, lat )
-            def tupleCoords = (lon, lat)
-        }
-        
         println( "Building merge tree" )
-        var mergeSet = immutable.HashMap[(Double, Double), UserCluster]()
+        var mergeSet = immutable.HashMap[(Double, Double), Cluster]()
         var debugCount = 0
-        for ( ud <- allUsers )
+        for ( (loc_id, lon, lat) <- locations )
         {
-            val u = new UserCluster(ud)
-            val nu = if ( mergeSet contains u.tupleCoords )
+            val c = new Cluster( lon, lat, List(loc_id) )
+            val cn = if ( mergeSet contains c.tupleCoords )
             {
-                val original = mergeSet(u.tupleCoords)
-                mergeSet -= u.tupleCoords
+                val original = mergeSet(c.tupleCoords)
+                mergeSet -= c.tupleCoords
                 debugCount -= 1
-                new UserCluster( u.lon, u.lat, ud :: original.users )
+                new Cluster( c.lon, c.lat, loc_id :: original.nameIds )
             }
-            else u
+            else c
             
             debugCount += 1
-            mergeSet += (nu.tupleCoords -> nu)
+            mergeSet += (cn.tupleCoords -> cn)
         }
         
         assert( debugCount == mergeSet.size )
         
-        val mergeTree = new edu.wlu.cs.levy.CG.KDTree[UserCluster](2)
+        val mergeTree = new edu.wlu.cs.levy.CG.KDTree[Cluster](2)
         for ( (c, u) <- mergeSet ) mergeTree.insert( u.coords, u )
         
         // In metres
@@ -170,7 +169,7 @@ class MarkerClusterer( val db : Database )
             while ( !finished )
             {
                 // Choose a min distance cluster to merge
-                var minDist : Option[(Double, UserCluster, UserCluster)] = None
+                var minDist : Option[(Double, Cluster, Cluster)] = None
                 for ( (coords, c) <- mergeSet )
                 {
                     import scala.collection.JavaConversions._
@@ -216,7 +215,7 @@ class MarkerClusterer( val db : Database )
             
             println( "  after merge: %d".format( mergeSet.size ) )
             
-            db withSession
+            /*db withSession
             {
                 for ( (c, u) <- mergeSet )
                 {
@@ -270,7 +269,7 @@ class MarkerClusterer( val db : Database )
                         }
                     }
                 }
-            }
+            }*/
             
             maxMergeDistance *= 2.0
         }
