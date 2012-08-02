@@ -326,6 +326,21 @@ class UserScraper( val db : Database )
                 var count = 0
                 for ( u <- users )
                 {
+                    val locationNameId =
+                    {
+                        val lname = u.location.getOrElse("")
+                        
+                        val query = ( for ( l <- CriticalMassTables.LocationName if l.name === lname ) yield l.id ).list
+                        if ( !query.isEmpty ) query.head
+                        else
+                        {
+                            CriticalMassTables.LocationName.name insert (lname)
+                            
+                            def scopeIdentity = SimpleFunction.nullary[Long]("scope_identity")
+                            Query(scopeIdentity).first
+                        }
+                    }
+                    
                     CriticalMassTables.Users insert (
                         u.user_id,
                         u.display_name,
@@ -335,7 +350,7 @@ class UserScraper( val db : Database )
                         u.age.getOrElse(-1),
                         u.accept_rate.getOrElse(-1),
                         u.website_url.getOrElse(""),
-                        u.location.getOrElse("").toLowerCase,
+                        locationNameId,
                         u.badge_counts.gold,
                         u.badge_counts.silver,
                         u.badge_counts.bronze
@@ -350,7 +365,11 @@ class UserScraper( val db : Database )
             if ( true )
             {
                 // Fetch all locations left un-geocoded and geocode via Yahoo
-                val locations = for ( Join(u, l) <- CriticalMassTables.Users leftJoin CriticalMassTables.Locations on(_.location is _.name) if ((l.name isNull) && (u.location != "")) ) yield u.location
+                //val locations = for ( Join(u, l) <- CriticalMassTables.Users leftJoin CriticalMassTables.Locations on(_.location is _.name) if ((l.name isNull) && (u.location != "")) ) yield u.location
+                val locations = for ( Join(ln, l) <-
+                    CriticalMassTables.LocationName leftJoin
+                    CriticalMassTables.Location on (_.id is _.name_id)
+                    if ((l.name_id isNull) && (ln.name != "")) ) yield ln.id ~ ln.name
                 
                 val allLocs = locations.list
                 val allNonEmptyLocs = allLocs.filter( _ != "" )
@@ -358,7 +377,7 @@ class UserScraper( val db : Database )
                 
                 println( allLocs.size, allNonEmptyLocs.size, uniques.size )
                 
-                for ( (addr, count) <- uniques.toList.zipWithIndex )
+                for ( ((id, addr), count) <- uniques.toList.zipWithIndex )
                 {
                     val locationJ = Dispatch.pullJSON( "http://where.yahooapis.com/geocode", List(
                         ("flags", "J"),
@@ -373,8 +392,8 @@ class UserScraper( val db : Database )
                         val l = locations.head
                         println( "    %s".format( l ) )
                         
-                        CriticalMassTables.Locations insert (
-                            addr,
+                        CriticalMassTables.Location insert (
+                            id,
                             l.longitude.toDouble,
                             l.latitude.toDouble,
                             l.radius.toDouble )
@@ -382,8 +401,8 @@ class UserScraper( val db : Database )
                     else
                     {
                         // Enter a null location
-                        CriticalMassTables.Locations insert (
-                            addr,
+                        CriticalMassTables.Location insert (
+                            id,
                             0.0,
                             0.0,
                             -1.0 )

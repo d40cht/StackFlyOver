@@ -55,10 +55,6 @@ object Application extends Controller
         def remove( key : String )(implicit app: Application) = Cache.set( uuid+key, None, 1 )
     }
     
-    
-    
-    
-    
     // An action wrapped to pass through the cache for this session
     object SessionCacheAction
     {
@@ -177,12 +173,12 @@ object Application extends Controller
         WithDbSession
         {
             // Get role from id with location and two types of tags
-            val roleData = ( for ( Join(role, institution) <-
-                CriticalMassTables.UserRole innerJoin
-                CriticalMassTables.Institution
-                on (_.institution_id is _.id)
+            val roleData = ( for (
+                role <- CriticalMassTables.UserRole;
+                institution <- CriticalMassTables.Institution if role.institution_id === institution.id;
+                location <- CriticalMassTables.LocationName if role.location_name_id === location.id;
                 if role.id === role_id )
-                yield role.id ~ institution.name ~ role.department ~ role.url ~ role.location ).list.head
+                yield role.id ~ institution.name ~ role.department ~ role.url ~ location.name ).list.head
 
             val res =
             {
@@ -239,10 +235,25 @@ object Application extends Controller
                                 Query(scopeIdentity).first
                             }
                             
+                            val locationNameId =
+                            {
+                                val already = ( for (loc <- CriticalMassTables.LocationName if loc.name == data.workLocation) yield loc.id).list
+                                if ( !already.isEmpty )
+                                {
+                                    already.head
+                                }
+                                else
+                                {
+                                    CriticalMassTables.LocationName.name insert (data.workLocation)
+                                    
+                                    Query(scopeIdentity).first
+                                }     
+                            }
+                            
                             val roleId =
                             {
                                 val r = CriticalMassTables.UserRole
-                                (r.user_id ~ r.institution_id ~ r.department ~ r.url ~ r.location) insert ((currUser.uid.toLong, institutionId, data.institutionDepartment, data.institutionURL, data.workLocation))
+                                (r.user_id ~ r.institution_id ~ r.department ~ r.url ~ r.location_name_id) insert ((currUser.uid.toLong, institutionId, data.institutionDepartment, data.institutionURL, locationNameId))
                                 
                                 Query(scopeIdentity).first
                             }
@@ -297,12 +308,12 @@ object Application extends Controller
         WithDbSession
         {
             // Get roles with location and two types of tags
-            val roles = ( for ( Join(role, institution) <-
-                CriticalMassTables.UserRole innerJoin
-                CriticalMassTables.Institution
-                on (_.institution_id is _.id)
+            val roles = ( for ( 
+                role <- CriticalMassTables.UserRole;
+                institution <- CriticalMassTables.Institution if role.institution_id === institution.id;
+                location <- CriticalMassTables.LocationName if role.location_name_id === location.id;
                 if role.user_id === user.uid.toLong )
-                yield role.id ~ institution.name ~ role.department ~ role.url ~ role.location ).list
+                yield role.id ~ institution.name ~ role.department ~ role.url ~ location.name ).list
 
             val res = for ( (rid, instname, dept, insturl, loc) <- roles ) yield
             {
@@ -376,12 +387,12 @@ object Application extends Controller
             println( "Marker users for: " + dh_id.toString )
             val users = (for
             {
-                Join(userMap, users) <-
-                CriticalMassTables.UserMap innerJoin
-                CriticalMassTables.Users on (_.user_id is _.user_id)
+                userMap <- CriticalMassTables.UserMap;
+                users <- CriticalMassTables.Users if userMap.user_id === users.user_id;
+                location <- CriticalMassTables.LocationName if users.location_name_id === location.id
                 if userMap.dh_id === dh_id && users.reputation > 150L
                 _ <- Query orderBy(Desc(users.reputation))
-            } yield users.reputation ~ users.display_name ~ users.user_id ~ users.location)
+            } yield users.reputation ~ users.display_name ~ users.user_id ~ location.name)
             
             val topN = (users take 100).list
 
@@ -551,7 +562,10 @@ object Application extends Controller
         {
             WithDbSession
             {
-                val similar = ( for ( role <- CriticalMassTables.UserRole if role.institution_id === instId ) yield role.location ).list.toSet
+                val similar = ( for (
+                    role <- CriticalMassTables.UserRole;
+                    location <- CriticalMassTables.LocationName if role.location_name_id === location.id;
+                    if role.institution_id === instId ) yield location.name ).list.toSet
                 
                 Ok(compact(render(similar.toList.map( x => ("id" -> x) ~ ("name" -> x) ))))
             }
