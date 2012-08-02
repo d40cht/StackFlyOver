@@ -5,13 +5,15 @@
    
     <h4>Running jobs</h4>
     <table>
-        <tr><th>Job id</th><th>Name</th><th>Progress</th><th>Status</th></tr>
+        <tr><th>Job id</th><th>Name</th><th>Progress</th><th>Status</th><th>Start time</th><th>End time</th></tr>
         @jobs.map( j => {
             <tr>
                 <td>{j.id}</td>
                 <td>{j.name}</td>
                 <td>{"%.1f%%".format( j.progress.toDouble * 100.0 )}</td>
                 <td>{j.status}</td>
+                <td>{j.startTime}</td>
+                <td>{j.endTime}</td>
             </tr>
         } )
     </table>

@@ -143,14 +143,17 @@ object CriticalMassTables
                 age ~ accept_rate ~ website_url ~ location ~ badge_gold ~ badge_silver ~ badge_bronze
     }
     
-    object Jobs extends Table[(String, String, Double, String)]("Jobs")
+    // TODO: Add time submitted and completed column
+    object Jobs extends Table[(String, String, Double, String, java.sql.Timestamp, java.sql.Timestamp)]("Jobs")
     {
         def job_id              = column[String]("job_id", O PrimaryKey)
         def name                = column[String]("name")
         def progress            = column[Double]("progress")
         def status              = column[String]("status")
+        def start_time          = column[java.sql.Timestamp]("start_time")
+        def end_time            = column[java.sql.Timestamp]("end_time")
         
-        def * = job_id ~ name ~ progress ~ status
+        def * = job_id ~ name ~ progress ~ status ~ start_time ~ end_time
     }
 }
 
@@ -210,13 +213,19 @@ object WithDbSession
 
 object JobRegistry
 {
-    class JobStatus( val id : String, val name : String, val progress : Double, val status : String )
+    class JobStatus(
+        val id : String,
+        val name : String,
+        val progress : Double,
+        val status : String,
+        val startTime : java.sql.Timestamp,
+        val endTime : java.sql.Timestamp )
     
     def getJobs( implicit app : Application ) : List[JobStatus] = WithDbSession
     {
         WithDbSession
         {
-            ( for ( r <- CriticalMassTables.Jobs ) yield r.job_id ~ r.name ~ r.progress ~ r.status ).list.map( x => new JobStatus( x._1, x._2, x._3, x._4 ) )    
+            ( for ( r <- CriticalMassTables.Jobs ) yield r ).list.map( x => new JobStatus( x._1, x._2, x._3, x._4, x._5, x._6 ) )
         }
     }
     
@@ -228,7 +237,8 @@ object JobRegistry
         val uuid = java.util.UUID.randomUUID().toString
         WithDbSession
         {
-            CriticalMassTables.Jobs insert (uuid, name, 0.0, "Submitted")
+            val now = new java.sql.Timestamp( (new java.util.Date()).getTime )
+            CriticalMassTables.Jobs insert (uuid, name, 0.0, "Submitted", now, now )
         }
         
         // Submit future
