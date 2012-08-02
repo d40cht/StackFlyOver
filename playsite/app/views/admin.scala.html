@@ -1,7 +1,20 @@
-@(user : Option[controllers.Application.UserData], roles : List[(String, String)])
+@(user : Option[controllers.Application.UserData], roles : List[(String, String)], jobs : List[controllers.JobRegistry.JobStatus])
 
 @main("Site admin", user) {
     <h1>Site admin</h1>
+   
+    <h4>Running jobs</h4>
+    <table>
+        <tr><th>Job id</th><th>Name</th><th>Progress</th><th>Status</th></tr>
+        @jobs.map( j => {
+            <tr>
+                <td>{j.id}</td>
+                <td>{j.name}</td>
+                <td>{"%.1f%%".format( j.progress.toDouble * 100.0 )}</td>
+                <td>{j.status}</td>
+            </tr>
+        } )
+    </table>
    
     <h4>User added roles</h4>
     <table>

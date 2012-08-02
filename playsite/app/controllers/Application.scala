@@ -194,9 +194,77 @@ object Dispatch
         val res = h(u as_str)   
         val j = JsonParser.parse(res)
         
-        
-        
         j
+    }
+}
+
+object WithDbSession
+{
+    def apply[T]( block : => T )( implicit app : Application ) : T =
+    {
+        val db = Database.forDataSource(DB.getDataSource())
+
+        db.withSession(block)
+    }
+}
+
+object JobRegistry
+{
+    class JobStatus( val id : String, val name : String, val progress : Double, val status : String )
+    
+    def getJobs( implicit app : Application ) : List[JobStatus] = WithDbSession
+    {
+        WithDbSession
+        {
+            ( for ( r <- CriticalMassTables.Jobs ) yield r.job_id ~ r.name ~ r.progress ~ r.status ).list.map( x => new JobStatus( x._1, x._2, x._3, x._4 ) )    
+        }
+    }
+    
+    def submit( name : String, workFn : ((Double, String) => Unit) => Unit )( implicit app : Application ) =
+    {
+        import play.api.libs.concurrent.Akka
+        
+        // Register job in db
+        val uuid = java.util.UUID.randomUUID().toString
+        WithDbSession
+        {
+            CriticalMassTables.Jobs insert (uuid, name, 0.0, "Submitted")
+        }
+        
+        // Submit future
+        Akka.future
+        {
+            // Call the work function, passing in a callback to update progress and status
+            try
+            {
+                workFn( (progress : Double, status : String ) =>
+                {
+                    WithDbSession
+                    {
+                        val job = ( for ( r <- CriticalMassTables.Jobs if r.job_id === uuid ) yield r )
+                        
+                        job.mutate ( m =>
+                        {
+                            m.row = m.row.copy(_3 = progress, _4 = status )
+                        } )
+                    }
+                } )
+                
+                // Set status to complete
+                WithDbSession
+                {
+                    ( for ( r <- CriticalMassTables.Jobs if r.job_id === uuid ) yield r ).mutate( _.delete )
+                }
+            }
+            catch
+            {
+                case e => { println( "Exception in async job: " + e.toString ); throw e }
+            }
+            
+            
+        }
+        
+        uuid
     }
 }
 
@@ -209,6 +277,8 @@ case class SupplementaryData(
     val soTags : String,
     val sectorTags : String,
     val anonymize : Boolean )
+    
+
 
 object Application extends Controller
 {
@@ -216,62 +286,6 @@ object Application extends Controller
     import play.api.Play.current
     import play.api.data._
     import play.api.data.Forms._
-    
-    
-    object JobRegistry
-    {        
-        def getJobs = withDbSession
-        {
-            ( for ( r <- CriticalMassTables.Jobs ) yield r.name ~ r.progress ~ r.status ).list
-        }
-        
-        def submit( name : String, workFn : ((Double, String) => Unit) => Unit ) =
-        {
-            import play.api.libs.concurrent.Akka
-            
-            // Register job in db
-            val uuid = java.util.UUID.randomUUID().toString
-            withDbSession
-            {
-                CriticalMassTables.Jobs insert (uuid, name, 0.0, "Submitted")
-            }
-            
-            // Submit future
-            Akka.future
-            {
-                // Call the work function, passing in a callback to update progress and status
-                try
-                {
-                    workFn( (progress : Double, status : String ) =>
-                    {
-                        withDbSession
-                        {
-                            val job = ( for ( r <- CriticalMassTables.Jobs if r.job_id === uuid ) yield r )
-                            
-                            job.mutate ( m =>
-                            {
-                                m.row = m.row.copy(_3 = progress, _4 = status )
-                            } )
-                        }
-                    } )
-                    
-                    // Set status to complete
-                    withDbSession
-                    {
-                        ( for ( r <- CriticalMassTables.Jobs if r.job_id === uuid ) yield r ).mutate( _.delete )
-                    }
-                }
-                catch
-                {
-                    case e => { println( "Exception in async job: " + e.toString ); throw e }
-                }
-                
-                
-            }
-            
-            uuid
-        }
-    }
 
     case class Pos( val name : String, val lon : Double, val lat : Double )
     case class UserData( val accessToken : String, val expiry : Int, val uid : Int, val name : String )
@@ -297,12 +311,7 @@ object Application extends Controller
         def remove( key : String )(implicit app: Application) = Cache.set( uuid+key, None, 1 )
     }
     
-    private def withDbSession[T]( block : => T ) : T =
-    {
-        val db = Database.forDataSource(DB.getDataSource())
-
-        db.withSession(block)
-    }
+    
     
     
     
@@ -360,12 +369,16 @@ object Application extends Controller
     {
         (request, sessionCache) =>
         
-        withDbSession
+        val jobs = JobRegistry.getJobs
+        
+        WithDbSession
         {
-            val res = (for ( Join(role, user) <-
+            import org.scalaquery.ql.extended.H2Driver.Implicit._
+            
+            val userRoles = (for ( Join(role, user) <-
                 CriticalMassTables.UserRole innerJoin
-                CriticalMassTables.Users on (_.user_id is _.user_id) ) yield user.display_name ~ role.url).list
-            Ok(views.html.admin(sessionCache.getAs[UserData]("user"), res))
+                CriticalMassTables.Users on (_.user_id is _.user_id) ) yield user.display_name ~ role.url).take(100).list
+            Ok(views.html.admin(sessionCache.getAs[UserData]("user"), userRoles, jobs))
         }
     }
     
@@ -395,7 +408,7 @@ object Application extends Controller
                 {
                     println( "Received user data: " + data.toString )
                     
-                    withDbSession
+                    WithDbSession
                     {
                         threadLocalSession withTransaction
                         {
@@ -455,9 +468,9 @@ object Application extends Controller
         val uuid = JobRegistry.submit( "Test job",
         { statusFn =>
             
-            for ( i <- 0 until 10 )
+            for ( i <- 0 until 100 )
             {
-                statusFn( i.toDouble / 10.0, "Status: " + i )
+                statusFn( i.toDouble / 100.0, "Status: " + i )
                 Thread.sleep(1000)
             }
         } )
@@ -468,7 +481,7 @@ object Application extends Controller
     {
         val jobs = JobRegistry.getJobs
         
-        Ok(compact(render(jobs.map( x => ("name" -> x._1) ~ ("progress" -> x._2) ~ ("status" -> x._3) ))))
+        Ok(compact(render(jobs.map( x => ("name" -> x.name) ~ ("progress" -> x.progress) ~ ("status" -> x.status) ))))
     }
         
     def refineUser() = SessionCacheAction(requireLogin=true)
@@ -485,7 +498,7 @@ object Application extends Controller
         
         val user = sessionCache.getAs[UserData]("user").get
         
-        withDbSession
+        WithDbSession
         {
             // Get roles with location and two types of tags
             val roles = ( for ( Join(role, institution) <-
@@ -525,7 +538,7 @@ object Application extends Controller
         
         // If logged in, additionally join on the institution table and give
         // local insitution summaries, e.g. institution to location, SO rep, SO tags, Sector tags
-        withDbSession
+        WithDbSession
         {
             def getPoints( swlat : Double, swlon : Double, nelat : Double, nelon : Double, zoom : Double ) =
             {
@@ -562,7 +575,7 @@ object Application extends Controller
         import org.scalaquery.ql.Ordering.Desc
         import org.scalaquery.ql.extended.H2Driver.Implicit._
         
-        withDbSession
+        WithDbSession
         {
             println( "Marker users for: " + dh_id.toString )
             val users = (for
@@ -612,7 +625,7 @@ object Application extends Controller
         import org.scalaquery.ql.Ordering.Desc
         import org.scalaquery.ql.extended.H2Driver.Implicit._
         
-        withDbSession
+        WithDbSession
         {
             val topTags = (for (Join(tagMap, tags) <-
                 CriticalMassTables.TagMap innerJoin
@@ -690,7 +703,7 @@ object Application extends Controller
         // TODO: If this is their first login, ask for more details
         // namely finer location, company name
         
-        withDbSession
+        WithDbSession
         {
             val checkRoles = ( for ( r <- CriticalMassTables.UserRole if r.user_id === meuid.toLong ) yield r.id ).list
             if ( checkRoles.isEmpty )
@@ -708,7 +721,7 @@ object Application extends Controller
     {
         import org.scalaquery.ql.extended.H2Driver.Implicit._
         
-        withDbSession
+        WithDbSession
         {
             val similar = ( for ( t <- CriticalMassTables.SectorTags if t.name like q.toLowerCase() + "%" ) yield t.id ~ t.name ).take(10).list
             
@@ -724,7 +737,7 @@ object Application extends Controller
         val lowerSFn = SimpleFunction[String]("lower")
         def lowerFn(c : Column[String]) = lowerSFn(Seq(c))
         
-        withDbSession
+        WithDbSession
         {
             val similar = ( for ( t <- CriticalMassTables.Institution if lowerFn(t.name) like q.toLowerCase() + "%" ) yield t.id ~ t.name ).take(10).list
             
@@ -740,7 +753,7 @@ object Application extends Controller
         
         if ( instId > 0 )
         {
-            withDbSession
+            WithDbSession
             {
                 val similar = ( for ( role <- CriticalMassTables.UserRole if role.institution_id === instId ) yield role.location ).list.toSet
                 
@@ -756,7 +769,7 @@ object Application extends Controller
         
         if ( instId > 0 )
         {
-            withDbSession
+            WithDbSession
             {
                 val similar = ( for ( role <- CriticalMassTables.UserRole if role.institution_id === instId ) yield role.department ).list.toSet
                 
@@ -772,7 +785,7 @@ object Application extends Controller
         
         if ( instId > 0 )
         {
-            withDbSession
+            WithDbSession
             {
                 val similar = ( for ( role <- CriticalMassTables.UserRole if role.institution_id === instId ) yield role.url ).list.toSet
                 
@@ -788,7 +801,7 @@ object Application extends Controller
     {
         import org.scalaquery.ql.extended.H2Driver.Implicit._
         
-        withDbSession
+        WithDbSession
         {
             val similar = ( for ( t <- CriticalMassTables.Tags if t.name like q.toLowerCase() + "%" ) yield t.id ~ t.name ).take(10).list
             
