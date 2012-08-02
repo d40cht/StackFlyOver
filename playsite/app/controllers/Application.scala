@@ -113,7 +113,7 @@ object Application extends Controller
     {
         (request, sessionCache) =>
         
-        val jobs = JobRegistry.getJobs
+        val jobs = JobRegistry.getJobs.sortWith( (x, y) => x.startTime.after( y.startTime ) )
         
         WithDbSession
         {
@@ -285,6 +285,47 @@ object Application extends Controller
                 }
             }
         )
+    }
+    
+    def exampleJob = Action
+    {
+        val uuid = JobRegistry.submit( "Test job",
+        { statusFn =>
+            
+            for ( i <- 0 until 100 )
+            {
+                statusFn( i.toDouble / 100.0, "Status: " + i )
+                Thread.sleep(1000)
+            }
+        } )
+        Ok( "Submitted: " + uuid )
+    }
+    
+    def pullUsersJob = Action
+    {
+        val uuid = JobRegistry.submit( "User scrape job",
+        { statusFn =>
+            
+            val db = Database.forDataSource(DB.getDataSource())
+            val userFetch = new processing.UserScraper(db)
+            userFetch.run( statusFn )
+        } )
+        Ok( "Submitted: " + uuid )
+    }
+    
+    def listJobs = Action
+    {
+        val jobs = JobRegistry.getJobs
+        
+        Ok(compact(render(jobs.map( x => ("name" -> x.name) ~ ("progress" -> x.progress) ~ ("status" -> x.status) ))))
+    }
+        
+    def refineUser() = SessionCacheAction(requireLogin=true)
+    {
+        (request, sessionCache) =>
+        
+        val currUser = sessionCache.getAs[UserData]("user").get
+        Ok(views.html.refineuser(currUser, userForm))
     }
     
     def userHome() = SessionCacheAction(requireLogin=true)

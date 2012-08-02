@@ -1,6 +1,5 @@
 # --- !Ups
 
-# Add a load of indices and foreign key constraints
 
 CREATE INDEX "DataHierarchy_lon" ON "DataHierarchy"("longitude");
 CREATE INDEX "DataHierarchy_lat" ON "DataHierarchy"("latitude");
@@ -25,3 +24,5 @@ ALTER TABLE "UserMap" ADD FOREIGN KEY ("user_id") REFERENCES "Users"("user_id") 
  
 # --- !Downs
  
+
+

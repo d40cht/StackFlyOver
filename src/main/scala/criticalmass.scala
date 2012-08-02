@@ -807,8 +807,8 @@ object Main extends App
         //val m = new Munge()
         //m.run()
         
-        val ur = new UserRoleEntry(db)
-        ur.run()
+        //val ur = new UserRoleEntry(db)
+        //ur.run()
     }
 }
        

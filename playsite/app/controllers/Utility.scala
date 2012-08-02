@@ -121,18 +121,31 @@ object JobRegistry
             }
             catch
             {
-                case e =>
+                case e : Throwable =>
                 {
+                    println( "Boom1")
+                    println( e.toString )
+                    println( "Boom2" )
+                    println( e.getStackTrace.map(_.toString).mkString(";") )
+                    println( "Boom3")
                     // Set status to error
                     WithDbSession
                     {
+                        println( "Boom4" )
                         val job = ( for ( r <- CriticalMassTables.Jobs if r.job_id === uuid ) yield r )
-                            
+                         
+                        println( "Boom5" )
                         job.mutate ( m =>
                         {
-                            m.row = m.row.copy(_3 = 0.0, _4 = e.toString )
+                            val message = e.toString + ": " + e.getStackTrace.map(_.toString).mkString(";")
+                            m.row = m.row.copy(_3 = 0.0, _4 = message )
                         } )
                     }
+                    println( "Boom6" )
+                }
+                case e =>
+                {
+                    println( "Uncaught exception: " + e.toString )
                 }
             }
             
