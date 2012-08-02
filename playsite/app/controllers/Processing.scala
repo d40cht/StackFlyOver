@@ -65,7 +65,7 @@ class MarkerClusterer( val db : Database )
         d
     }
     
-    def run() =
+    def run( statusFn : (Double, String) => Unit ) =
     {   
         println( "Deleting old data" )
         db withSession
@@ -131,10 +131,9 @@ class MarkerClusterer( val db : Database )
         // of points in range
         println( "  done" )*/
         
-        println( "   pulled in %d locations".format( locations.size ) )
+        statusFn( 0.0, "pulled in %d locations".format( locations.size ) )
         
         // Run through the google map scales, merging as appropriate
-        println( "Building merge tree" )
         var mergeSet = immutable.HashMap[(Double, Double), Cluster]()
         var debugCount = 0
         for ( (loc_id, lon, lat) <- locations )
@@ -162,7 +161,7 @@ class MarkerClusterer( val db : Database )
         var maxMergeDistance = 0.2
         for ( level <- 16 to 0 by -1 )
         {
-            println( "Merge distance: %f %d".format( maxMergeDistance, mergeSet.size ) ) 
+            statusFn( 0.0, "Merge distance: %f %d".format( maxMergeDistance, mergeSet.size ) )
             
             var finished = false
             
@@ -213,7 +212,7 @@ class MarkerClusterer( val db : Database )
                 if ( mergeSet.size < 50 ) finished = true
             }
             
-            println( "  after merge: %d".format( mergeSet.size ) )
+            statusFn( 0.0, "after merge: %d".format( mergeSet.size ) )
             
             /*db withSession
             {
@@ -356,7 +355,7 @@ class UserScraper( val db : Database )
                     )
                     count += 1
                 }
-                statusFn( 0.0, "New users: %d" + count.toString )
+                statusFn( 0.0, "New users: %d".format( count.toString ) )
                 
                 Thread.sleep(500)
             }
@@ -407,7 +406,7 @@ class UserScraper( val db : Database )
                             -1.0 )
                     }
                     
-                    statusFn( 0.0, "New location: %s" + addr )
+                    statusFn( 0.0, "New location: %s".format( addr ) )
                     Thread.sleep(500)
                 }
             }
@@ -455,7 +454,7 @@ class UserScraper( val db : Database )
                     }
                 }
                 
-                statusFn( 0.0, "Tags for user: %s" + name )
+                statusFn( 0.0, "Tags for user: %s".format( name ) )
                 Thread.sleep(200)
             }
         }

@@ -2,7 +2,7 @@
 
 @main("Site admin", user) {
     <h1>Site admin</h1>
-   
+    
     <h4>Running jobs</h4>
     <table>
         <tr><th>Job id</th><th>Name</th><th>Progress</th><th>Status</th><th>Start time</th><th>End time</th></tr>
@@ -17,6 +17,13 @@
             </tr>
         } )
     </table>
+    
+    <h4>Start jobs</h4>
+    <p>
+        <a href="@routes.Application.exampleJob">Example job</a>
+        <a href="@routes.Application.pullUsersJob">Pull users and tags</a>
+        <a href="@routes.Application.rebuildHierarchyJob">Rebuild location hierarchy</a>
+    </p>
    
     <h4>User added roles</h4>
     <table>

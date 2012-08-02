@@ -9,6 +9,7 @@ GET     /refineUser                 controllers.Application.refineUser
 GET     /editUserRole               controllers.Application.editUserRole( role_id : Long )
 GET     /exampleJob                 controllers.Application.exampleJob
 GET     /pullUsersJob               controllers.Application.pullUsersJob
+GET     /rebuildHierarchyJob        controllers.Application.rebuildHierarchyJob
 GET     /listJobs                   controllers.Application.listJobs
 POST    /refineUserAccept           controllers.Application.refineUserAccept
 GET     /mapData                    controllers.Application.mapData( loc : String )

@@ -298,6 +298,17 @@ object Application extends Controller
         Ok( "Submitted: " + uuid )
     }
     
+    def rebuildHierarchyJob = Action
+    {
+        val uuid = JobRegistry.submit( "Location hierarchy rebuild",
+        { statusFn =>
+            
+            val db = Database.forDataSource(DB.getDataSource())
+            val userFetch = new processing.MarkerClusterer(db)
+            userFetch.run( statusFn )
+        } )
+        Ok( "Submitted: " + uuid )
+    }
     
     def userHome() = SessionCacheAction(requireLogin=true)
     {
