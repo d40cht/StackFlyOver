@@ -1,3 +1,5 @@
+package controllers
+
 import play.api._
 import play.api.mvc._
 import play.api.db._
@@ -10,273 +12,6 @@ import org.scalaquery.ql.{Join, SimpleFunction, Query}
 
 import net.liftweb.json._
 import net.liftweb.json.JsonDSL._
-
-object CriticalMassTables
-{
-    import org.scalaquery.ql.extended.{ExtendedTable => Table}
-    import org.scalaquery.ql.TypeMapper._
-    import org.scalaquery.ql._
-    
-    object SectorTags extends Table[(Long, String)]("SectorTags")
-    {
-        def id                  = column[Long]("id", O PrimaryKey, O AutoInc)
-        def name                = column[String]("name")
-        
-        def * = id ~ name
-    }
-    
-    object Institution extends Table[(Long, String)]("Institutions")
-    {
-        def id                  = column[Long]("id", O PrimaryKey, O AutoInc)
-        def name                = column[String]("name")
-        
-        def * = id ~ name
-    }
-    
-    object UserRole extends Table[(Long, Long, Long, String, String, String)]("UserRole")
-    {
-        def id                  = column[Long]("id", O PrimaryKey, O AutoInc)
-        def user_id             = column[Long]("user_id")
-        def institution_id      = column[Long]("institution_id")
-        def department          = column[String]("department")
-        def url                 = column[String]("url")
-        def location            = column[String]("location")
-        
-        def * = id ~ user_id ~ institution_id ~ department ~ url ~ location
-    }
-    
-    object RoleSOTags extends Table[(Long, Long)]("RoleSOTags")
-    {
-        def role_id             = column[Long]("role_id")
-        def tag_id              = column[Long]("tag_id")
-        
-        def * = role_id ~ tag_id
-    }
-    
-    object RoleSectorTags extends Table[(Long, Long)]("RoleSectorTags")
-    {
-        def role_id             = column[Long]("role_id")
-        def tag_id              = column[Long]("tag_id")
-        
-        def * = role_id ~ tag_id
-    }
-    
-    object Tags extends Table[(Long, String)]("Tags")
-    {
-        def id                  = column[Long]("id", O PrimaryKey, O AutoInc)
-        def name                = column[String]("name")
-        
-        def * = id ~ name
-    }
-    
-    // Top tags for a user, including counts
-    object UserTags extends Table[(Long, Long, Long)]("UserTags")
-    {
-        def tag_id              = column[Long]("tag_id")
-        def user_id             = column[Long]("user_id")
-        def count               = column[Long]("count")
-        
-        def * = tag_id ~ user_id ~ count
-    }
-    
-    // Top tags for a hierarchy area, including counts
-    object TagMap extends Table[(Long, Long, Long)]("TagMap")
-    {
-        def dh_id               = column[Long]("dh_id")
-        def tag_id              = column[Long]("tag_id")
-        def count               = column[Long]("count")
-        
-        def * = dh_id ~ tag_id ~ count
-    }
-    
-    // Users for a hierarchy area
-    object UserMap extends Table[(Long, Long)]("UserMap")
-    {
-        def dh_id               = column[Long]("dh_id")
-        def user_id             = column[Long]("user_id")
-        
-        def * = dh_id ~ user_id
-    }
-    
-    object DataHierarchy extends Table[(Long, Int, Double, Double, Int, Int, Long, String)]("DataHierarchy")
-    {
-        def id                  = column[Long]("id", O PrimaryKey, O AutoInc)
-        def level               = column[Int]("level")
-        def longitude           = column[Double]("longitude")
-        def latitude            = column[Double]("latitude")
-        def count               = column[Int]("count")
-        def maxRep              = column[Int]("maxRep")
-        def maxRepUid           = column[Long]("maxRepUid")
-        def label               = column[String]("label")
-        
-        def * = id ~ level ~ longitude ~ latitude ~ count ~ maxRep ~ maxRepUid ~ label
-    }
-    
-    
-    // A sensible radius threshold seems to be 40km (40,000)
-    object Locations extends Table[(String, Double, Double, Double)]("Locations")
-    {
-        def name                = column[String]("name", O PrimaryKey)
-        def longitude           = column[Double]("longitude")
-        def latitude            = column[Double]("latitude")
-        def radius              = column[Double]("radius")
-        
-        def * = name ~ longitude ~ latitude ~ radius
-    }
-    
-    object Users extends Table[(Long, String, Long, Long, Long, Int, Int, String, String, Int, Int, Int)]("Users")
-    {
-        def user_id             = column[Long]("user_id", O PrimaryKey)
-        def display_name        = column[String]("display_name")
-        def creation_date       = column[Long]("creation_date")
-        def last_access_date    = column[Long]("last_access_date")
-        def reputation          = column[Long]("reputation")
-        def age                 = column[Int]("age")
-        def accept_rate         = column[Int]("accept_rate")
-        def website_url         = column[String]("website_url")
-        def location            = column[String]("location")
-        def badge_gold          = column[Int]("badge_gold")
-        def badge_silver        = column[Int]("badge_silver")
-        def badge_bronze        = column[Int]("badge_bronze")
-        
-        def * = user_id ~ display_name ~ creation_date ~ last_access_date ~ reputation ~
-                age ~ accept_rate ~ website_url ~ location ~ badge_gold ~ badge_silver ~ badge_bronze
-    }
-    
-    // TODO: Add time submitted and completed column
-    object Jobs extends Table[(String, String, Double, String, java.sql.Timestamp, java.sql.Timestamp)]("Jobs")
-    {
-        def job_id              = column[String]("job_id", O PrimaryKey)
-        def name                = column[String]("name")
-        def progress            = column[Double]("progress")
-        def status              = column[String]("status")
-        def start_time          = column[java.sql.Timestamp]("start_time")
-        def end_time            = column[java.sql.Timestamp]("end_time")
-        
-        def * = job_id ~ name ~ progress ~ status ~ start_time ~ end_time
-    }
-}
-
-
-object Global extends GlobalSettings {
-
-  override def onStart(app: Application) {
-    Logger.info("Application has started")
-    
-    implicit val ipapp = app
-    // Clear out any jobs from a previous run...
-    val db = Database.forDataSource(DB.getDataSource())
-    db.withSession
-    {
-        ( for ( r <- CriticalMassTables.Jobs ) yield r ).mutate( _.delete )
-    }
-  }  
-  
-  override def onStop(app: Application) {
-    Logger.info("Application shutdown...")
-  }  
-    
-}
-
-
-package controllers
-{
-
-object Dispatch
-{
-    import dispatch._
-    
-    lazy val h = new Http
-    
-    def pullJSON( baseUrl : String, params : List[(String, String)] ) =
-    {
-        import java.net.URLEncoder.encode
-        
-        val fullUrl = baseUrl + "?" + params.map( x => encode(x._1, "utf-8") + "=" + encode(x._2, "utf-8") ).mkString("&")
-        val u = url( fullUrl )
-        val res = h(u as_str)   
-        val j = JsonParser.parse(res)
-        
-        j
-    }
-}
-
-object WithDbSession
-{
-    def apply[T]( block : => T )( implicit app : Application ) : T =
-    {
-        val db = Database.forDataSource(DB.getDataSource())
-
-        db.withSession(block)
-    }
-}
-
-object JobRegistry
-{
-    class JobStatus(
-        val id : String,
-        val name : String,
-        val progress : Double,
-        val status : String,
-        val startTime : java.sql.Timestamp,
-        val endTime : java.sql.Timestamp )
-    
-    def getJobs( implicit app : Application ) : List[JobStatus] = WithDbSession
-    {
-        WithDbSession
-        {
-            ( for ( r <- CriticalMassTables.Jobs ) yield r ).list.map( x => new JobStatus( x._1, x._2, x._3, x._4, x._5, x._6 ) )
-        }
-    }
-    
-    def submit( name : String, workFn : ((Double, String) => Unit) => Unit )( implicit app : Application ) =
-    {
-        import play.api.libs.concurrent.Akka
-        
-        // Register job in db
-        val uuid = java.util.UUID.randomUUID().toString
-        WithDbSession
-        {
-            val now = new java.sql.Timestamp( (new java.util.Date()).getTime )
-            CriticalMassTables.Jobs insert (uuid, name, 0.0, "Submitted", now, now )
-        }
-        
-        // Submit future
-        Akka.future
-        {
-            // Call the work function, passing in a callback to update progress and status
-            try
-            {
-                workFn( (progress : Double, status : String ) =>
-                {
-                    WithDbSession
-                    {
-                        val job = ( for ( r <- CriticalMassTables.Jobs if r.job_id === uuid ) yield r )
-                        
-                        job.mutate ( m =>
-                        {
-                            m.row = m.row.copy(_3 = progress, _4 = status )
-                        } )
-                    }
-                } )
-                
-                // Set status to complete
-                WithDbSession
-                {
-                    ( for ( r <- CriticalMassTables.Jobs if r.job_id === uuid ) yield r ).mutate( _.delete )
-                }
-            }
-            catch
-            {
-                case e => { println( "Exception in async job: " + e.toString ); throw e }
-            }
-            
-            
-        }
-        
-        uuid
-    }
-}
 
 
 case class SupplementaryData(
@@ -483,6 +218,18 @@ object Application extends Controller
                 statusFn( i.toDouble / 100.0, "Status: " + i )
                 Thread.sleep(1000)
             }
+        } )
+        Ok( "Submitted: " + uuid )
+    }
+    
+    def pullUsersJob = Action
+    {
+        val uuid = JobRegistry.submit( "Test job",
+        { statusFn =>
+            
+            val db = Database.forDataSource(DB.getDataSource())
+            val userFetch = new processing.UserScraper(db)
+            userFetch.run( statusFn )
         } )
         Ok( "Submitted: " + uuid )
     }
@@ -821,4 +568,3 @@ object Application extends Controller
   
 }
 
-}
