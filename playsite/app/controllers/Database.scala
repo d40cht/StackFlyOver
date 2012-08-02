@@ -22,16 +22,16 @@ object CriticalMassTables
         def * = id ~ name
     }
     
-    object UserRole extends Table[(Long, Long, Long, String, String, String)]("UserRole")
+    object UserRole extends Table[(Long, Long, Long, String, String, Long)]("UserRole")
     {
         def id                  = column[Long]("id", O PrimaryKey, O AutoInc)
         def user_id             = column[Long]("user_id")
         def institution_id      = column[Long]("institution_id")
         def department          = column[String]("department")
         def url                 = column[String]("url")
-        def location            = column[String]("location")
+        def location_name_id    = column[Long]("location_id")
         
-        def * = id ~ user_id ~ institution_id ~ department ~ url ~ location
+        def * = id ~ user_id ~ institution_id ~ department ~ url ~ location_name_id
     }
     
     object RoleSOTags extends Table[(Long, Long)]("RoleSOTags")
@@ -103,17 +103,25 @@ object CriticalMassTables
     
     
     // A sensible radius threshold seems to be 40km (40,000)
-    object Locations extends Table[(String, Double, Double, Double)]("Locations")
+    object Location extends Table[(Long, Double, Double, Double)]("Location")
     {
-        def name                = column[String]("name", O PrimaryKey)
+        def name_id             = column[Long]("name_id", O PrimaryKey)
         def longitude           = column[Double]("longitude")
         def latitude            = column[Double]("latitude")
         def radius              = column[Double]("radius")
         
-        def * = name ~ longitude ~ latitude ~ radius
+        def * = name_id ~ longitude ~ latitude ~ radius
     }
     
-    object Users extends Table[(Long, String, Long, Long, Long, Int, Int, String, String, Int, Int, Int)]("Users")
+    object LocationName extends Table[(Long, String)]("LocationName")
+    {
+        def id                  = column[Long]("id", O PrimaryKey)
+        def name                = column[String]("name")
+        
+        def * = id ~ name
+    }
+    
+    object Users extends Table[(Long, String, Long, Long, Long, Int, Int, String, Long, Int, Int, Int)]("Users")
     {
         def user_id             = column[Long]("user_id", O PrimaryKey)
         def display_name        = column[String]("display_name")
@@ -123,13 +131,13 @@ object CriticalMassTables
         def age                 = column[Int]("age")
         def accept_rate         = column[Int]("accept_rate")
         def website_url         = column[String]("website_url")
-        def location            = column[String]("location")
+        def location_name_id    = column[Long]("location_id")
         def badge_gold          = column[Int]("badge_gold")
         def badge_silver        = column[Int]("badge_silver")
         def badge_bronze        = column[Int]("badge_bronze")
         
         def * = user_id ~ display_name ~ creation_date ~ last_access_date ~ reputation ~
-                age ~ accept_rate ~ website_url ~ location ~ badge_gold ~ badge_silver ~ badge_bronze
+                age ~ accept_rate ~ website_url ~ location_name_id ~ badge_gold ~ badge_silver ~ badge_bronze
     }
     
     // TODO: Add time submitted and completed column
