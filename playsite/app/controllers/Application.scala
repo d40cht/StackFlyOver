@@ -153,18 +153,6 @@ object Application extends Controller
         Ok( "Submitted: " + uuid )
     }
     
-    def pullUsersJob = Action
-    {
-        val uuid = JobRegistry.submit( "Test job",
-        { statusFn =>
-            
-            val db = Database.forDataSource(DB.getDataSource())
-            val userFetch = new processing.UserScraper(db)
-            userFetch.run( statusFn )
-        } )
-        Ok( "Submitted: " + uuid )
-    }
-    
     def listJobs = Action
     {
         val jobs = JobRegistry.getJobs
@@ -172,13 +160,6 @@ object Application extends Controller
         Ok(compact(render(jobs.map( x => ("name" -> x.name) ~ ("progress" -> x.progress) ~ ("status" -> x.status) ))))
     }
         
-    def refineUser() = SessionCacheAction(requireLogin=true)
-    {
-        (request, sessionCache) =>
-        
-        val currUser = sessionCache.getAs[UserData]("user").get
-        Ok(views.html.refineuser(currUser, userForm, None))
-    }
     
     def editUserRole( role_id : Long ) = SessionCacheAction(requireLogin=true)
     {
@@ -287,20 +268,6 @@ object Application extends Controller
         )
     }
     
-    def exampleJob = Action
-    {
-        val uuid = JobRegistry.submit( "Test job",
-        { statusFn =>
-            
-            for ( i <- 0 until 100 )
-            {
-                statusFn( i.toDouble / 100.0, "Status: " + i )
-                Thread.sleep(1000)
-            }
-        } )
-        Ok( "Submitted: " + uuid )
-    }
-    
     def pullUsersJob = Action
     {
         val uuid = JobRegistry.submit( "User scrape job",
@@ -313,19 +280,12 @@ object Application extends Controller
         Ok( "Submitted: " + uuid )
     }
     
-    def listJobs = Action
-    {
-        val jobs = JobRegistry.getJobs
-        
-        Ok(compact(render(jobs.map( x => ("name" -> x.name) ~ ("progress" -> x.progress) ~ ("status" -> x.status) ))))
-    }
-        
     def refineUser() = SessionCacheAction(requireLogin=true)
     {
         (request, sessionCache) =>
         
         val currUser = sessionCache.getAs[UserData]("user").get
-        Ok(views.html.refineuser(currUser, userForm))
+        Ok(views.html.refineuser(currUser, userForm, None))
     }
     
     def userHome() = SessionCacheAction(requireLogin=true)
