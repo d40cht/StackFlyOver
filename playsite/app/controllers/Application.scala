@@ -379,7 +379,7 @@ object Application extends Controller
     {
         (request, sessionCache) =>
         
-        val jobs = JobRegistry.getJobs
+        val jobs = JobRegistry.getJobs.sortWith( (x, y) => x.startTime.after( y.startTime ) )
         
         WithDbSession
         {
