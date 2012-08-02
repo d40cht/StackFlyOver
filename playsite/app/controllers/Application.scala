@@ -37,7 +37,7 @@ object Application extends Controller
         def isAdmin = (uid == 415313)
     }
 
-    case class UserRole( val institutionName : String, val url : String, val department : String, val location : String, val soTags : List[String], val sectorTags : List[String] )
+    case class UserRole( val id : Long, val institutionName : String, val url : String, val department : String, val location : String, val soTags : List[String], val sectorTags : List[String] )
     
     val stackOverFlowKey = "5FUHVgHRGHWbz9J5bEy)Ng(("
     val stackOverFlowSecretKey = "aL1DlUG5A7M96N48t2*k0w(("
@@ -160,6 +160,13 @@ object Application extends Controller
         Ok(compact(render(jobs.map( x => ("name" -> x.name) ~ ("progress" -> x.progress) ~ ("status" -> x.status) ))))
     }
         
+    def refineUser( role_id : Option[Long] ) = SessionCacheAction(requireLogin=true)
+    {
+        (request, sessionCache) =>
+        
+        val currUser = sessionCache.getAs[UserData]("user").get
+        Ok(views.html.refineuser(currUser, userForm, role_id))
+    }
     
     def editUserRole( role_id : Long ) = SessionCacheAction(requireLogin=true)
     {
@@ -192,7 +199,7 @@ object Application extends Controller
                     on (_.tag_id is _.id)
                     if roleTags.role_id === rid ) yield tags.name ).list
                 
-                new UserRole( instname, insturl, dept, loc, soTags, sectorTags )   
+                new UserRole( rid, instname, insturl, dept, loc, soTags, sectorTags )   
             }
             
             val f = userForm.fill(new SupplementaryData( res.location, res.institutionName, res.url, res.department, res.soTags.mkString(";"), res.sectorTags.mkString(";") ))
@@ -280,13 +287,6 @@ object Application extends Controller
         Ok( "Submitted: " + uuid )
     }
     
-    def refineUser() = SessionCacheAction(requireLogin=true)
-    {
-        (request, sessionCache) =>
-        
-        val currUser = sessionCache.getAs[UserData]("user").get
-        Ok(views.html.refineuser(currUser, userForm, None))
-    }
     
     def userHome() = SessionCacheAction(requireLogin=true)
     {
@@ -318,7 +318,7 @@ object Application extends Controller
                     on (_.tag_id is _.id)
                     if roleTags.role_id === rid ) yield tags.name ).list
                 
-                new UserRole( instname, insturl, dept, loc, soTags, sectorTags )   
+                new UserRole( rid, instname, insturl, dept, loc, soTags, sectorTags )   
             }
 
             Ok(views.html.userhome(user, res.toList))
@@ -504,7 +504,7 @@ object Application extends Controller
             val checkRoles = ( for ( r <- CriticalMassTables.UserRole if r.user_id === meuid.toLong ) yield r.id ).list
             if ( checkRoles.isEmpty )
             {
-                Redirect(routes.Application.refineUser)
+                Redirect(routes.Application.refineUser(None))
             }
             else
             {

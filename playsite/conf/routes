@@ -5,7 +5,7 @@
 # Home page
 GET     /                           controllers.Application.index
 GET     /admin                      controllers.Application.admin
-GET     /refineUser                 controllers.Application.refineUser
+GET     /refineUser                 controllers.Application.refineUser( role_id : Option[Long] )
 GET     /exampleJob                 controllers.Application.exampleJob
 GET     /pullUsersJob               controllers.Application.pullUsersJob
 GET     /listJobs                   controllers.Application.listJobs
