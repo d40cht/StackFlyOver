@@ -160,12 +160,12 @@ object Application extends Controller
         Ok(compact(render(jobs.map( x => ("name" -> x.name) ~ ("progress" -> x.progress) ~ ("status" -> x.status) ))))
     }
         
-    def refineUser( role_id : Option[Long] ) = SessionCacheAction(requireLogin=true)
+    def refineUser() = SessionCacheAction(requireLogin=true)
     {
         (request, sessionCache) =>
         
         val currUser = sessionCache.getAs[UserData]("user").get
-        Ok(views.html.refineuser(currUser, userForm, role_id))
+        Ok(views.html.refineuser(currUser, userForm, None))
     }
     
     def editUserRole( role_id : Long ) = SessionCacheAction(requireLogin=true)
@@ -504,7 +504,7 @@ object Application extends Controller
             val checkRoles = ( for ( r <- CriticalMassTables.UserRole if r.user_id === meuid.toLong ) yield r.id ).list
             if ( checkRoles.isEmpty )
             {
-                Redirect(routes.Application.refineUser(None))
+                Redirect(routes.Application.refineUser)
             }
             else
             {
