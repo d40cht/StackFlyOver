@@ -20,8 +20,7 @@ case class SupplementaryData(
     val institutionURL : String,
     val institutionDepartment : String,
     val soTags : String,
-    val sectorTags : String,
-    val anonymize : Boolean )
+    val sectorTags : String )
     
 
 
@@ -38,7 +37,7 @@ object Application extends Controller
         def isAdmin = (uid == 415313)
     }
 
-    case class UserRole( val institutionName : String, val url : String, val department : String, val location : String, val soTags : List[String], val sectorTags : List[String], val anonymize : Boolean )
+    case class UserRole( val institutionName : String, val url : String, val department : String, val location : String, val soTags : List[String], val sectorTags : List[String] )
     
     val stackOverFlowKey = "5FUHVgHRGHWbz9J5bEy)Ng(("
     val stackOverFlowSecretKey = "aL1DlUG5A7M96N48t2*k0w(("
@@ -135,10 +134,90 @@ object Application extends Controller
             "InstitutionURL"    -> text,
             "InstitutionDepartment"	-> text,
             "SOTags"            -> text,
-            "SectorTags"        -> text,
-            "Anonymize"         -> boolean
+            "SectorTags"        -> text
         )(SupplementaryData.apply)(SupplementaryData.unapply)
     )
+
+    
+    def exampleJob = Action
+    {
+        val uuid = JobRegistry.submit( "Test job",
+        { statusFn =>
+            
+            for ( i <- 0 until 100 )
+            {
+                statusFn( i.toDouble / 100.0, "Status: " + i )
+                Thread.sleep(1000)
+            }
+        } )
+        Ok( "Submitted: " + uuid )
+    }
+    
+    def pullUsersJob = Action
+    {
+        val uuid = JobRegistry.submit( "Test job",
+        { statusFn =>
+            
+            val db = Database.forDataSource(DB.getDataSource())
+            val userFetch = new processing.UserScraper(db)
+            userFetch.run( statusFn )
+        } )
+        Ok( "Submitted: " + uuid )
+    }
+    
+    def listJobs = Action
+    {
+        val jobs = JobRegistry.getJobs
+        
+        Ok(compact(render(jobs.map( x => ("name" -> x.name) ~ ("progress" -> x.progress) ~ ("status" -> x.status) ))))
+    }
+        
+    def refineUser() = SessionCacheAction(requireLogin=true)
+    {
+        (request, sessionCache) =>
+        
+        val currUser = sessionCache.getAs[UserData]("user").get
+        Ok(views.html.refineuser(currUser, userForm, None))
+    }
+    
+    def editUserRole( role_id : Long ) = SessionCacheAction(requireLogin=true)
+    {
+        (request, sessionCache) =>
+        
+        val currUser = sessionCache.getAs[UserData]("user").get
+        
+        WithDbSession
+        {
+            // Get role from id with location and two types of tags
+            val roleData = ( for ( Join(role, institution) <-
+                CriticalMassTables.UserRole innerJoin
+                CriticalMassTables.Institution
+                on (_.institution_id is _.id)
+                if role.id === role_id )
+                yield role.id ~ institution.name ~ role.department ~ role.url ~ role.location ).list.head
+
+            val res =
+            {
+                val (rid, instname, dept, insturl, loc) = roleData
+                val soTags = ( for ( Join(roleTags, tags) <-
+                    CriticalMassTables.RoleSOTags innerJoin
+                    CriticalMassTables.Tags
+                    on (_.tag_id is _.id)
+                    if roleTags.role_id === rid ) yield tags.name ).list
+                    
+                val sectorTags = ( for ( Join(roleTags, tags) <-
+                    CriticalMassTables.RoleSectorTags innerJoin
+                    CriticalMassTables.SectorTags
+                    on (_.tag_id is _.id)
+                    if roleTags.role_id === rid ) yield tags.name ).list
+                
+                new UserRole( instname, insturl, dept, loc, soTags, sectorTags )   
+            }
+            
+            val f = userForm.fill(new SupplementaryData( res.location, res.institutionName, res.url, res.department, res.soTags.mkString(";"), res.sectorTags.mkString(";") ))
+            Ok(views.html.refineuser(currUser, f, Some(role_id)))
+        }
+    }
     
     def refineUserAccept = SessionCacheAction(requireLogin=true)
     {
@@ -208,47 +287,6 @@ object Application extends Controller
         )
     }
     
-    def exampleJob = Action
-    {
-        val uuid = JobRegistry.submit( "Test job",
-        { statusFn =>
-            
-            for ( i <- 0 until 100 )
-            {
-                statusFn( i.toDouble / 100.0, "Status: " + i )
-                Thread.sleep(1000)
-            }
-        } )
-        Ok( "Submitted: " + uuid )
-    }
-    
-    def pullUsersJob = Action
-    {
-        val uuid = JobRegistry.submit( "Test job",
-        { statusFn =>
-            
-            val db = Database.forDataSource(DB.getDataSource())
-            val userFetch = new processing.UserScraper(db)
-            userFetch.run( statusFn )
-        } )
-        Ok( "Submitted: " + uuid )
-    }
-    
-    def listJobs = Action
-    {
-        val jobs = JobRegistry.getJobs
-        
-        Ok(compact(render(jobs.map( x => ("name" -> x.name) ~ ("progress" -> x.progress) ~ ("status" -> x.status) ))))
-    }
-        
-    def refineUser() = SessionCacheAction(requireLogin=true)
-    {
-        (request, sessionCache) =>
-        
-        val currUser = sessionCache.getAs[UserData]("user").get
-        Ok(views.html.refineuser(currUser, userForm))
-    }
-    
     def userHome() = SessionCacheAction(requireLogin=true)
     {
         (request, sessionCache) =>
@@ -279,7 +317,7 @@ object Application extends Controller
                     on (_.tag_id is _.id)
                     if roleTags.role_id === rid ) yield tags.name ).list
                 
-                new UserRole( instname, insturl, dept, loc, soTags, sectorTags, false )   
+                new UserRole( instname, insturl, dept, loc, soTags, sectorTags )   
             }
 
             Ok(views.html.userhome(user, res.toList))
