@@ -224,7 +224,7 @@ object Application extends Controller
     
     def pullUsersJob = Action
     {
-        val uuid = JobRegistry.submit( "Test job",
+        val uuid = JobRegistry.submit( "User scrape job",
         { statusFn =>
             
             val db = Database.forDataSource(DB.getDataSource())
