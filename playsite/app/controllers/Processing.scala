@@ -355,7 +355,7 @@ class UserScraper( val db : Database )
                     )
                     count += 1
                 }
-                statusFn( 0.0, "New users: %d".format( count.toString ) )
+                statusFn( 0.0, "New users: %d".format( count ) )
                 
                 Thread.sleep(500)
             }
