@@ -66,14 +66,21 @@ class MarkerClusterer( val db : Database )
     }
     
     def run( statusFn : (Double, String) => Unit ) =
-    {   
+    {
         println( "Deleting old data" )
         db withSession
         {
+            import org.scalaquery.ql.extended.{ExtendedTable => Table}
+            
+            def rowCount[T]( table : Table[T] ) = Query( ( for ( r <- table ) yield r ).count ).first
+            
             ( for ( r <- CriticalMassTables.DataHierarchy ) yield r ).mutate( _.delete )
-            ( for ( r <- CriticalMassTables.TagMap ) yield r ).mutate( _.delete )
-            ( for ( r <- CriticalMassTables.UserMap ) yield r ).mutate( _.delete )
-            //( for ( r <- CriticalMassTables.InstitutionMap ) yield r ).mutate( _.delete )
+
+            // The foreign key constraint should clear these out            
+            assert( rowCount( CriticalMassTables.DataHierarchy ) == 0 )
+            assert( rowCount( CriticalMassTables.TagMap ) == 0 )
+            assert( rowCount( CriticalMassTables.UserMap ) == 0 )
+            assert( rowCount( CriticalMassTables.InstitutionMap ) == 0 )
         }
         
         case class Cluster( val lon : Double, val lat : Double, val nameIds : List[Long] )
@@ -94,8 +101,37 @@ class MarkerClusterer( val db : Database )
             def tupleCoords = (lon, lat)
         }
         
-        val locations = ( for ( ln <- CriticalMassTables.Location if ln.radius >= 0.0 && ln.radius < 100000.0 )
-            yield ln.name_id ~ ln.longitude ~ ln.latitude ).list
+        case class LocationData( val userCount : Int, val maxRep : Int, val tagData : List[(Int, Int)], val institutions : Set[Int] )
+        
+        val allData = db withSession
+        {
+            statusFn( 0.0, "Pulling in locations for clustering" )
+            val locations = ( for ( ln <- CriticalMassTables.Location if ln.radius >= 0.0 && ln.radius < 100000.0 )
+                yield ln.name_id ~ ln.longitude ~ ln.latitude ).list
+        
+            var lastProgress = -1.0
+            val allData = for ( (loc, i) <- locations.zipWithIndex ) yield
+            {
+                val (id, lon, lat) = loc
+                
+                val progress = (100.0*(i.toDouble/locations.size)).toInt.toDouble
+                if ( progress != lastProgress ) statusFn( progress, "Pulling data for locations" )
+                lastProgress = progress
+                
+                val institutions = (for (r <- CriticalMassTables.UserRole if r.location_name_id === id ) yield r.institution_id).list.toSet
+                val users = (for (r <- CriticalMassTables.Users if r.location_name_id === id ) yield r.user_id ~ r.reputation).list
+                val tags = (for (
+                    r <- CriticalMassTables.Users;
+                    t <- CriticalMassTables.UserTags;
+                    _ <- Query groupBy t.tag_id;
+                    if r.user_id === t.user_id && r.location_name_id === id ) yield t.tag_id ~ t.count.sum).list
+                val locData = new LocationData( users.size, users.map(_._2.toInt).foldLeft(0)(_ max _), tags.map( x => (x._1.toInt, x._2.getOrElse(0L).toInt) ), institutions.map(_.toInt) )
+                
+                (loc, locData)
+            }
+            
+            allData
+        }
                 
         /*class UserTag( val id : Long, val name : String, val count : Long )        
         class UserData( val uid : Long, val reputation : Long, val lon : Double, val lat : Double, val tags : List[UserTag] )
@@ -131,12 +167,12 @@ class MarkerClusterer( val db : Database )
         // of points in range
         println( "  done" )*/
         
-        statusFn( 0.0, "pulled in %d locations".format( locations.size ) )
+        statusFn( 0.0, "pulled in %d locations".format( allData.size ) )
         
         // Run through the google map scales, merging as appropriate
         var mergeSet = immutable.HashMap[(Double, Double), Cluster]()
         var debugCount = 0
-        for ( (loc_id, lon, lat) <- locations )
+        for ( ((loc_id, lon, lat), locData) <- allData )
         {
             val c = new Cluster( lon, lat, List(loc_id) )
             val cn = if ( mergeSet contains c.tupleCoords )

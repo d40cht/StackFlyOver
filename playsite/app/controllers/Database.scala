@@ -87,6 +87,15 @@ object CriticalMassTables
         def * = dh_id ~ user_id
     }
     
+    // Institutions for a hierarchy area
+    object InstitutionMap extends Table[(Long, Long)]("InstitutionMap")
+    {
+        def dh_id               = column[Long]("dh_id")
+        def institution_id      = column[Long]("institution_id")
+        
+        def * = dh_id ~ institution_id
+    }
+    
     object DataHierarchy extends Table[(Long, Int, Double, Double, Int, Int, Long, String)]("DataHierarchy")
     {
         def id                  = column[Long]("id", O PrimaryKey, O AutoInc)
@@ -153,3 +162,4 @@ object CriticalMassTables
         def * = job_id ~ name ~ progress ~ status ~ start_time ~ end_time
     }
 }
+
