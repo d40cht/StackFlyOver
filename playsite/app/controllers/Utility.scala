@@ -102,6 +102,7 @@ object JobRegistry
             {
                 workFn( (progress : Double, status : String ) =>
                 {
+                    println( progress.toString + ": " + status )
                     WithDbSession
                     {
                         val job = ( for ( r <- CriticalMassTables.Jobs if r.job_id === uuid ) yield r )
@@ -123,25 +124,26 @@ object JobRegistry
             {
                 case e : Throwable =>
                 {
-                    println( "Boom1")
                     println( e.toString )
-                    println( "Boom2" )
                     println( e.getStackTrace.map(_.toString).mkString(";") )
-                    println( "Boom3")
                     // Set status to error
                     WithDbSession
                     {
-                        println( "Boom4" )
                         val job = ( for ( r <- CriticalMassTables.Jobs if r.job_id === uuid ) yield r )
                          
-                        println( "Boom5" )
-                        job.mutate ( m =>
+                        try
                         {
-                            val message = e.toString + ": " + e.getStackTrace.map(_.toString).mkString(";")
-                            m.row = m.row.copy(_3 = 0.0, _4 = message )
-                        } )
+                            job.mutate ( m =>
+                            {
+                                val message = e.toString + ": " + e.getStackTrace.map(_.toString).mkString(";")
+                                m.row = m.row.copy(_3 = 0.0, _4 = message.take(255) )
+                            } )
+                        }
+                        catch
+                        {
+                            case e : Throwable => println( "Boof boof boog: " + e.toString )
+                        }
                     }
-                    println( "Boom6" )
                 }
                 case e =>
                 {
