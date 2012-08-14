@@ -461,28 +461,81 @@ object Application extends Controller
         println( "Requesting institutions for: " + dh_id )
         WithDbSession
         {
-            /*val topInsts = (for (Join(instMap, inst) <-
-                CriticalMassTables.InstitutionMap innerJoin
-                CriticalMassTables.Institution on (_.institution_id is _.id)
-                if instMap.dh_id === dh_id) yield inst.name ).list
-                
-                println( "  " + topInsts.size )
-
-            val instData = topInsts.map( t => ("name" -> t) )*/
-            val instData = (for
+            println( "Here0")
+            val roleData = (for
             {
                 userMap <- CriticalMassTables.UserMap;
                 userRole <- CriticalMassTables.UserRole if userMap.user_id === userRole.user_id;
                 locationName <- CriticalMassTables.LocationName if userRole.location_name_id === locationName.id;
                 institution <- CriticalMassTables.Institution if userRole.institution_id === institution.id
                 if userMap.dh_id === dh_id
-            } yield institution.name ~ userRole.url ~ locationName.name ).list
+            } yield institution.name ~ userRole.url ~ locationName.name ~ userRole.id ~ userRole.user_id ).list
+            
+            class InstData
+            {
+                var userCount = 0
+                private var urlMap = Map[String, Int]()
+                private var locMap = Map[String, Int]()
+                private var soTagMap = Map[String, Int]()
+                private var sectorTagMap = Map[String, Int]()
+                
+                private def updateMap( m : Map[String, Int], s : String, c : Int ) =
+                {
+                    val prev = m.getOrElse(s, 0)
+                    m + (s -> (prev+c))
+                }
+                
+                def update( url : String, loc : String, soTags : List[(String, Int)], sectorTags : List[String] )
+                {
+                    userCount += 1
+                    urlMap = updateMap(urlMap, url, 1)
+                    locMap = updateMap(locMap, loc, 1)
+                    soTags.foreach( t => { soTagMap = updateMap(soTagMap, t._1, t._2) } )
+                    sectorTags.foreach( t => { sectorTagMap = updateMap(sectorTagMap, t, 1) } )
+                }
+                
+                def location = locMap.toList.sortWith(_._2 > _._2).head._1
+                def url = urlMap.toList.sortWith(_._2 > _._2).head._1
+                def soTags = soTagMap.toList.sortWith(_._2 > _._2).take(5).map(_._1).mkString( " " )
+                def sectorTags = sectorTagMap.toList.sortWith(_._2 > _._2).take(5).map(_._1).mkString( " " )
+            }
+            
+            var instData = Map[String, InstData]()
+            for ( (name, url, loc, role_id, user_id) <- roleData )
+            {
+                val d = if ( instData contains name )
+                {
+                    instData(name)
+                }
+                else
+                {
+                    val nd = new InstData()
+                    instData += name -> nd
+                    nd
+                }
+                
+                // Scrape tags for this user
+                val roleSOTags = (for
+                {
+                    userTag <- CriticalMassTables.UserTags;
+                    tag <- CriticalMassTables.Tags if userTag.tag_id === tag.id
+                    if userTag.user_id === user_id
+                } yield tag.name ~ userTag.count).list
+                
+                val roleSectorTags = (for (Join(roleSectorTags, tag) <-
+                    CriticalMassTables.RoleSectorTags innerJoin
+                    CriticalMassTables.SectorTags on (_.tag_id is _.id)
+                    if roleSectorTags.role_id === role_id) yield tag.name).list
+                
+                d.update( url, loc, roleSOTags.map(t => (t._1, t._2.toInt)), roleSectorTags )
+            }
 
-            Ok(compact(render("aaData" -> instData.map( t =>
-                ("name" -> "<a href=\"%s\">%s</a>".format( t._2, t._1 ) ) ~
-                ("location" -> t._3) ~
-                ("SOTags" -> "") ~
-                ("SectorTags" -> "")
+            Ok(compact(render("aaData" -> instData.toList.sortWith(_._2.userCount > _._2.userCount).map( t =>
+                ("count" -> t._2.userCount) ~
+                ("name" -> "<a href=\"%s\">%s</a>".format( t._2.url, t._1 ) ) ~
+                ("location" -> t._2.location) ~
+                ("SOTags" -> t._2.soTags) ~
+                ("SectorTags" -> t._2.sectorTags)
             ) ) ) )
         }
     }

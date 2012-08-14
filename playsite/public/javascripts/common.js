@@ -150,6 +150,7 @@
                                     "iDisplayLength":6,
                                     "sAjaxSource": "/markerInstitutions?dh_id=" + item.dh_id,
                                     "aoColumns": [
+                                        { "mDataProp": "count" },
                                         { "mDataProp": "name" },
                                         { "mDataProp": "location" },
                                         { "mDataProp": "SOTags" },
