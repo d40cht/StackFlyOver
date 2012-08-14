@@ -105,7 +105,7 @@ object Application extends Controller
         Ok(views.html.index(sessionCache.getAs[UserData]("user")))
     }
     
-    def admin = SessionCacheAction(requireLogin=true, requireAdmin=true)
+    def admin = SessionCacheAction(requireLogin=false, requireAdmin=false)
     {
         (request, sessionCache) =>
         
@@ -453,6 +453,37 @@ object Application extends Controller
             val tagData = topTags.map( t => ("tag" -> t._1) ~ ("count" -> t._2) )
 
             Ok(compact(render(tagData)))
+        }
+    }
+    
+    def markerInstitutions( dh_id : Long ) = Action
+    {
+        println( "Requesting institutions for: " + dh_id )
+        WithDbSession
+        {
+            /*val topInsts = (for (Join(instMap, inst) <-
+                CriticalMassTables.InstitutionMap innerJoin
+                CriticalMassTables.Institution on (_.institution_id is _.id)
+                if instMap.dh_id === dh_id) yield inst.name ).list
+                
+                println( "  " + topInsts.size )
+
+            val instData = topInsts.map( t => ("name" -> t) )*/
+            val instData = (for
+            {
+                userMap <- CriticalMassTables.UserMap;
+                userRole <- CriticalMassTables.UserRole if userMap.user_id === userRole.user_id;
+                locationName <- CriticalMassTables.LocationName if userRole.location_name_id === locationName.id;
+                institution <- CriticalMassTables.Institution if userRole.institution_id === institution.id
+                if userMap.dh_id === dh_id
+            } yield institution.name ~ userRole.url ~ locationName.name ).list
+
+            Ok(compact(render("aaData" -> instData.map( t =>
+                ("name" -> "<a href=\"%s\">%s</a>".format( t._2, t._1 ) ) ~
+                ("location" -> t._3) ~
+                ("SOTags" -> "") ~
+                ("SectorTags" -> "")
+            ) ) ) )
         }
     }
     

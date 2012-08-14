@@ -76,32 +76,33 @@ class MarkerClusterer( val db : Database )
             
             ( for ( r <- CriticalMassTables.DataHierarchy ) yield r ).mutate( _.delete )
 
-            // The foreign key constraint should clear these out            
+            //delete from "DataHierarchy"; delete from "InstitutionMap"; delete from "TagMap"; delete from "UserMap";
+            // The foreign key constraint should clear these out. But currently don't. Why?
             assert( rowCount( CriticalMassTables.DataHierarchy ) == 0 )
             assert( rowCount( CriticalMassTables.TagMap ) == 0 )
             assert( rowCount( CriticalMassTables.UserMap ) == 0 )
             assert( rowCount( CriticalMassTables.InstitutionMap ) == 0 )
         }
         
-        case class Cluster( val lon : Double, val lat : Double, val locData : List[LocationData] )
+        case class Cluster( val lon : Double, val lat : Double, val locDatum : LocationData )
         {
             def dist( other : Cluster ) = distfn( lon, lat, other.lon, other.lat )
             def merge( other : Cluster) : Cluster =
             {
-                val size = locData.size.toDouble
-                val sizeOther = other.locData.size.toDouble
+                val size = locDatum.userData.size.toDouble
+                val sizeOther = other.locDatum.userData.size.toDouble
                 val total = size + sizeOther
                 val newLon = (size/total) * lon + (sizeOther/total) * other.lon
                 val newLat = (size/total) * lat + (sizeOther/total) * other.lat
                 
-                new Cluster( newLon, newLat, locData ++ other.locData ) 
+                new Cluster( newLon, newLat, locDatum combine other.locDatum ) 
             }
             
             def coords = Array( lon, lat )
             def tupleCoords = (lon, lat)
         }
         
-        case class LocationData( val userIds : Set[Int], val maxRep : Int, val tagData : Map[Int, Int], val institutionIds : Set[Int] )
+        case class LocationData( val userData : List[(Int, Int)], val maxRep : Int, val tagData : Map[Int, Int], val institutionIds : Set[Int] )
         {
             def combine( other : LocationData ) =
             {
@@ -111,35 +112,53 @@ class MarkerClusterer( val db : Database )
                     val prevCount = combinedTags.getOrElse( tid, 0 )
                     combinedTags += (tid -> (prevCount + count))
                 }
-                new LocationData( userIds ++ other.userIds, maxRep max other.maxRep, combinedTags, institutionIds ++ other.institutionIds )
+                new LocationData( userData ++ other.userData, maxRep max other.maxRep, combinedTags, institutionIds ++ other.institutionIds )
             }
             
-            def userCount = userIds.size
+            def userCount = userData.size
+            def topUserIds = userData.sortWith( _._2 > _._2 ).map( _._1 ).take(1000)
+            def topTagData = tagData.toList.sortWith( _._2 > _._2 ).take(100)
         }
         
+        class Progress( val size : Int, val message : String )
+        {
+            var lastPercent = -1
+            
+            def update( count : Int )
+            {
+                val thisPercent = (100.0 * count.toDouble / size.toDouble).toInt
+                if ( thisPercent != lastPercent )
+                {
+                    statusFn( thisPercent, message )
+                    lastPercent = thisPercent
+                }
+            }
+        }
+        
+        var totalInstitutions = 0
         val allData = db withSession
         {
             statusFn( 0.0, "Pulling in locations for clustering" )
             val locations = ( for ( ln <- CriticalMassTables.Location if ln.radius >= 0.0 && ln.radius < 100000.0 )
                 yield ln.name_id ~ ln.longitude ~ ln.latitude ).list
         
-            var lastProgress = -1.0
+            val p = new Progress( locations.size, "Pulling data for locations" )
             val allData = for ( (loc, i) <- locations.zipWithIndex ) yield
             {
                 val (id, lon, lat) = loc
                 
-                val progress = (100.0*(i.toDouble/locations.size)).toInt.toDouble
-                if ( progress != lastProgress ) statusFn( progress, "Pulling data for locations" )
-                lastProgress = progress
+                p.update(i)
                 
                 val institutions = (for (r <- CriticalMassTables.UserRole if r.location_name_id === id ) yield r.institution_id).list.toSet
+                
+                totalInstitutions += institutions.size
                 val users = (for (r <- CriticalMassTables.Users if r.location_name_id === id ) yield r.user_id ~ r.reputation).list
                 val tags = (for (
                     r <- CriticalMassTables.Users;
                     t <- CriticalMassTables.UserTags;
                     _ <- Query groupBy t.tag_id;
                     if r.user_id === t.user_id && r.location_name_id === id ) yield t.tag_id ~ t.count.sum).list
-                val locData = new LocationData( users.map( _._1.toInt ).toSet, users.map(_._2.toInt).foldLeft(0)(_ max _), tags.map( x => (x._1.toInt, x._2.getOrElse(0L).toInt) ).toMap, institutions.map(_.toInt) )
+                val locData = new LocationData( users.map( x => (x._1.toInt, x._2.toInt) ), users.map(_._2.toInt).foldLeft(0)(_ max _), tags.map( x => (x._1.toInt, x._2.getOrElse(0L).toInt) ).toMap, institutions.map(_.toInt) )
                 
                 (loc, locData)
             }
@@ -147,20 +166,20 @@ class MarkerClusterer( val db : Database )
             allData
         }
 
-        statusFn( 0.0, "pulled in %d locations".format( allData.size ) )
+        statusFn( 0.0, "pulled in %d locations, %d institutions".format( allData.size, totalInstitutions ) )
         
         // Run through the google map scales, merging as appropriate
         var mergeSet = immutable.HashMap[(Double, Double), Cluster]()
         var debugCount = 0
         for ( ((loc_id, lon, lat), locDatum) <- allData )
         {
-            val c = new Cluster( lon, lat, List(locDatum) )
+            val c = new Cluster( lon, lat, locDatum )
             val cn = if ( mergeSet contains c.tupleCoords )
             {
                 val original = mergeSet(c.tupleCoords)
                 mergeSet -= c.tupleCoords
                 debugCount -= 1
-                new Cluster( c.lon, c.lat, locDatum :: original.locData )
+                new Cluster( c.lon, c.lat, locDatum combine original.locDatum )
             }
             else c
             
@@ -174,10 +193,10 @@ class MarkerClusterer( val db : Database )
         for ( (c, u) <- mergeSet ) mergeTree.insert( u.coords, u )
         
         // In metres?
-        var maxMergeDistance = 0.2
-        for ( level <- 16 to 0 by -1 )
+        var maxMergeDistance = 1.6
+        for ( level <- 13 to 0 by -1 )
         {
-            statusFn( 0.0, "Merge distance: %f %d".format( maxMergeDistance, mergeSet.size ) )
+            statusFn( 0.0, "Merge distance: %f %d (map scale: %d)".format( maxMergeDistance, mergeSet.size, level ) )
             
             var finished = false
             
@@ -229,13 +248,18 @@ class MarkerClusterer( val db : Database )
             
             statusFn( 0.0, "after merge: %d".format( mergeSet.size ) )
             
+            
+            
             db withSession
             {
-                for ( (coords, cluster) <- mergeSet )
+                val p = new Progress( mergeSet.size, "Loading hierarchy data into db" )
+                for ( ((coords, cluster), i) <- mergeSet.toList.zipWithIndex )
                 {
+                    p.update(i)
+                    
                     val dh = CriticalMassTables.DataHierarchy
                     
-                    val collapsed = cluster.locData.reduce( _ combine _ )
+                    val collapsed = cluster.locDatum
                     
                     val userCount = collapsed.userCount
                     val maxRep = collapsed.maxRep
@@ -252,14 +276,18 @@ class MarkerClusterer( val db : Database )
                         
                         val dhId = Query(scopeIdentity).first
                         
-                        for ( uid <- collapsed.userIds )
+                        for ( uid <- collapsed.topUserIds )
                         {
                             CriticalMassTables.UserMap insert ( (dhId, uid.toLong) )
                         }
                         
-                        for ( (tagId, count) <- collapsed.tagData.toList.sortWith( _._2 > _._2 ) )
+                        for ( (tagId, count) <- collapsed.topTagData )
                         {
-                            CriticalMassTables.TagMap insert( (dhId, tagId.toLong, count.toLong) )
+                            if ( count > 1 )
+                            {
+                                val logCount = scala.math.log(count.toLong.toDouble)
+                                CriticalMassTables.TagMap insert( (dhId, tagId.toLong, logCount.toLong) )
+                            }
                         }
                         
                         for ( instId <- collapsed.institutionIds )

@@ -18,6 +18,7 @@ object CriticalMassTables
     {
         def id                  = column[Long]("id", O PrimaryKey, O AutoInc)
         def name                = column[String]("name")
+        //def timestamp           = column[java.sql.Timestamp]("created")
         
         def * = id ~ name
     }
@@ -30,6 +31,7 @@ object CriticalMassTables
         def department          = column[String]("department")
         def url                 = column[String]("url")
         def location_name_id    = column[Long]("location_id")
+        //def timestamp           = column[java.sql.Timestamp]("created")
         
         def * = id ~ user_id ~ institution_id ~ department ~ url ~ location_name_id
     }
@@ -144,6 +146,7 @@ object CriticalMassTables
         def badge_gold          = column[Int]("badge_gold")
         def badge_silver        = column[Int]("badge_silver")
         def badge_bronze        = column[Int]("badge_bronze")
+        //def timestamp           = column[java.sql.Timestamp]("created")
         
         def * = user_id ~ display_name ~ creation_date ~ last_access_date ~ reputation ~
                 age ~ accept_rate ~ website_url ~ location_name_id ~ badge_gold ~ badge_silver ~ badge_bronze

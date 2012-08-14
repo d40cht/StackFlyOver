@@ -1,19 +1,21 @@
 
       
-      function refreshTable(oTable, source) {
-        table = oTable.dataTable();
-        oSettings = table.fnSettings();
+      function refreshTable(theTable, source)
+      {
+        var oSettings = theTable.fnSettings();
 
-        //Retrieve the new data with $.getJSON. You could use it ajax too
-        $.getJSON(source, null, function( json ) {
-            table.fnClearTable(this);
+        // Retrieve the new data with $.getJSON. You could use it ajax too
+        $.getJSON(source, null, function( json )
+        {
+            theTable.fnClearTable();
 
-            for (var i=0; i<json.aaData.length; i++) {
-                table.oApi._fnAddData(oSettings, json.aaData[i]);
+            for (var i=0; i<json.aaData.length; i++)
+            {
+                theTable.oApi._fnAddData(oSettings, json.aaData[i]);
             }
 
             oSettings.aiDisplay = oSettings.aiDisplayMaster.slice();
-            table.fnDraw();
+            theTable.fnDraw();
         });
     }
 
@@ -29,7 +31,8 @@
         var markersArray = [];
         var map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
         
-        var oTable = null;
+        var instTable = null;
+        var userTable = null;
       
         google.maps.event.addListener(map, 'idle', function ()
         {
@@ -104,12 +107,11 @@
                         }
                         
                         var markerClickFn = function() {
-                            //infowindow.open(map,smarker);
                           
                             // Reload the table with local users
-                            if ( oTable == null )
+                            if ( userTable == null )
                             {
-                                oTable = $('#example').dataTable( {
+                                userTable = $('#userData').dataTable( {
                                     // Disable sorting. Take what comes from the server
                                     "aaSorting": [],
                                     "sPaginationType": "full_numbers",
@@ -130,7 +132,34 @@
                             }
                             else
                             {
-                                refreshTable( oTable, "/markerUsers?dh_id=" + item.dh_id );
+                                refreshTable( userTable, "/markerUsers?dh_id=" + item.dh_id );
+                            }
+                            
+                            // Reload the table with local users
+                            if ( instTable == null )
+                            {
+                                instTable = $('#instData').dataTable( {
+                                    // Disable sorting. Take what comes from the server
+                                    "aaSorting": [],
+                                    "sPaginationType": "full_numbers",
+                                    "bProcessing": false,
+                                    "bAutoWidth":true,
+                                    "bFilter":false,
+                                    "bInfo":false,
+                                    "bLengthChange":false,
+                                    "iDisplayLength":6,
+                                    "sAjaxSource": "/markerInstitutions?dh_id=" + item.dh_id,
+                                    "aoColumns": [
+                                        { "mDataProp": "name" },
+                                        { "mDataProp": "location" },
+                                        { "mDataProp": "SOTags" },
+                                        { "mDataProp": "SectorTags" }
+                                    ]
+                                } );
+                            }
+                            else
+                            {
+                                refreshTable( instTable, "/markerInstitutions?dh_id=" + item.dh_id );
                             }
                             
                             $.getJSON("/markerTags?dh_id=" + item.dh_id,

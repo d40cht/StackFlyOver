@@ -20,9 +20,24 @@
         <input type="button" value="Add"/>
     </form>
     <br/> -->
-    <h4>Click map marker to list local users and tags:</h4>
-    <div id="tableWrapper" style="font-size:80%">
-    <table cellpadding="0" cellspacing="0" border="0" class="dataTable" id="example">
+    <h4>Click map marker to list local companies, users and tags:</h4>
+    
+    <div id="tableWrapper1" style="font-size:80%">
+    <table cellpadding="0" cellspacing="0" border="0" class="dataTable" id="instData">
+        <thead>
+            <tr>
+	            <th width="10%">Institution Name</th>
+	            <th width="15%">Location</th>
+	            <th width="15%">SO tags</th>
+	            <th width="15%">Sector tags</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    </div>
+    
+    <div id="tableWrapper2" style="font-size:80%">
+    <table cellpadding="0" cellspacing="0" border="0" class="dataTable" id="userData">
         <thead>
             <tr>
 	            <th width="10%">Reputation</th>

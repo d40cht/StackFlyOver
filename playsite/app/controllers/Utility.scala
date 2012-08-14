@@ -94,31 +94,34 @@ object JobRegistry
             CriticalMassTables.Jobs insert (uuid, name, 0.0, "Submitted", now, now )
         }
         
+        def reportProgressFn( progress : Double, status : String ) =
+        {
+            println( progress.toString + ": " + status )
+            WithDbSession
+            {
+                val job = ( for ( r <- CriticalMassTables.Jobs if r.job_id === uuid ) yield r )
+                
+                job.mutate ( m =>
+                {
+                    m.row = m.row.copy(_3 = progress, _4 = status )
+                } )
+            }
+        }
+        
         // Submit future
         Akka.future
         {
             // Call the work function, passing in a callback to update progress and status
             try
             {
-                workFn( (progress : Double, status : String ) =>
-                {
-                    println( progress.toString + ": " + status )
-                    WithDbSession
-                    {
-                        val job = ( for ( r <- CriticalMassTables.Jobs if r.job_id === uuid ) yield r )
-                        
-                        job.mutate ( m =>
-                        {
-                            m.row = m.row.copy(_3 = progress, _4 = status )
-                        } )
-                    }
-                } )
-                
+                workFn( reportProgressFn )
+               
+                reportProgressFn( 100.0, "Complete" )
                 // Set status to complete
-                WithDbSession
+                /*WithDbSession
                 {
                     ( for ( r <- CriticalMassTables.Jobs if r.job_id === uuid ) yield r ).mutate( _.delete )
-                }
+                }*/
             }
             catch
             {
