@@ -24,6 +24,7 @@ GET     /logout                     controllers.Application.logout
 GET     /markerUsers                controllers.Application.markerUsers( dh_id : Long )
 GET     /markerInstitutions         controllers.Application.markerInstitutions( dh_id : Long )
 GET     /markerTags                 controllers.Application.markerTags( dh_id : Long )
+GET     /userPage                   controllers.Application.userPage( user_id : Long )
 GET     /userHome                   controllers.Application.userHome
 
 

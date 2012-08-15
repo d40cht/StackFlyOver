@@ -32,9 +32,14 @@ object Application extends Controller
     import play.api.data.Forms._
 
     case class Pos( val name : String, val lon : Double, val lat : Double )
-    case class UserData( val accessToken : String, val expiry : Int, val uid : Int, val name : String )
+    
+    
+    case class UserAuth( val accessToken : String, val expiry : Int )
+    
+    case class UserData( val uid : Int, val name : String, val auth : Option[UserAuth] )
     {
-        def isAdmin = (uid == 415313)
+        def isLocallyAuthenticated = !auth.isEmpty
+        def isAdmin = isLocallyAuthenticated && (uid == 415313)
     }
 
     case class UserRole( val id : Long, val institutionName : String, val url : String, val department : String, val location : String, val soTags : List[String], val sectorTags : List[String] )
@@ -117,7 +122,7 @@ object Application extends Controller
             
             val userRoles = (for ( Join(role, user) <-
                 CriticalMassTables.UserRole innerJoin
-                CriticalMassTables.Users on (_.user_id is _.user_id) ) yield user.display_name ~ role.url).take(100).list
+                CriticalMassTables.Users on (_.user_id is _.user_id) ) yield user.user_id ~ user.display_name ~ role.url).take(100).list
             Ok(views.html.admin(sessionCache.getAs[UserData]("user"), userRoles, jobs))
         }
     }
@@ -310,14 +315,39 @@ object Application extends Controller
         Ok( "Submitted: " + uuid )
     }
     
-    def userHome() = SessionCacheAction(requireLogin=true)
+    private def getUserDetails( user_id : Long )( implicit sessionCache : SessionCache, dbSession : org.scalaquery.session.Session ) =
+    {
+        val inSession = sessionCache.getAs[UserData]("user")
+        
+        inSession match
+        {
+            case Some(ud) if ud.uid == user_id => ud
+            case _ => WithDbSession
+            {
+                val userName = (for (u <- CriticalMassTables.Users if u.user_id === user_id) yield u.display_name).first
+                
+                new UserData( user_id.toInt, userName, None )
+            }
+        }
+    }
+    
+    def userHome = SessionCacheAction(requireLogin=true)
     {
         (request, sessionCache) =>
         
-        val user = sessionCache.getAs[UserData]("user").get
+        val ud = sessionCache.getAs[UserData]("user").get
+        Redirect(routes.Application.userPage(ud.uid))
+    }
+    
+    def userPage( user_id : Long ) = SessionCacheAction(requireLogin=false)
+    {
+        (request, sessionCache) =>
         
+        implicit val sc = sessionCache
         WithDbSession
         {
+            val user = getUserDetails( user_id )
+            
             // Get roles with location and two types of tags
             val roles = ( for ( 
                 role <- CriticalMassTables.UserRole;
@@ -598,7 +628,7 @@ object Application extends Controller
 	    println( "User authenticated: ", meuid, mename )
                 
         // Get user_id and display_name and stick them in the cache
-        sessionCache.set("user", new UserData(accessToken, expires, meuid, mename ) )
+        sessionCache.set("user", new UserData( meuid, mename, Some( new UserAuth(accessToken, expires) ) ) )
         
         println( "User is %s (%d)".format( mename, meuid ) )
         
