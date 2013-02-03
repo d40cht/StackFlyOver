@@ -480,7 +480,7 @@ object Application extends Controller
                 CriticalMassTables.Tags on (_.tag_id is _.id)
                 if tagMap.dh_id === dh_id) yield tags.name ~ tagMap.count).list
 
-            val tagData = topTags.map( t => ("tag" -> t._1) ~ ("count" -> t._2) )
+            val tagData = topTags.sortWith(_._2 > _._2).map( t => ("tag" -> t._1) ~ ("count" -> t._2) ).take(50)
 
             Ok(compact(render(tagData)))
         }
