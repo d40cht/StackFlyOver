@@ -75,6 +75,10 @@ class MarkerClusterer( val db : Database )
             def rowCount[T]( table : Table[T] ) = Query( ( for ( r <- table ) yield r ).count ).first
             
             ( for ( r <- CriticalMassTables.DataHierarchy ) yield r ).mutate( _.delete )
+            ( for ( r <- CriticalMassTables.TagMap ) yield r ).mutate( _.delete )
+            ( for ( r <- CriticalMassTables.UserMap ) yield r ).mutate( _.delete )
+            ( for ( r <- CriticalMassTables.InstitutionMap ) yield r ).mutate( _.delete )
+
 
             //delete from "DataHierarchy"; delete from "InstitutionMap"; delete from "TagMap"; delete from "UserMap";
             // The foreign key constraint should clear these out. But currently don't. Why?
