@@ -2,12 +2,11 @@
 
 @import controllers.Application.UserData
 
-@main("StackNative: StackOverflow highlights on a map", user) {
-    <h1>StackNative: StackOverflow highlights on a map</h1>
+@main("StackNative: StackOverflow on a map", user) {
+    <h1>StackNative: StackOverflow on a map</h1>
     
-    <p>Welcome to StackNative, the free and collaboratively edited-site that shows StackOverflow users and their employers on a map. This site aims to make it easier for developers to find places and companies where other great developers work. You can contribute by signing in (with your SO account) and adding your employer details and work location, and a little bit of information about what you do.</p>
 
-    <p>Zoom in to see more detail. Stars denote high-scoring individuals in that area (click to see who's top). Hover over each icon to see the top five tags in that cluster.</p>
+    <p>Zoom in to see more detail. Stars denote high-scoring individuals in that area (click to see who's top).</p>
     
 
     <div id="map_canvas" style="height:80%; width:65%; float:left"></div>
@@ -68,12 +67,12 @@
 
     </script>
 
-    <!-- <div style="position:fixed;bottom:1%;right:1%">
+    <div style="position:fixed;bottom:1%;left:1%; background-color: #fff; padding: 2px; border: 1px solid #aaa">
         Created by
         <a href="http://stackoverflow.com/users/415313/alex-wilson">
             Alex Wilson
-        </a>
-    </div> -->
+        </a>. Email: <a href="mailto:stacknative@@gmail.com">stacknative@@gmail.com</a>
+    </div>
     
 }
 

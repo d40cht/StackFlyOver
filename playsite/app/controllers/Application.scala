@@ -478,9 +478,10 @@ object Application extends Controller
             val topTags = (for (Join(tagMap, tags) <-
                 CriticalMassTables.TagMap innerJoin
                 CriticalMassTables.Tags on (_.tag_id is _.id)
-                if tagMap.dh_id === dh_id) yield tags.name ~ tagMap.count).list
+                if tagMap.dh_id === dh_id;
+                _ <- Query orderBy(Desc(tagMap.count)) ) yield tags.name ~ tagMap.count).take(50).list
 
-            val tagData = topTags.sortWith(_._2 > _._2).map( t => ("tag" -> t._1) ~ ("count" -> t._2) ).take(50)
+            val tagData = topTags.sortWith(_._2 > _._2).map( t => ("tag" -> t._1) ~ ("count" -> t._2) )
 
             Ok(compact(render(tagData)))
         }
