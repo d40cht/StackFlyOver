@@ -431,7 +431,7 @@ object Application extends Controller
                 userMap <- CriticalMassTables.UserMap;
                 users <- CriticalMassTables.Users if userMap.user_id === users.user_id;
                 location <- CriticalMassTables.LocationName if users.location_name_id === location.id
-                if userMap.dh_id === dh_id && users.reputation > 150L
+                if userMap.dh_id === dh_id && users.reputation > 50L
                 _ <- Query orderBy(Desc(users.reputation))
             } yield users.reputation ~ users.display_name ~ users.user_id ~ location.name)
             

@@ -342,6 +342,8 @@ class UserScraper( val db : Database )
             }
             
             // Scrape in additional users from SO and add to db
+            if ( true )
+            {
             for ( i <- startUserId until maxUserId by 100L )
             {
                 val j = (i until i+100L)
@@ -390,6 +392,7 @@ class UserScraper( val db : Database )
                 statusFn( 0.0, "New users: %d".format( count ) )
                 
                 Thread.sleep(500)
+            }
             }
             
             if ( true )
