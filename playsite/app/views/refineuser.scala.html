@@ -1,8 +1,8 @@
-@(user : controllers.Application.UserData, refineForm : play.api.data.Form[controllers.SupplementaryData], role_id : Option[Long])
+@(globalData : controllers.Application.GlobalData, user : controllers.Application.UserData, refineForm : play.api.data.Form[controllers.SupplementaryData], role_id : Option[Long])
 
 @import controllers.Application.UserData
 
-@main("Welcome: "+user.name, Some(user)) {
+@main("Welcome: "+user.name, globalData, Some(user)) {
     <h1>Welcome: @user.name</h1>
     
 

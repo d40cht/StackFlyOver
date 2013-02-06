@@ -1,8 +1,8 @@
-@(user : Option[controllers.Application.UserData])
+@(globalData : controllers.Application.GlobalData, user : Option[controllers.Application.UserData])
 
 @import controllers.Application.UserData
 
-@main("StackNative: StackOverflow on a map", user) {
+@main("StackNative: StackOverflow on a map", globalData, user) {
     <h1>StackNative: StackOverflow on a map</h1>
     
 
@@ -18,8 +18,10 @@
         <input type="text"/>
         <input type="button" value="Add"/>
     </form>
-    <br/> -->    
-    <!--<h4>Companies/institutions</h4>
+    <br/> -->
+    
+    @if( !user.isEmpty ) {
+    <h4>Companies/institutions</h4>
     <div id="tableWrapper1" style="font-size:80%">
     <table cellpadding="0" cellspacing="0" border="0" class="dataTable" id="instData">
         <thead>
@@ -33,9 +35,11 @@
         </thead>
         <tbody></tbody>
     </table>
-    </div>-->
+    </div>
     
     <br/>
+    }
+    
     <h4>Users</h4>
     <div id="tableWrapper2" style="font-size:80%">
     <table cellpadding="0" cellspacing="0" border="0" class="dataTable" id="userData">
@@ -67,12 +71,6 @@
 
     </script>
 
-    <div style="position:fixed;bottom:1%;left:1%; background-color: #fff; padding: 2px; border: 1px solid #aaa">
-        Created by
-        <a href="http://stackoverflow.com/users/415313/alex-wilson">
-            Alex Wilson
-        </a>. Email: <a href="mailto:stacknative@@gmail.com">stacknative@@gmail.com</a>
-    </div>
     
 }
 

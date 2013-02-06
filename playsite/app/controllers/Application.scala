@@ -33,6 +33,7 @@ object Application extends Controller
 
     case class Pos( val name : String, val lon : Double, val lat : Double )
     
+    case class GlobalData( val numRoles : Int, numInstitutions : Int, val numLocations : Int )
     
     case class UserAuth( val accessToken : String, val expiry : Int )
     
@@ -63,7 +64,7 @@ object Application extends Controller
     // An action wrapped to pass through the cache for this session
     object SessionCacheAction
     {
-        def apply[T]( requireLogin : Boolean, requireAdmin : Boolean = false )( block : (Request[AnyContent], SessionCache) => SimpleResult[T] ) =
+        def apply[T]( requireLogin : Boolean, requireAdmin : Boolean = false )( block : (Request[AnyContent], SessionCache, GlobalData) => SimpleResult[T] ) =
         {
             Action( request =>
             {
@@ -75,6 +76,32 @@ object Application extends Controller
                 }
                 
                 val sessionCache = new SessionCache( uuid )
+                
+                val globalData =
+                {
+                    sessionCache.getAs[GlobalData]("globalData") match
+                    {
+                        case Some(sd)   => sd
+                        case None       =>
+                        {
+                            WithDbSession
+                            {
+                                import org.scalaquery.ql.extended.H2Driver.Implicit._
+                                import org.scalaquery.ql.extended.{ExtendedTable => Table}
+                                
+                                def rowCount[T]( table : Table[T] ) = Query( ( for ( r <- table ) yield r ).count ).first
+                        
+                                val numRoles = rowCount(CriticalMassTables.UserRole)
+                                val numInstitutions = rowCount(CriticalMassTables.Institution)
+                                val numLocations = rowCount(CriticalMassTables.Location)
+                                
+                                val newSD = GlobalData( numRoles, numInstitutions, numLocations )
+                                sessionCache.set("globalData", newSD )
+                                newSD
+                            }
+                        }
+                    }
+                }
                 
                 var redirect = false
                 if ( requireLogin )
@@ -92,7 +119,7 @@ object Application extends Controller
                 
                 if ( !redirect )
                 {
-                    block(request, sessionCache).withSession( session + ("uuid" -> uuid ) )
+                    block(request, sessionCache, globalData).withSession( session + ("uuid" -> uuid) )
                 }
                 else
                 {
@@ -105,14 +132,14 @@ object Application extends Controller
     
     def index = SessionCacheAction(requireLogin=false)
     {
-        (request, sessionCache) =>
+        (request, sessionCache, globalData) =>
         
-        Ok(views.html.index(sessionCache.getAs[UserData]("user")))
+        Ok(views.html.index(globalData, sessionCache.getAs[UserData]("user")))
     }
     
     def admin = SessionCacheAction(requireLogin=false, requireAdmin=false)
     {
-        (request, sessionCache) =>
+        (request, sessionCache, globalData) =>
         
         val jobs = JobRegistry.getJobs.sortWith( (x, y) => x.startTime.after( y.startTime ) )
         
@@ -123,7 +150,7 @@ object Application extends Controller
             val userRoles = (for ( Join(role, user) <-
                 CriticalMassTables.UserRole innerJoin
                 CriticalMassTables.Users on (_.user_id is _.user_id) ) yield user.user_id ~ user.display_name ~ role.url).take(100).list
-            Ok(views.html.admin(sessionCache.getAs[UserData]("user"), userRoles, jobs))
+            Ok(views.html.admin(globalData, sessionCache.getAs[UserData]("user"), userRoles, jobs))
         }
     }
     
@@ -163,15 +190,15 @@ object Application extends Controller
         
     def refineUser() = SessionCacheAction(requireLogin=true)
     {
-        (request, sessionCache) =>
+        (request, sessionCache, globalData) =>
         
         val currUser = sessionCache.getAs[UserData]("user").get
-        Ok(views.html.refineuser(currUser, userForm, None))
+        Ok(views.html.refineuser(globalData, currUser, userForm, None))
     }
     
     def editUserRole( role_id : Long ) = SessionCacheAction(requireLogin=true)
     {
-        (request, sessionCache) =>
+        (request, sessionCache, globalData) =>
         
         val currUser = sessionCache.getAs[UserData]("user").get
         
@@ -204,13 +231,13 @@ object Application extends Controller
             }
             
             val f = userForm.fill(new SupplementaryData( res.location, res.institutionName, res.url, res.department, res.soTags.mkString(";"), res.sectorTags.mkString(";") ))
-            Ok(views.html.refineuser(currUser, f, Some(role_id)))
+            Ok(views.html.refineuser(globalData, currUser, f, Some(role_id)))
         }
     }
     
     def refineUserAccept = SessionCacheAction(requireLogin=true)
     {
-        (requestEx, sessionCache) =>
+        (requestEx, sessionCache, globalData) =>
         
         implicit val request = requestEx
         
@@ -333,7 +360,7 @@ object Application extends Controller
     
     def userHome = SessionCacheAction(requireLogin=true)
     {
-        (request, sessionCache) =>
+        (request, sessionCache, globalData) =>
         
         val ud = sessionCache.getAs[UserData]("user").get
         Redirect(routes.Application.userPage(ud.uid))
@@ -341,7 +368,7 @@ object Application extends Controller
     
     def userPage( user_id : Long ) = SessionCacheAction(requireLogin=false)
     {
-        (request, sessionCache) =>
+        (request, sessionCache, globalData) =>
         
         implicit val sc = sessionCache
         WithDbSession
@@ -373,7 +400,7 @@ object Application extends Controller
                 new UserRole( rid, instname, insturl, dept, loc, soTags, sectorTags )   
             }
 
-            Ok(views.html.userhome(user, res.toList))
+            Ok(views.html.userhome(globalData, user, res.toList))
         }
     }
 
@@ -492,7 +519,6 @@ object Application extends Controller
         println( "Requesting institutions for: " + dh_id )
         WithDbSession
         {
-            println( "Here0")
             val roleData = (for
             {
                 userMap <- CriticalMassTables.UserMap;
@@ -573,7 +599,7 @@ object Application extends Controller
     
     def logout() = SessionCacheAction(requireLogin=true)
     {
-        (request, sessionCache) =>
+        (request, sessionCache, globalData) =>
         
         sessionCache.remove("user")
         Redirect(routes.Application.index)
@@ -581,7 +607,7 @@ object Application extends Controller
     
     def authenticate( code : String ) = SessionCacheAction(requireLogin=false)
     {
-        (request, sessionCache) =>
+        (request, sessionCache, globalData) =>
         
         import akka.util.Timeout
         import akka.dispatch.Await
@@ -682,8 +708,6 @@ object Application extends Controller
     {
         import org.scalaquery.ql.extended.H2Driver.Implicit._
 
-        println( instId, q )
-        
         if ( instId > 0 )
         {
             WithDbSession

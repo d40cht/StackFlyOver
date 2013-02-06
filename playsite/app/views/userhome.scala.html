@@ -1,6 +1,6 @@
-@(user : controllers.Application.UserData, roles : List[controllers.Application.UserRole])
+@(globalData : controllers.Application.GlobalData, user : controllers.Application.UserData, roles : List[controllers.Application.UserRole])
 
-@main("Roles for: " + user.name, Some(user)) {
+@main("Roles for: " + user.name, globalData, Some(user)) {
     <h1>Roles for: @user.name</h1>
    
     <table>
