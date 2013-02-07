@@ -342,6 +342,25 @@ object Application extends Controller
         Ok( "Submitted: " + uuid )
     }
     
+    def backupDbJob = Action
+    {
+        val uuid = JobRegistry.submit( "Location hierarchy rebuild",
+        { statusFn =>
+            
+            val db = DB.getDataSource()
+            
+            val backupFileName = "db_" + org.joda.time.LocalDateTime.now().toString().replace( ":", "_" ).replace( ".", "_" ) + ".zip"
+            statusFn( 0.0, "Starting db backup to: " + backupFileName )
+            val con = db.getConnection
+            val ps = con.prepareStatement( "BACKUP TO ?" )
+            ps.setString( 1, backupFileName )
+            ps.execute()
+            con.close()
+            statusFn( 100.0, "Backup complete to: " + backupFileName )
+        } )
+        Ok( "Submitted: " + uuid )
+    }
+    
     private def getUserDetails( user_id : Long )( implicit sessionCache : SessionCache, dbSession : org.scalaquery.session.Session ) =
     {
         val inSession = sessionCache.getAs[UserData]("user")
