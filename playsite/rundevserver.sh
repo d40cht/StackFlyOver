@@ -11,4 +11,4 @@
 #
 set -e
 
-java -Dconfig.resource=dev -DapplyEvolutions.default=true -Djava.net.preferIPv4Stack=true -DLD_PRELOAD=/usr/lib/authbind/libauthbind.so.1 -Dhttp.port=9000 -cp "`dirname $0`/target/staged/*" play.core.server.NettyServer `dirname $0`
+java -Dconfig.resource=dev.conf -DapplyEvolutions.default=true -Djava.net.preferIPv4Stack=true -DLD_PRELOAD=/usr/lib/authbind/libauthbind.so.1 -Dhttp.port=9000 -cp "`dirname $0`/target/staged/*" play.core.server.NettyServer `dirname $0`

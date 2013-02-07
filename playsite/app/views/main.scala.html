@@ -39,7 +39,7 @@
         @user match {
             case None => {
                 <span>
-                    <a href="https://stackexchange.com/oauth?client_id=498&redirect_uri=http://www.stacknative.com/authenticate">
+                    <a href="https://stackexchange.com/oauth?client_id=498&redirect_uri=@globalData.baseUrl/authenticate">
                        Sign in 
                     </a>
                     with your SO account for more features.
@@ -65,7 +65,7 @@
         <a href="http://stackoverflow.com/users/415313/alex-wilson">
             Alex Wilson
         </a>, email: <a href="mailto:stacknative@@gmail.com">stacknative@@gmail.com</a> |
-        Roles: @{globalData.numRoles}, Institutions: @{globalData.numInstitutions}, Locations: @{globalData.numLocations}
+        SO users: @{globalData.numUsers}, Locations: @{globalData.numLocations}, Roles: @{globalData.numRoles}, Institutions: @{globalData.numInstitutions}
     </div>
     
         

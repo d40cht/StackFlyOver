@@ -319,31 +319,32 @@ class UserScraper( val db : Database )
         // Get most recent user from StackOverflow
         db withSession
         {
-            val maxUserId =
-            {
-                val userPull = SODispatch.pullJSON( "http://api.stackexchange.com/2.0/users", List(
-                    ("order", "desc"),
-                    ("sort", "creation"),
-                    ("site", "stackoverflow"),
-                    ("pagesize","1"),
-                    ("key", stackOverflowKey) ) )
-                    
-                val mostRecentUser = (userPull \ "items").children.head.extract[FullUser]
-            
-                mostRecentUser.user_id
-            }
-            
-            // Get most recent user id from db
-            val startUserId =
-            {
-                val users = for ( u <- CriticalMassTables.Users ) yield u.user_id.max
-                
-                users.list.head.getOrElse( -1L ) + 1
-            }
-            
             // Scrape in additional users from SO and add to db
             try
             {
+                val maxUserId =
+                {
+                    val userPull = SODispatch.pullJSON( "http://api.stackexchange.com/2.0/users", List(
+                        ("order", "desc"),
+                        ("sort", "creation"),
+                        ("site", "stackoverflow"),
+                        ("pagesize","1"),
+                        ("key", stackOverflowKey) ) )
+                        
+                    val mostRecentUser = (userPull \ "items").children.head.extract[FullUser]
+                
+                    mostRecentUser.user_id
+                }
+                
+                // Get most recent user id from db
+                val startUserId =
+                {
+                    val users = for ( u <- CriticalMassTables.Users ) yield u.user_id.max
+                    
+                    users.list.head.getOrElse( -1L ) + 1
+                }
+            
+            
                 for ( i <- startUserId until maxUserId by 100L )
                 {
                     val j = (i until i+100L)

@@ -34,7 +34,7 @@ object Application extends Controller
 
     case class Pos( val name : String, val lon : Double, val lat : Double )
     
-    case class GlobalData( val numRoles : Int, numInstitutions : Int, val numLocations : Int )
+    case class GlobalData( val baseUrl : String, val numUsers : Int, val numLocations : Int, val numRoles : Int, numInstitutions : Int )
     
     case class UserAuth( val accessToken : String, val expiry : Int )
     
@@ -92,11 +92,13 @@ object Application extends Controller
                                 
                                 def rowCount[T]( table : Table[T] ) = Query( ( for ( r <- table ) yield r ).count ).first
                         
+                                val baseUrl = Play.application.configuration.getString("application.baseUrl").get
+                                val numUsers = rowCount(CriticalMassTables.Users)
                                 val numRoles = rowCount(CriticalMassTables.UserRole)
                                 val numInstitutions = rowCount(CriticalMassTables.Institution)
                                 val numLocations = rowCount(CriticalMassTables.Location)
                                 
-                                val newSD = GlobalData( numRoles, numInstitutions, numLocations )
+                                val newSD = GlobalData( baseUrl, numUsers, numLocations, numRoles, numInstitutions )
                                 sessionCache.set("globalData", newSD )
                                 newSD
                             }
@@ -195,6 +197,18 @@ object Application extends Controller
         
         val currUser = sessionCache.getAs[UserData]("user").get
         Ok(views.html.refineuser(globalData, currUser, userForm, None))
+    }
+    
+    def deleteUserRole( role_id : Long ) = SessionCacheAction(requireLogin=true)
+    {
+        (request, sessionCache, globalData) =>
+       
+        WithDbSession
+        { 
+            ( for ( r <- CriticalMassTables.UserRole if r.id === role_id ) yield r ).mutate( _.delete )
+        }
+        
+        Redirect(routes.Application.userHome)
     }
     
     def editUserRole( role_id : Long ) = SessionCacheAction(requireLogin=true)
@@ -594,22 +608,22 @@ object Application extends Controller
                 // Scrape tags for this user
                 val roleSOTags = (for
                 {
-                    userTag <- CriticalMassTables.UserTags;
-                    tag <- CriticalMassTables.Tags if userTag.tag_id === tag.id
-                    if userTag.user_id === user_id
-                } yield tag.name ~ userTag.count).list
+                    roleTag <- CriticalMassTables.RoleSOTags;
+                    tag <- CriticalMassTables.Tags if roleTag.tag_id === tag.id
+                    if roleTag.role_id === role_id
+                } yield tag.name ).list
                 
                 val roleSectorTags = (for (Join(roleSectorTags, tag) <-
                     CriticalMassTables.RoleSectorTags innerJoin
                     CriticalMassTables.SectorTags on (_.tag_id is _.id)
                     if roleSectorTags.role_id === role_id) yield tag.name).list
                 
-                d.update( url, loc, roleSOTags.map(t => (t._1, t._2.toInt)), roleSectorTags )
+                d.update( url, loc, roleSOTags.map(t => (t, 1)), roleSectorTags )
             }
 
             Ok(compact(render("aaData" -> instData.toList.sortWith(_._2.userCount > _._2.userCount).map( t =>
                 ("count" -> t._2.userCount) ~
-                ("name" -> "<a href=\"%s\">%s</a>".format( t._2.url, t._1 ) ) ~
+                ("name" -> "<a href=\"http://%s\">%s</a>".format( t._2.url, t._1 ) ) ~
                 ("location" -> t._2.location) ~
                 ("SOTags" -> t._2.soTags) ~
                 ("SectorTags" -> t._2.sectorTags)
@@ -636,7 +650,9 @@ object Application extends Controller
         
         implicit val formats = net.liftweb.json.DefaultFormats
 
-        val baseUrl = Play.application.configuration.getString("application.baseUrl")
+        
+        val baseUrl = globalData.baseUrl
+        println( "Base url is: " + baseUrl )
         
         // Post the code back to try to get an access token
         println( "Requesting access token" )
@@ -648,6 +664,8 @@ object Application extends Controller
             "redirect_uri"  -> Seq("%s/authenticate".format(baseUrl)),
             "client_secret" -> Seq(stackOverFlowSecretKey) ) )
         val post = promiseRes.await(5000).get.body
+        
+        println( post )
 
 
         val fields = post.split("&").map
