@@ -3,6 +3,7 @@ package controllers
 import play.api._
 import play.api.mvc._
 import play.api.db._
+import play.api.Play.current
 
 import org.scalaquery.session.Database
 import org.scalaquery.session._
@@ -634,6 +635,8 @@ object Application extends Controller
         import akka.util.duration._
         
         implicit val formats = net.liftweb.json.DefaultFormats
+
+        val baseUrl = Play.application.configuration.getString("application.baseUrl")
         
         // Post the code back to try to get an access token
         println( "Requesting access token" )
@@ -642,7 +645,7 @@ object Application extends Controller
         val promiseRes = url.post( Map(
             "client_id"     -> Seq("498"),
             "code"          -> Seq(code),
-            "redirect_uri"  -> Seq("http://www.stacknative.com/authenticate"),
+            "redirect_uri"  -> Seq("%s/authenticate".format(baseUrl)),
             "client_secret" -> Seq(stackOverFlowSecretKey) ) )
         val post = promiseRes.await(5000).get.body
 
