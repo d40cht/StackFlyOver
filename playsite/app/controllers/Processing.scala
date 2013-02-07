@@ -342,57 +342,64 @@ class UserScraper( val db : Database )
             }
             
             // Scrape in additional users from SO and add to db
-            if ( true )
+            try
             {
-            for ( i <- startUserId until maxUserId by 100L )
-            {
-                val j = (i until i+100L)
-
-                val json = SODispatch.pullJSON( "http://api.stackexchange.com/2.0/users/%s".format(j.mkString(";")), List(
-                    ("site", "stackoverflow"),
-                    ("pagesize", "100"),
-                    ("key", stackOverflowKey) ) )
-
-                val users = (json \ "items").children.map( _.extract[FullUser] )
-                
-                var count = 0
-                for ( u <- users )
+                for ( i <- startUserId until maxUserId by 100L )
                 {
-                    val locationNameId =
-                    {
-                        val lname = u.location.getOrElse("")
-                        
-                        val query = ( for ( l <- CriticalMassTables.LocationName if l.name === lname ) yield l.id ).list
-                        if ( !query.isEmpty ) query.head
-                        else
-                        {
-                            CriticalMassTables.LocationName.name insert (lname)
-                            
-                            def scopeIdentity = SimpleFunction.nullary[Long]("scope_identity")
-                            Query(scopeIdentity).first
-                        }
-                    }
+                    val j = (i until i+100L)
+
+                    val json = SODispatch.pullJSON( "http://api.stackexchange.com/2.0/users/%s".format(j.mkString(";")), List(
+                        ("site", "stackoverflow"),
+                        ("pagesize", "100"),
+                        ("key", stackOverflowKey) ) )
+
+                    val users = (json \ "items").children.map( _.extract[FullUser] )
                     
-                    CriticalMassTables.Users insert (
-                        u.user_id,
-                        u.display_name,
-                        u.creation_date,
-                        u.last_access_date,
-                        u.reputation,
-                        u.age.getOrElse(-1),
-                        u.accept_rate.getOrElse(-1),
-                        u.website_url.getOrElse(""),
-                        locationNameId,
-                        u.badge_counts.gold,
-                        u.badge_counts.silver,
-                        u.badge_counts.bronze
-                    )
-                    count += 1
+                    var count = 0
+                    for ( u <- users )
+                    {
+                        val locationNameId =
+                        {
+                            val lname = u.location.getOrElse("")
+                            
+                            val query = ( for ( l <- CriticalMassTables.LocationName if l.name === lname ) yield l.id ).list
+                            if ( !query.isEmpty ) query.head
+                            else
+                            {
+                                CriticalMassTables.LocationName.name insert (lname)
+                                
+                                def scopeIdentity = SimpleFunction.nullary[Long]("scope_identity")
+                                Query(scopeIdentity).first
+                            }
+                        }
+                        
+                        CriticalMassTables.Users insert (
+                            u.user_id,
+                            u.display_name,
+                            u.creation_date,
+                            u.last_access_date,
+                            u.reputation,
+                            u.age.getOrElse(-1),
+                            u.accept_rate.getOrElse(-1),
+                            u.website_url.getOrElse(""),
+                            locationNameId,
+                            u.badge_counts.gold,
+                            u.badge_counts.silver,
+                            u.badge_counts.bronze
+                        )
+                        count += 1
+                    }
+                    statusFn( 0.0, "New users: %d".format( count ) )
+                    
+                    Thread.sleep(500)
                 }
-                statusFn( 0.0, "New users: %d".format( count ) )
-                
-                Thread.sleep(500)
             }
+            catch
+            {
+                case e : java.lang.AssertionError =>
+                {
+                    println( "Assertion failed: " + e )
+                }
             }
             
             if ( true )
