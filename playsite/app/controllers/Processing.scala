@@ -41,7 +41,8 @@ case class UserTagCounts(
 case class YahooLocation(
     latitude    : String,
     longitude   : String,
-    radius      : String )
+    radius      : String,
+    quality	: String )
     
 
 class MarkerClusterer( val db : Database )
@@ -307,10 +308,72 @@ class MarkerClusterer( val db : Database )
     }
 }
 
+class LocationUpdater( val db : Database )
+{
+    val yahooAPIKey = "50EgoNvV34HOEN8sYfWvUqVqpOfapxOSGBiRb7VjwbdsfYwolMb4XdFPhuuz"
+    
+    def run( statusFn : (Double, String) => Unit )
+    {
+        implicit val formats = DefaultFormats
+        
+        // Get most recent user from StackOverflow
+        db withSession
+        {
+            // Fetch all locations left un-geocoded and geocode via Yahoo
+            //val locations = for ( Join(u, l) <- CriticalMassTables.Users leftJoin CriticalMassTables.Locations on(_.location is _.name) if ((l.name isNull) && (u.location != "")) ) yield u.location
+            val locations = for ( Join(ln, l) <-
+                CriticalMassTables.LocationName leftJoin
+                CriticalMassTables.Location on (_.id is _.name_id)
+                if ((l.name_id isNull) && (ln.name != "")) ) yield ln.id ~ ln.name
+            
+            val allLocs = locations.list
+            val allNonEmptyLocs = allLocs.filter( _ != "" )
+            val uniques = allNonEmptyLocs.toSet
+            
+            println( allLocs.size, allNonEmptyLocs.size, uniques.size )
+            
+            for ( ((id, addr), count) <- uniques.toList.zipWithIndex )
+            {
+                val locationJ = Dispatch.pullJSON( "http://where.yahooapis.com/geocode", List(
+                    ("flags", "J"),
+                    ("q", addr),
+                    ("appid", yahooAPIKey) ) )
+                    
+                val locations = (locationJ \ "ResultSet" \ "Results").children.map( _.extract[YahooLocation] ).sortWith( _.quality.toDouble < _.quality.toDouble )
+                
+                println( "%d: %s".format( count, addr) )
+                if ( !locations.isEmpty )
+                {
+                    val l = locations.head
+                    println( "    %s".format( l ) )
+                    
+                    CriticalMassTables.Location insert (
+                        id,
+                        l.longitude.toDouble,
+                        l.latitude.toDouble,
+                        l.radius.toDouble )
+                }
+                else
+                {
+                    // Enter a null location
+                    CriticalMassTables.Location insert (
+                        id,
+                        0.0,
+                        0.0,
+                        -1.0 )
+                }
+                
+                statusFn( 0.0, "New location: %s".format( addr ) )
+                Thread.sleep(500)
+            }
+        }
+    }
+}
+
 class UserScraper( val db : Database )
 {
     val stackOverflowKey = "5FUHVgHRGHWbz9J5bEy)Ng(("
-    val yahooAPIKey = "50EgoNvV34HOEN8sYfWvUqVqpOfapxOSGBiRb7VjwbdsfYwolMb4XdFPhuuz"
+    
     
     def run( statusFn : (Double, String) => Unit )
     {
@@ -405,53 +468,8 @@ class UserScraper( val db : Database )
             
             if ( true )
             {
-                // Fetch all locations left un-geocoded and geocode via Yahoo
-                //val locations = for ( Join(u, l) <- CriticalMassTables.Users leftJoin CriticalMassTables.Locations on(_.location is _.name) if ((l.name isNull) && (u.location != "")) ) yield u.location
-                val locations = for ( Join(ln, l) <-
-                    CriticalMassTables.LocationName leftJoin
-                    CriticalMassTables.Location on (_.id is _.name_id)
-                    if ((l.name_id isNull) && (ln.name != "")) ) yield ln.id ~ ln.name
-                
-                val allLocs = locations.list
-                val allNonEmptyLocs = allLocs.filter( _ != "" )
-                val uniques = allNonEmptyLocs.toSet
-                
-                println( allLocs.size, allNonEmptyLocs.size, uniques.size )
-                
-                for ( ((id, addr), count) <- uniques.toList.zipWithIndex )
-                {
-                    val locationJ = Dispatch.pullJSON( "http://where.yahooapis.com/geocode", List(
-                        ("flags", "J"),
-                        ("q", addr),
-                        ("appid", yahooAPIKey) ) )
-                        
-                    val locations = (locationJ \ "ResultSet" \ "Results").children.map( _.extract[YahooLocation] ).sortWith( _.radius < _.radius )
-                    
-                    println( "%d: %s".format( count, addr) )
-                    if ( !locations.isEmpty )
-                    {
-                        val l = locations.head
-                        println( "    %s".format( l ) )
-                        
-                        CriticalMassTables.Location insert (
-                            id,
-                            l.longitude.toDouble,
-                            l.latitude.toDouble,
-                            l.radius.toDouble )
-                    }
-                    else
-                    {
-                        // Enter a null location
-                        CriticalMassTables.Location insert (
-                            id,
-                            0.0,
-                            0.0,
-                            -1.0 )
-                    }
-                    
-                    statusFn( 0.0, "New location: %s".format( addr ) )
-                    Thread.sleep(500)
-                }
+                val l = new LocationUpdater( db )
+                l.run( statusFn )
             }
                 
             // Now fetch tag stats for each user left without tags

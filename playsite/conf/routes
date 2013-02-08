@@ -11,6 +11,7 @@ GET     /deleteUserRole             controllers.Application.deleteUserRole( role
 GET     /exampleJob                 controllers.Application.exampleJob
 GET     /pullUsersJob               controllers.Application.pullUsersJob
 GET     /rebuildHierarchyJob        controllers.Application.rebuildHierarchyJob
+GET     /rebuildLocationsJob        controllers.Application.rebuildLocationsJob
 GET     /backupDbJob                controllers.Application.backupDbJob
 GET     /listJobs                   controllers.Application.listJobs
 POST    /refineUserAccept           controllers.Application.refineUserAccept

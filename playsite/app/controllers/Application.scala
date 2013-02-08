@@ -357,6 +357,27 @@ object Application extends Controller
         Ok( "Submitted: " + uuid )
     }
     
+    def rebuildLocationsJob = Action
+    {
+        val uuid = JobRegistry.submit( "Locations rebuild",
+        { statusFn =>
+            
+            val db = Database.forDataSource(DB.getDataSource())
+            
+            statusFn( 0.0, "Deleting existing locations" )
+            WithDbSession
+            {
+                ( for ( r <- CriticalMassTables.Location ) yield r ).mutate( _.delete )
+            }
+            
+            statusFn( 0.0, "Re-scraping all locations" )
+            val l = new processing.LocationUpdater( db )
+            l.run( statusFn )
+        } )
+        Ok( "Submitted: " + uuid )
+    }
+    
+    
     def backupDbJob = Action
     {
         val uuid = JobRegistry.submit( "Location hierarchy rebuild",
