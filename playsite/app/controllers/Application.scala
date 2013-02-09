@@ -367,7 +367,7 @@ object Application extends Controller
             statusFn( 0.0, "Deleting existing locations" )
             WithDbSession
             {
-                ( for ( r <- CriticalMassTables.Location ) yield r ).mutate( _.delete )
+                //( for ( r <- CriticalMassTables.Location ) yield r ).mutate( _.delete )
             }
             
             statusFn( 0.0, "Re-scraping all locations" )

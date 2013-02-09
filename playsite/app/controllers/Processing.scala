@@ -339,7 +339,7 @@ class LocationUpdater( val db : Database )
                     ("q", addr),
                     ("appid", yahooAPIKey) ) )
                     
-                val locations = (locationJ \ "ResultSet" \ "Results").children.map( _.extract[YahooLocation] ).sortWith( _.quality.toDouble < _.quality.toDouble )
+                val locations = (locationJ \ "ResultSet" \ "Results").children.map( _.extract[YahooLocation] ).sortWith( _.quality.toDouble > _.quality.toDouble )
                 
                 println( "%d: %s".format( count, addr) )
                 if ( !locations.isEmpty )
@@ -363,7 +363,7 @@ class LocationUpdater( val db : Database )
                         -1.0 )
                 }
                 
-                statusFn( 0.0, "New location: %s".format( addr ) )
+                statusFn( count.toDouble / uniques.size.toDouble, "New location: %s".format( addr ) )
                 Thread.sleep(500)
             }
         }
