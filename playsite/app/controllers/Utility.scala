@@ -64,6 +64,19 @@ object WithDbSession
     }
 }
 
+object DBUtil
+{
+    def clearTable( db : Database, tableName : String ) =
+    {
+        db withSession
+        { session : org.scalaquery.session.Session =>
+        
+            val ps = session.prepareStatement( "DELETE FROM \"" + tableName + "\"" )
+            ps.execute()
+        }
+    }
+}
+
 object JobRegistry
 {
     class JobStatus(

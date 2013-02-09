@@ -10,7 +10,7 @@ import net.liftweb.json.{JsonParser, DefaultFormats}
 
 import scala.collection.{mutable, immutable}
 
-import controllers.{CriticalMassTables, Dispatch, SODispatch}
+import controllers.{CriticalMassTables, Dispatch, SODispatch, DBUtil}
 
 case class Badges(
     val gold : Int,
@@ -44,6 +44,7 @@ case class YahooLocation(
     radius      : String )
     
 
+
 class MarkerClusterer( val db : Database )
 {
     // http://www.movable-type.co.uk/scripts/latlong.html
@@ -68,16 +69,19 @@ class MarkerClusterer( val db : Database )
     def run( statusFn : (Double, String) => Unit ) =
     {
         println( "Deleting old data" )
+        
+        DBUtil.clearTable( db, CriticalMassTables.DataHierarchy.tableName )
+        DBUtil.clearTable( db, CriticalMassTables.TagMap.tableName )
+        DBUtil.clearTable( db, CriticalMassTables.UserMap.tableName )
+        DBUtil.clearTable( db, CriticalMassTables.InstitutionMap.tableName )
+        
         db withSession
         {
             import org.scalaquery.ql.extended.{ExtendedTable => Table}
             
             def rowCount[T]( table : Table[T] ) = Query( ( for ( r <- table ) yield r ).count ).first
             
-            ( for ( r <- CriticalMassTables.DataHierarchy ) yield r ).mutate( _.delete )
-            ( for ( r <- CriticalMassTables.TagMap ) yield r ).mutate( _.delete )
-            ( for ( r <- CriticalMassTables.UserMap ) yield r ).mutate( _.delete )
-            ( for ( r <- CriticalMassTables.InstitutionMap ) yield r ).mutate( _.delete )
+            
 
 
             //delete from "DataHierarchy"; delete from "InstitutionMap"; delete from "TagMap"; delete from "UserMap";
