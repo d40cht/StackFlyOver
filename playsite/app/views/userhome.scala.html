@@ -1,8 +1,25 @@
 @(globalData : controllers.Application.GlobalData, user : controllers.Application.UserData, roles : List[controllers.Application.UserRole])
 
-@main("Roles for: " + user.name, globalData, Some(user)) {
-    <h1>Roles for: @user.name</h1>
+@main("Home page for: " + user.name, globalData, Some(user)) {
+    <h1>Home page for: @user.name</h1>
+    
+    <h2>Contact details</h2>
+    @user.email match {
+        case None =>
+        {
+            <p>Please enter your email address to complete registration with the site.</p>
+            
+            <form action={routes.Application.addEmail}>
+                <p>Email: <input type="text" name="email"/> </p>
+        
+                <input type="submit" value="Submit"/>
+            </form>
+        }
+        case Some(email) => <p>Your registered email address: {email}</p>
+    }
    
+    <h2>Roles</h2>
+    
     <table>
     <tr><th>Institution</th><th>Department</th><th>Location</th><th>Stack overflow tags</th><th>Institution sector tags</th><th>Actions</th></tr>
     @roles.map( r => {

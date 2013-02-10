@@ -38,7 +38,7 @@ object Application extends Controller
     
     case class UserAuth( val accessToken : String, val expiry : Int )
     
-    case class UserData( val uid : Int, val name : String, val auth : Option[UserAuth] )
+    case class UserData( val uid : Int, val name : String, val auth : Option[UserAuth], val email : Option[String] )
     {
         def isLocallyAuthenticated = !auth.isEmpty
         def isAdmin = isLocallyAuthenticated && (uid == 415313)
@@ -65,7 +65,7 @@ object Application extends Controller
     // An action wrapped to pass through the cache for this session
     object SessionCacheAction
     {
-        def apply[T]( requireLogin : Boolean, requireAdmin : Boolean = false )( block : (Request[AnyContent], SessionCache, GlobalData) => SimpleResult[T] ) =
+        def apply[T]( requireLogin : Boolean, requireAdmin : Boolean = false )( block : (Request[AnyContent], SessionCache, GlobalData) => PlainResult ) =
         {
             Action( request =>
             {
@@ -300,7 +300,9 @@ object Application extends Controller
                             val roleId =
                             {
                                 val r = CriticalMassTables.UserRole
-                                (r.user_id ~ r.institution_id ~ r.department ~ r.url ~ r.location_name_id) insert ((currUser.uid.toLong, institutionId, data.institutionDepartment, data.institutionURL, locationNameId))
+                                val now = new java.sql.Timestamp( (new java.util.Date()).getTime )
+                                
+                                (r.user_id ~ r.institution_id ~ r.department ~ r.url ~ r.location_name_id ~ r.modified) insert ((currUser.uid.toLong, institutionId, data.institutionDepartment, data.institutionURL, locationNameId, now))
                                 
                                 Query(scopeIdentity).first
                             }
@@ -406,12 +408,31 @@ object Application extends Controller
             case Some(ud) if ud.uid == user_id => ud
             case _ => WithDbSession
             {
-                val userName = (for (u <- CriticalMassTables.Users if u.user_id === user_id) yield u.display_name).first
+                val userDetails = (for (u <- CriticalMassTables.Users if u.user_id === user_id) yield u.display_name ~ u.email).first
                 
-                new UserData( user_id.toInt, userName, None )
+                new UserData( user_id.toInt, userDetails._1, None, userDetails._2 )
             }
         }
     }
+    
+    def addEmail = SessionCacheAction(requireLogin=true)
+    {
+        (request, sessionCache, globalData) =>
+        
+        val emailAddress = request.queryString.get("email").flatMap(_.headOption)
+
+        val ud = sessionCache.getAs[UserData]("user").get
+        WithDbSession
+        {
+            val em = for ( u <- CriticalMassTables.Users if u.user_id === ud.uid.toLong ) yield u.email
+            
+            em.update( emailAddress )
+        }
+        
+        
+        Redirect(routes.Application.userPage(ud.uid))
+    }
+    
     
     def userHome = SessionCacheAction(requireLogin=true)
     {
@@ -714,25 +735,41 @@ object Application extends Controller
         val mename = (response \ "display_name").extract[String]
 
 	    println( "User authenticated: ", meuid, mename )
-                
-        // Get user_id and display_name and stick them in the cache
-        sessionCache.set("user", new UserData( meuid, mename, Some( new UserAuth(accessToken, expires) ) ) )
-        
-        println( "User is %s (%d)".format( mename, meuid ) )
-        
-        // TODO: If this is their first login, ask for more details
-        // namely finer location, company name
-        
-        WithDbSession
+	    val emailOption : Option[Option[String]] = WithDbSession
         {
-            val checkRoles = ( for ( r <- CriticalMassTables.UserRole if r.user_id === meuid.toLong ) yield r.id ).list
-            if ( checkRoles.isEmpty )
+            ( for ( r <- CriticalMassTables.Users if r.user_id == meuid.toLong ) yield r.email ).list.headOption
+        }
+        
+        emailOption match
+        {
+            case None => Redirect(routes.Application.index).flashing
             {
-                Redirect(routes.Application.refineUser)
+                "Log in failed" -> "We're sorry, but we have not yet gleaned your details from Stack Overflow. If you have just registered with SO, please try again tomorrow."
             }
-            else
+                
+            case Some( email ) =>
             {
-                Redirect(routes.Application.userHome)
+	         
+                // Get user_id and display_name and stick them in the cache
+                sessionCache.set("user", new UserData( meuid, mename, Some( new UserAuth(accessToken, expires) ), email ) )
+                
+                println( "User is %s (%d)".format( mename, meuid ) )
+                
+                // TODO: If this is their first login, ask for more details
+                // namely finer location, company name
+                
+                WithDbSession
+                {
+                    val checkRoles = ( for ( r <- CriticalMassTables.UserRole if r.user_id === meuid.toLong ) yield r.id ).list
+                    if ( checkRoles.isEmpty )
+                    {
+                        Redirect(routes.Application.refineUser)
+                    }
+                    else
+                    {
+                        Redirect(routes.Application.userHome)
+                    }
+                }
             }
         }
     }

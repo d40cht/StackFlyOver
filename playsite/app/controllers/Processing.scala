@@ -202,6 +202,7 @@ class MarkerClusterer( val db : Database )
         for ( (c, u) <- mergeSet ) mergeTree.insert( u.coords, u )
         
         // In metres?
+        val updateTimestamp = new java.sql.Timestamp( (new java.util.Date()).getTime )
         var maxMergeDistance = 1.6
         for ( level <- 13 to 0 by -1 )
         {
@@ -280,7 +281,8 @@ class MarkerClusterer( val db : Database )
                     db withTransaction
                     {
                         val scopeIdentity = SimpleFunction.nullary[Long]("scope_identity")
-                        (dh.level ~ dh.longitude ~ dh.latitude ~ dh.count ~ dh.maxRep ~ dh.maxRepUid ~ dh.label) insert ( (level, cluster.lon, cluster.lat, userCount, maxRep, maxRepUid, label) )
+                        (dh.level ~ dh.longitude ~ dh.latitude ~ dh.count ~ dh.maxRep ~ dh.maxRepUid ~ dh.label ~ dh.created) insert
+                            ( (level, cluster.lon, cluster.lat, userCount, maxRep, maxRepUid, label, updateTimestamp) )
                         
                         
                         val dhId = Query(scopeIdentity).first
@@ -441,6 +443,8 @@ class UserScraper( val db : Database )
                             }
                         }
                         
+                        val now = new java.sql.Timestamp( (new java.util.Date()).getTime )
+                        
                         CriticalMassTables.Users insert (
                             u.user_id,
                             u.display_name,
@@ -453,7 +457,10 @@ class UserScraper( val db : Database )
                             locationNameId,
                             u.badge_counts.gold,
                             u.badge_counts.silver,
-                            u.badge_counts.bronze
+                            u.badge_counts.bronze,
+                            null,
+                            now,
+                            false
                         )
                         count += 1
                     }

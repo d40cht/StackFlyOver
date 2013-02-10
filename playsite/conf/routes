@@ -6,6 +6,7 @@
 GET     /                           controllers.Application.index
 GET     /admin                      controllers.Application.admin
 GET     /refineUser                 controllers.Application.refineUser
+GET     /addEmail                   controllers.Application.addEmail
 GET     /editUserRole               controllers.Application.editUserRole( role_id : Long )
 GET     /deleteUserRole             controllers.Application.deleteUserRole( role_id : Long )
 GET     /exampleJob                 controllers.Application.exampleJob

@@ -18,12 +18,11 @@ object CriticalMassTables
     {
         def id                  = column[Long]("id", O PrimaryKey, O AutoInc)
         def name                = column[String]("name")
-        //def timestamp           = column[java.sql.Timestamp]("created")
         
         def * = id ~ name
     }
     
-    object UserRole extends Table[(Long, Long, Long, String, String, Long)]("UserRole")
+    object UserRole extends Table[(Long, Long, Long, String, String, Long, java.sql.Timestamp)]("UserRole")
     {
         def id                  = column[Long]("id", O PrimaryKey, O AutoInc)
         def user_id             = column[Long]("user_id")
@@ -31,9 +30,9 @@ object CriticalMassTables
         def department          = column[String]("department")
         def url                 = column[String]("url")
         def location_name_id    = column[Long]("location_id")
-        //def timestamp           = column[java.sql.Timestamp]("created")
+        def modified            = column[java.sql.Timestamp]("modified")
         
-        def * = id ~ user_id ~ institution_id ~ department ~ url ~ location_name_id
+        def * = id ~ user_id ~ institution_id ~ department ~ url ~ location_name_id ~ modified
     }
     
     object RoleSOTags extends Table[(Long, Long)]("RoleSOTags")
@@ -98,7 +97,7 @@ object CriticalMassTables
         def * = dh_id ~ institution_id
     }
     
-    object DataHierarchy extends Table[(Long, Int, Double, Double, Int, Int, Long, String)]("DataHierarchy")
+    object DataHierarchy extends Table[(Long, Int, Double, Double, Int, Int, Long, String, java.sql.Timestamp)]("DataHierarchy")
     {
         def id                  = column[Long]("id", O PrimaryKey, O AutoInc)
         def level               = column[Int]("level")
@@ -108,8 +107,9 @@ object CriticalMassTables
         def maxRep              = column[Int]("maxRep")
         def maxRepUid           = column[Long]("maxRepUid")
         def label               = column[String]("label")
+        def created             = column[java.sql.Timestamp]("created")
         
-        def * = id ~ level ~ longitude ~ latitude ~ count ~ maxRep ~ maxRepUid ~ label
+        def * = id ~ level ~ longitude ~ latitude ~ count ~ maxRep ~ maxRepUid ~ label ~ created
     }
     
     
@@ -132,7 +132,7 @@ object CriticalMassTables
         def * = id ~ name
     }
     
-    object Users extends Table[(Long, String, Long, Long, Long, Int, Int, String, Long, Int, Int, Int)]("Users")
+    object Users extends Table[(Long, String, Long, Long, Long, Int, Int, String, Long, Int, Int, Int, Option[String], java.sql.Timestamp, Boolean)]("Users")
     {
         def user_id             = column[Long]("user_id", O PrimaryKey)
         def display_name        = column[String]("display_name")
@@ -146,10 +146,13 @@ object CriticalMassTables
         def badge_gold          = column[Int]("badge_gold")
         def badge_silver        = column[Int]("badge_silver")
         def badge_bronze        = column[Int]("badge_bronze")
-        //def timestamp           = column[java.sql.Timestamp]("created")
+        def email               = column[Option[String]]("email")
+        def lastScanned         = column[java.sql.Timestamp]("lastScanned")
+        def detailFresh         = column[Boolean]("detailFresh")
         
         def * = user_id ~ display_name ~ creation_date ~ last_access_date ~ reputation ~
-                age ~ accept_rate ~ website_url ~ location_name_id ~ badge_gold ~ badge_silver ~ badge_bronze
+                age ~ accept_rate ~ website_url ~ location_name_id ~ badge_gold ~ badge_silver ~
+                badge_bronze ~ email ~ lastScanned ~ detailFresh
     }
     
     // TODO: Add time submitted and completed column
