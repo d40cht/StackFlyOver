@@ -737,7 +737,7 @@ object Application extends Controller
 	    println( "User authenticated: ", meuid, mename )
 	    val emailOption : Option[Option[String]] = WithDbSession
         {
-            ( for ( r <- CriticalMassTables.Users if r.user_id == meuid.toLong ) yield r.email ).list.headOption
+            ( for ( r <- CriticalMassTables.Users if r.user_id === meuid.toLong ) yield r.email ).list.headOption
         }
         
         emailOption match
