@@ -48,6 +48,7 @@ case class YahooLocation(
 
 class MarkerClusterer( val db : Database )
 {
+    val levelRange = 13 to 0 by -1
     // http://www.movable-type.co.uk/scripts/latlong.html
     private def distfn( lon1 : Double, lat1 : Double, lon2 : Double, lat2 : Double ) : Double =
     {
@@ -81,9 +82,6 @@ class MarkerClusterer( val db : Database )
             import org.scalaquery.ql.extended.{ExtendedTable => Table}
             
             def rowCount[T]( table : Table[T] ) = Query( ( for ( r <- table ) yield r ).count ).first
-            
-            
-
 
             //delete from "DataHierarchy"; delete from "InstitutionMap"; delete from "TagMap"; delete from "UserMap";
             // The foreign key constraint should clear these out. But currently don't. Why?
@@ -204,7 +202,7 @@ class MarkerClusterer( val db : Database )
         // In metres?
         val updateTimestamp = new java.sql.Timestamp( (new java.util.Date()).getTime )
         var maxMergeDistance = 1.6
-        for ( level <- 13 to 0 by -1 )
+        for ( level <- levelRange )
         {
             statusFn( 0.0, "Merge distance: %f %d (map scale: %d)".format( maxMergeDistance, mergeSet.size, level ) )
             

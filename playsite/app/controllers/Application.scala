@@ -419,14 +419,17 @@ object Application extends Controller
     {
         (request, sessionCache, globalData) =>
         
-        val emailAddress = request.queryString.get("email").flatMap(_.headOption)
+        val emailAddress : Option[String] = request.queryString.get("email").flatMap(_.headOption)
 
         val ud = sessionCache.getAs[UserData]("user").get
         WithDbSession
         {
             val em = for ( u <- CriticalMassTables.Users if u.user_id === ud.uid.toLong ) yield u.email
             
+            println( "Updating: " + ud.uid + " with " + emailAddress )
             em.update( emailAddress )
+            
+            sessionCache.set("user", ud.copy(email=emailAddress) )
         }
         
         
@@ -751,7 +754,7 @@ object Application extends Controller
             {
 	         
                 // Get user_id and display_name and stick them in the cache
-                sessionCache.set("user", new UserData( meuid, mename, Some( new UserAuth(accessToken, expires) ), email ) )
+                sessionCache.set("user", UserData( meuid, mename, Some( new UserAuth(accessToken, expires) ), email ) )
                 
                 println( "User is %s (%d)".format( mename, meuid ) )
                 

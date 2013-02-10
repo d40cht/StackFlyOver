@@ -4,19 +4,18 @@
     <h1>Home page for: @user.name</h1>
     
     <h2>Contact details</h2>
-    @user.email match {
-        case None =>
-        {
+    @if( user.email == None) {
+        <div>
             <p>Please enter your email address to complete registration with the site.</p>
             
-            <form action={routes.Application.addEmail}>
-                <p>Email: <input type="text" name="email"/> </p>
-        
-                <input type="submit" value="Submit"/>
+            <form action=@routes.Application.addEmail.toString>
+                <p>Email: <input type="text" name="email"/> <input type="submit" value="Submit"/> </p>
             </form>
-        }
-        case Some(email) => <p>Your registered email address: {email}</p>
+        </div>
+    } else {    
+        <p>Your registered email address: @user.email.get</p>
     }
+    </br>
    
     <h2>Roles</h2>
     
