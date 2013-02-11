@@ -140,7 +140,7 @@ object Application extends Controller
         Ok(views.html.index(globalData, sessionCache.getAs[UserData]("user")))
     }
     
-    def admin = SessionCacheAction(requireLogin=false, requireAdmin=false)
+    def admin = SessionCacheAction(requireLogin=true, requireAdmin=true)
     {
         (request, sessionCache, globalData) =>
         
@@ -307,14 +307,14 @@ object Application extends Controller
                                 Query(scopeIdentity).first
                             }
                             
-                            for ( tag <- data.soTags.split(";") )
+                            for ( tag <- data.soTags.split(";").filter( _ != "" ) )
                             {
                                 val tagId = tag.toLong
                                 
                                 CriticalMassTables.RoleSOTags insert ((roleId, tagId))
                             }
                             
-                            for ( tag <- data.sectorTags.split(";") )
+                            for ( tag <- data.sectorTags.split(";").filter( _ != "" ) )
                             {
                                 val tagId = if ( isId(tag) ) tag.toLong
                                 else

@@ -48,7 +48,23 @@ case class YahooLocation(
 
 class MarkerClusterer( val db : Database )
 {
-    val levelRange = 13 to 0 by -1
+    val levelRange : List[(Int, Double)] = (13 to 0 by -1).zipWithIndex.map
+    { case (l, i) =>
+        (l, 1.6 * math.pow(2.0, i.toDouble))
+    }.toList
+    
+    
+    // Returns a list of tuples of (hierarchy level, nearest hierarchy element id)
+    def getClosestElements( lon : Double, lat : Double ) : List[(Int, Long)] =
+    {
+        // No geo-query currently available natively in H2, so pull data out
+        // using an appropriate bounding box
+        levelRange.map
+        { case (l, maxMergeDist) =>
+            (l, 0L)
+        }
+    }
+    
     // http://www.movable-type.co.uk/scripts/latlong.html
     private def distfn( lon1 : Double, lat1 : Double, lon2 : Double, lat2 : Double ) : Double =
     {
@@ -201,8 +217,7 @@ class MarkerClusterer( val db : Database )
         
         // In metres?
         val updateTimestamp = new java.sql.Timestamp( (new java.util.Date()).getTime )
-        var maxMergeDistance = 1.6
-        for ( level <- levelRange )
+        for ( (level, maxMergeDistance) <- levelRange )
         {
             statusFn( 0.0, "Merge distance: %f %d (map scale: %d)".format( maxMergeDistance, mergeSet.size, level ) )
             
@@ -307,7 +322,7 @@ class MarkerClusterer( val db : Database )
                 }
             }
             
-            maxMergeDistance *= 2.0
+            //maxMergeDistance *= 2.0
         }
     }
 }
@@ -373,6 +388,7 @@ class LocationUpdater( val db : Database )
         }
     }
 }
+
 
 class UserScraper( val db : Database )
 {
@@ -456,7 +472,7 @@ class UserScraper( val db : Database )
                             u.badge_counts.gold,
                             u.badge_counts.silver,
                             u.badge_counts.bronze,
-                            null,
+                            None,
                             now,
                             false
                         )

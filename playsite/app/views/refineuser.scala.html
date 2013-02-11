@@ -36,7 +36,7 @@
 		<li>combine multiple words into single-words with dashes</li>
 		<li>maximum of 5 tags, 25 chars per tag</li>
 		<li>tag characters: [a-z 0-9 + # - .]</li>
-		<li>delimit tags by semi-colon</li>
+		<!--<li>delimit tags by semi-colon</li>-->
 	<ul>
     </div>
     
@@ -46,14 +46,14 @@
         var institutionName = null;
         // Add a callback function in to un-grey out the department, location and url fields upon filling in institution
         // may need to pass an additional parameter through as part of the url to then narrow searches on url/loc/dept
-        $("#InstitutionName").tokenInput("/institutionBySuffix", { theme: "facebook", allowNewItems:true, tokenLimit:1, minChars:2,
+        $("#InstitutionName").tokenInput("/institutionBySuffix", { theme: "facebook", allowFreeTagging:true, tokenLimit:1, minChars:2, tokenDelimiter:";",
             onAdd: function(token)
             {
-                $("#InstitutionURL").tokenInput("/instURLBySuffix?inst="+token.id, { theme: "facebook", allowNewItems:true, tokenLimit:1 } );	
-                $("#InstitutionDepartment").tokenInput("/instDepartmentBySuffix?inst="+token.id, { theme: "facebook", allowNewItems:true, tokenLimit:1 } );	
-                $("#WorkLocation").tokenInput("/instLocationBySuffix?inst="+token.id, { theme: "facebook", allowNewItems:true, tokenLimit:1, minChars:2 } );
-                $("#SOTags").tokenInput("/tagBySuffix", { theme: "facebook", minChars:1 } );
-                $("#SectorTags").tokenInput("/workSectorBySuffix", { theme: "facebook", allowNewItems:true, minChars:1 } );
+                $("#InstitutionURL").tokenInput("/instURLBySuffix?inst="+token.id, { theme: "facebook", allowFreeTagging:true, tokenLimit:1, tokenDelimiter:";" } );	
+                $("#InstitutionDepartment").tokenInput("/instDepartmentBySuffix?inst="+token.id, { theme: "facebook", allowFreeTagging:true, tokenLimit:1, tokenDelimiter:";" } );	
+                $("#WorkLocation").tokenInput("/instLocationBySuffix?inst="+token.id, { theme: "facebook", allowFreeTagging:true, tokenLimit:1, minChars:2, tokenDelimiter:";" } );
+                $("#SOTags").tokenInput("/tagBySuffix", { theme: "facebook", minChars:1, tokenDelimiter:";" } );
+                $("#SectorTags").tokenInput("/workSectorBySuffix", { theme: "facebook", allowFreeTagging:true, minChars:1, tokenDelimiter:";" } );
 
                 $("#instDetails").show();
             }  } );

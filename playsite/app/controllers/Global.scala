@@ -27,6 +27,18 @@ object Global extends GlobalSettings {
     QuartzScheduler.start()
     //QuartzScheduler schedule("job 1 ", foo) every (5 seconds)
     //QuartzScheduler schedule("job 2 ", bar) at "0 0 3 * * ? *"
+    
+    // 10:15:00 on any day of any month, any day of the week on any year
+    QuartzScheduler schedule( "Data scrape",
+    {
+        controllers.JobRegistry.submit( "User scrape job",
+        { statusFn =>
+            
+            val db = Database.forDataSource(DB.getDataSource())
+            val userFetch = new processing.UserScraper(db)
+            userFetch.run( statusFn )
+        } )
+    } ) at "0 15 10 * * ?"
   }  
   
   override def onStop(app: Application) {
