@@ -1,6 +1,6 @@
-@(globalData : controllers.Application.GlobalData, user : controllers.Application.UserData, roles : List[controllers.Application.UserRole])
+@(globalData : controllers.Application.GlobalData, user : controllers.Application.UserData, roles : List[controllers.Application.UserRole], flash: Flash)
 
-@main("Home page for: " + user.name, globalData, Some(user)) {
+@main("Home page for: " + user.name, globalData, Some(user), flash) {
     <h1>Home page for: @user.name</h1>
     
     <h2>Contact details</h2>

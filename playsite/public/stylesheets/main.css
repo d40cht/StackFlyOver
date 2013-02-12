@@ -17,6 +17,7 @@ html, body
 }
 
 .footer, .push {
+    clear: both;
     height: 2em;
 }
 
@@ -34,14 +35,33 @@ div
     padding:0px;
 }
 
-.footercontent, .headercontent, .maincontent
+.footercontent, .headercontent, .maincontent, .flashcontent
 {
-    padding: 10px;
+}
+
+.flashsuccess, .flashfailure
+{
+    font-weight: bold;
+    text-align: center;
+    color: #fff;
+    padding: 6px;
+}
+
+.flashsuccess
+{
+    background: #00a000;
+    
+}
+
+.flashfailure
+{
+    background: #a00000;
 }
 
 .footercontent, .headercontent
 {
     font-size: small;
+    padding: 6px;
 }
 
 .headercontent
@@ -180,3 +200,40 @@ div.dataTables_paginate span>a {
 div.dataTables_info {
     padding: 9px 6px 6px 6px;
 }
+
+.idTabs {
+    margin:0 auto;
+    width: 100%;
+    background:#f0f0ff;
+}
+.idTabs li { list-style:none; float:left}
+.idTabs a {
+  display:block;
+  padding:4px 4px;
+  text-decoration:none!important;
+  margin:0px;
+  margin-left:8px;
+  color:#FFF;
+  background:#999;
+  
+}
+.idTabs a:hover {
+  background:#666;
+}
+.idTabs a.selected {
+  color:#000;
+  background:#fff;
+  font-weight:bold;
+  border-left: 1px solid;
+  border-right: 1px solid;
+  border-top: 1px solid;
+  border-bottom:none;
+}
+
+.tabMember {
+    clear:both;
+    background:#fff;
+    padding-top: 6px;
+    min-height: 10em;
+}
+

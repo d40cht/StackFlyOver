@@ -31,6 +31,7 @@ object Application extends Controller
     import play.api.Play.current
     import play.api.data._
     import play.api.data.Forms._
+    import play.api.mvc.{Flash}
 
     case class Pos( val name : String, val lon : Double, val lat : Double )
     
@@ -65,7 +66,7 @@ object Application extends Controller
     // An action wrapped to pass through the cache for this session
     object SessionCacheAction
     {
-        def apply[T]( requireLogin : Boolean, requireAdmin : Boolean = false )( block : (Request[AnyContent], SessionCache, GlobalData) => PlainResult ) =
+        def apply[T]( requireLogin : Boolean, requireAdmin : Boolean = false )( block : (Request[AnyContent], SessionCache, GlobalData, Flash) => PlainResult ) =
         {
             Action( request =>
             {
@@ -122,11 +123,11 @@ object Application extends Controller
                 
                 if ( !redirect )
                 {
-                    block(request, sessionCache, globalData).withSession( session + ("uuid" -> uuid) )
+                    block(request, sessionCache, globalData, flash(request)).withSession( session + ("uuid" -> uuid) )
                 }
                 else
                 {
-                    Redirect(routes.Application.index)
+                    Redirect(routes.Application.index).flashing( "failure" -> "Please log in for full access" )
                 }
             } )
         }
@@ -135,14 +136,14 @@ object Application extends Controller
     
     def index = SessionCacheAction(requireLogin=false)
     {
-        (request, sessionCache, globalData) =>
+        (request, sessionCache, globalData, flash) =>
         
-        Ok(views.html.index(globalData, sessionCache.getAs[UserData]("user")))
+        Ok(views.html.index(globalData, sessionCache.getAs[UserData]("user"), flash))
     }
     
     def admin = SessionCacheAction(requireLogin=true, requireAdmin=true)
     {
-        (request, sessionCache, globalData) =>
+        (request, sessionCache, globalData, flash) =>
         
         val jobs = JobRegistry.getJobs.sortWith( (x, y) => x.startTime.after( y.startTime ) )
         
@@ -153,7 +154,7 @@ object Application extends Controller
             val userRoles = (for ( Join(role, user) <-
                 CriticalMassTables.UserRole innerJoin
                 CriticalMassTables.Users on (_.user_id is _.user_id) ) yield user.user_id ~ user.display_name ~ role.url).take(100).list
-            Ok(views.html.admin(globalData, sessionCache.getAs[UserData]("user"), userRoles, jobs))
+            Ok(views.html.admin(globalData, sessionCache.getAs[UserData]("user"), userRoles, jobs, flash))
         }
     }
     
@@ -193,15 +194,15 @@ object Application extends Controller
         
     def refineUser() = SessionCacheAction(requireLogin=true)
     {
-        (request, sessionCache, globalData) =>
+        (request, sessionCache, globalData, flash) =>
         
         val currUser = sessionCache.getAs[UserData]("user").get
-        Ok(views.html.refineuser(globalData, currUser, userForm, None))
+        Ok(views.html.refineuser(globalData, currUser, userForm, None, flash))
     }
     
     def deleteUserRole( role_id : Long ) = SessionCacheAction(requireLogin=true)
     {
-        (request, sessionCache, globalData) =>
+        (request, sessionCache, globalData, flash) =>
        
         WithDbSession
         { 
@@ -213,7 +214,7 @@ object Application extends Controller
     
     def editUserRole( role_id : Long ) = SessionCacheAction(requireLogin=true)
     {
-        (request, sessionCache, globalData) =>
+        (request, sessionCache, globalData, flash) =>
         
         val currUser = sessionCache.getAs[UserData]("user").get
         
@@ -246,13 +247,13 @@ object Application extends Controller
             }
             
             val f = userForm.fill(new SupplementaryData( res.location, res.institutionName, res.url, res.department, res.soTags.mkString(";"), res.sectorTags.mkString(";") ))
-            Ok(views.html.refineuser(globalData, currUser, f, Some(role_id)))
+            Ok(views.html.refineuser(globalData, currUser, f, Some(role_id), flash))
         }
     }
     
     def refineUserAccept = SessionCacheAction(requireLogin=true)
     {
-        (requestEx, sessionCache, globalData) =>
+        (requestEx, sessionCache, globalData, flash) =>
         
         implicit val request = requestEx
         
@@ -417,7 +418,7 @@ object Application extends Controller
     
     def addEmail = SessionCacheAction(requireLogin=true)
     {
-        (request, sessionCache, globalData) =>
+        (request, sessionCache, globalData, flash) =>
         
         val emailAddress : Option[String] = request.queryString.get("email").flatMap(_.headOption)
 
@@ -439,7 +440,7 @@ object Application extends Controller
     
     def userHome = SessionCacheAction(requireLogin=true)
     {
-        (request, sessionCache, globalData) =>
+        (request, sessionCache, globalData, flash) =>
         
         val ud = sessionCache.getAs[UserData]("user").get
         Redirect(routes.Application.userPage(ud.uid))
@@ -447,7 +448,7 @@ object Application extends Controller
     
     def userPage( user_id : Long ) = SessionCacheAction(requireLogin=false)
     {
-        (request, sessionCache, globalData) =>
+        (request, sessionCache, globalData, flash) =>
         
         implicit val sc = sessionCache
         WithDbSession
@@ -479,7 +480,7 @@ object Application extends Controller
                 new UserRole( rid, instname, insturl, dept, loc, soTags, sectorTags )   
             }
 
-            Ok(views.html.userhome(globalData, user, res.toList))
+            Ok(views.html.userhome(globalData, user, res.toList, flash))
         }
     }
 
@@ -678,15 +679,18 @@ object Application extends Controller
     
     def logout() = SessionCacheAction(requireLogin=true)
     {
-        (request, sessionCache, globalData) =>
+        (request, sessionCache, globalData, flash) =>
+        
+        val ud = sessionCache.getAs[UserData]("user").get
+        val uname = ud.name
         
         sessionCache.remove("user")
-        Redirect(routes.Application.index)
+        Redirect(routes.Application.index).flashing( "success" -> "Goodbye %s".format(uname) )
     }
     
     def authenticate( code : String ) = SessionCacheAction(requireLogin=false)
     {
-        (request, sessionCache, globalData) =>
+        (request, sessionCache, globalData, flash) =>
         
         import akka.util.Timeout
         import akka.dispatch.Await

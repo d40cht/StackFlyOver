@@ -1,4 +1,4 @@
-@(title: String, globalData : controllers.Application.GlobalData, user : Option[controllers.Application.UserData])(content: Html)
+@(title: String, globalData : controllers.Application.GlobalData, user : Option[controllers.Application.UserData], flash : Flash)(content: Html)
 
 <!DOCTYPE html>
 
@@ -7,10 +7,11 @@
         <title>@title</title>
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/jquery.dataTables.css")"/>
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")"/>
-        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/jquery-ui-1.8.22.custom.css")"/>
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/jquery-ui-1.10.0.custom.min.css")"/>
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/token-input.css")"/>
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/token-input-facebook.css")"/>
         <script src="@routes.Assets.at("javascripts/jquery-1.7.2.min.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.at("javascripts/jquery.idTabs.min.js")" type="text/javascript"></script>
         <script src="@routes.Assets.at("javascripts/jquery.tokeninput.new.js")" type="text/javascript"></script>
         <script src="@routes.Assets.at("javascripts/jquery.dataTables.min.js")" type="text/javascript"></script>
         <script src="@routes.Assets.at("javascripts/tagCloud.js")" type="text/javascript"></script>
@@ -51,6 +52,24 @@
                 }
             }
        
+        </div>
+        
+        <div class="flashcontent">
+            @{flash.get("failure") match {
+                case None => {
+                }
+                case Some(message) => {
+                    <div class="flashfailure">{message}</div>
+                }
+            }}
+            
+            @{flash.get("success") match {
+                case None => {
+                }
+                case Some(message) => {
+                    <div class="flashsuccess">{message}</div>
+                }
+            }}
         </div>
 
         <div class="maincontent">

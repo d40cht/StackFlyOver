@@ -1,6 +1,6 @@
-@(globalData : controllers.Application.GlobalData, user : Option[controllers.Application.UserData], roles : List[(Long, String, String)], jobs : List[controllers.JobRegistry.JobStatus])
+@(globalData : controllers.Application.GlobalData, user : Option[controllers.Application.UserData], roles : List[(Long, String, String)], jobs : List[controllers.JobRegistry.JobStatus], flash: Flash)
 
-@main("Site admin", globalData, user) {
+@main("Site admin", globalData, user, flash) {
     <h1>Site admin</h1>
     
     <h4>Running jobs</h4>

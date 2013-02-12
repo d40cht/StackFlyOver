@@ -1,11 +1,11 @@
-@(globalData : controllers.Application.GlobalData, user : Option[controllers.Application.UserData])
+@(globalData : controllers.Application.GlobalData, user : Option[controllers.Application.UserData], flash: Flash)
 
 @import controllers.Application.UserData
 
-@main("StackNative", globalData, user) {
+@main("StackNative", globalData, user, flash) {
 
     <div style="width:100%;height:85%">
-        <h1>StackNative: find the places where other great coders live and work.</h1>
+        <h1>StackNative: Find the places where other great coders live and work.</h1>
         
         <ol>
             <li>Browse the map now to see where StackOverflow users hang out.</li>
@@ -14,53 +14,63 @@
         
         <br/>
         
-        <div id="content" style="float:left;overflow:hidden;height:100%;width:70%">
+        <p>Zoom in to see more detail. Stars denote high-scoring individuals in that area (click to see who's top).</p>
+        <div id="content" style="float:left;overflow:hidden;height:100%;width:68%">
             
-            <p>Zoom in to see more detail. Stars denote high-scoring individuals in that area (click to see who's top).</p>
+            
             <div id="map_canvas" style="height:100%; width: 95%; margin: 0 auto"></div>
         </div>
         
-        <div id="detail" style="float:left;overflow:hidden;height:100%;width:30%">
-    
-            @if( !user.isEmpty ) {
-                <h4>Companies/institutions</h4>
-                <div id="tableWrapper1" style="font-size:80%">
-                    <table cellpadding="0" cellspacing="0" border="0" class="dataTable" id="instData">
+        <div id="detail" style="float:left;overflow:hidden;width:28%;border:1px solid; padding: 8px;background:#f0f0ff">
+            <div style="width:100%">
+                <ul class="idTabs">
+                    <li><a href="#tabs-1">Users</a></li>
+                    <li><a href="#tabs-2">Tags</a></li>
+                    @if( !user.isEmpty ) {
+                        <li><a href="#tabs-3">Companies</a></li>
+                    }
+                </ul>
+            </div>
+            
+        
+            <div id="tabs-1" class="tabMember">
+                <div id="tableWrapper2" style="font-size:80%">
+                    <table cellpadding="0" cellspacing="0" border="0" class="dataTable" id="userData">
                         <thead>
                             <tr>
-                                <th width="5%">Users</th>
-	                            <th width="10%">Institution Name</th>
-	                            <th width="15%">Location</th>
-	                            <th width="15%">SO tags</th>
-	                            <th width="15%">Sector tags</th>
+                                <th width="10%">Reputation</th>
+                                <th width="15%">User name</th>
+                                <th width="20%">Location</th>
+                                <th width="10%">Top tags</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
                     </table>
                 </div>
+            </div>
+            
+            <div id="tabs-2" class="tabMember">
+                <div id="tagcloud" style="font-size:60%"></div>
+            </div>
+            
+            @if( !user.isEmpty ) {
+                <div id="tabs-3" class="tabMember">
+                    <div id="tableWrapper1" style="font-size:80%">
+                        <table cellpadding="0" cellspacing="0" border="0" class="dataTable" id="instData">
+                            <thead>
+                                <tr>
+                                    <th width="5%">Users</th>
+                                    <th width="10%">Institution Name</th>
+                                    <th width="15%">Location</th>
+                                    <th width="15%">SO tags</th>
+                                    <th width="15%">Sector tags</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
             }
-    
-            <h4>Users</h4>
-            <div id="tableWrapper2" style="font-size:80%">
-                <table cellpadding="0" cellspacing="0" border="0" class="dataTable" id="userData">
-                    <thead>
-                        <tr>
-	                        <th width="10%">Reputation</th>
-	                        <th width="15%">User name</th>
-	                        <th width="20%">Location</th>
-	                        <th width="10%">Top tags</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-            
-            <br/>
-            <h4>Top local tags</h4>
-            
-            <div id="tagcloud" style="font-size:60%"/>
-            
-            </div>
         </div>
     </div>
 

@@ -120,7 +120,7 @@
                                     "bFilter":false,
                                     "bInfo":false,
                                     "bLengthChange":false,
-                                    "iDisplayLength":6,
+                                    "iDisplayLength":10,
                                     "sAjaxSource": "/markerUsers?dh_id=" + item.dh_id,
                                     "aoColumns": [
                                         { "mDataProp": "reputation" },
@@ -147,7 +147,7 @@
                                     "bFilter":false,
                                     "bInfo":false,
                                     "bLengthChange":false,
-                                    "iDisplayLength":6,
+                                    "iDisplayLength":10,
                                     "sAjaxSource": "/markerInstitutions?dh_id=" + item.dh_id,
                                     "aoColumns": [
                                         { "mDataProp": "count" },
