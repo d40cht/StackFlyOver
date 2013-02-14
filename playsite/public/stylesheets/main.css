@@ -19,6 +19,7 @@ html, body
 .footer, .push {
     clear: both;
     height: 2em;
+    width: 100%;
 }
 
 
@@ -81,6 +82,7 @@ div
 {
     background: #f0f0ff;
     text-align: center;
+    width: 100%;
 }
 
 h1, h2, h3, h4, h5, h6
@@ -236,5 +238,21 @@ div.dataTables_info {
     background:#fff;
     padding-top: 6px;
     min-height: 10em;
+}
+
+.smnav {
+    width: 100%;
+}
+
+.social-media-list {
+    width: 400px;
+    margin: 0px auto;
+}
+
+.social-media-list li {
+    display:block;
+    float: left;
+    text-align:center;
+    padding: 10px 2px;
 }
 

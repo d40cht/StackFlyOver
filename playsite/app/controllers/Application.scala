@@ -66,7 +66,7 @@ object Application extends Controller
     // An action wrapped to pass through the cache for this session
     object SessionCacheAction
     {
-        def apply[T]( requireLogin : Boolean, requireAdmin : Boolean = false )( block : (Request[AnyContent], SessionCache, GlobalData, Flash) => PlainResult ) =
+        def apply[T]( requireLogin : Boolean, requireAdmin : Boolean = false, requireUserId : Option[Long] = None )( block : (Request[AnyContent], SessionCache, GlobalData, Flash) => PlainResult ) =
         {
             Action( request =>
             {
@@ -116,6 +116,7 @@ object Application extends Controller
                         case Some(ud) =>
                         {
                             if ( requireAdmin && ! ud.isAdmin ) redirect = true
+                            if ( requireUserId != None && requireUserId != Some( ud.uid ) ) redirect = true
                         }
                         case _ => redirect = true
                     }
@@ -450,7 +451,7 @@ object Application extends Controller
         Redirect(routes.Application.userPage(ud.uid))
     }
     
-    def userPage( user_id : Long ) = SessionCacheAction(requireLogin=false)
+    def userPage( user_id : Long ) = SessionCacheAction(requireLogin=true, requireUserId=Some(user_id))
     {
         (request, sessionCache, globalData, flash) =>
         
