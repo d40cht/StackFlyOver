@@ -12,6 +12,7 @@ import org.scalaquery.ql.{Join, SimpleFunction, Query}
 import net.liftweb.json._
 import net.liftweb.json.JsonDSL._
 
+
 object Dispatch
 {
     import dispatch._
@@ -41,7 +42,7 @@ object SODispatch
         
         val backoff = (j \ "backoff").extract[Option[Int]]
         val quota_remaining = j \ "quota_remaining"
-        println( "Backoff: ", backoff, quota_remaining )
+        Logger.debug( "Backoff: %s %s".format(backoff.toString, quota_remaining.toString) )
         
         backoff match
         {
@@ -109,7 +110,7 @@ object JobRegistry
         
         def reportProgressFn( progress : Double, status : String ) =
         {
-            println( progress.toString + ": " + status )
+            Logger.debug( progress.toString + ": " + status )
             WithDbSession
             {
                 val job = ( for ( r <- CriticalMassTables.Jobs if r.job_id === uuid ) yield r )
@@ -140,8 +141,7 @@ object JobRegistry
             {
                 case e : Throwable =>
                 {
-                    println( e.toString )
-                    println( e.getStackTrace.map(_.toString).mkString(";") )
+                    Logger.error( "Error in job", e )
                     // Set status to error
                     WithDbSession
                     {
@@ -157,13 +157,13 @@ object JobRegistry
                         }
                         catch
                         {
-                            case e : Throwable => println( "Boof boof boog: " + e.toString )
+                            case e : Throwable => Logger.error( "Error setting job error status", e )
                         }
                     }
                 }
                 case e =>
                 {
-                    println( "Uncaught exception: " + e.toString )
+                    Logger.error( "Uncaught exception in job", e )
                 }
             }
             

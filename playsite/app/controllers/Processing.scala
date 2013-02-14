@@ -44,7 +44,7 @@ case class YahooLocation(
     radius      : String,
     quality	: String )
     
-
+import play.api.Logger
 
 class MarkerClusterer( val db : Database )
 {
@@ -86,7 +86,7 @@ class MarkerClusterer( val db : Database )
     
     def run( statusFn : (Double, String) => Unit ) =
     {
-        println( "Deleting old data" )
+        Logger.debug( "Deleting old data" )
         
         DBUtil.clearTable( db, CriticalMassTables.DataHierarchy.tableName )
         DBUtil.clearTable( db, CriticalMassTables.TagMap.tableName )
@@ -349,7 +349,7 @@ class LocationUpdater( val db : Database )
             val allNonEmptyLocs = allLocs.filter( _ != "" )
             val uniques = allNonEmptyLocs.toSet
             
-            println( allLocs.size, allNonEmptyLocs.size, uniques.size )
+            Logger.debug( "All locations: %d, all non-empty locations: %d, unique locations: %d".format( allLocs.size, allNonEmptyLocs.size, uniques.size ) )
             
             for ( ((id, addr), count) <- uniques.toList.zipWithIndex )
             {
@@ -360,11 +360,11 @@ class LocationUpdater( val db : Database )
                     
                 val locations = (locationJ \ "ResultSet" \ "Results").children.map( _.extract[YahooLocation] ).sortWith( _.quality.toDouble > _.quality.toDouble )
                 
-                println( "%d: %s".format( count, addr) )
+                //Logger.debug( "%d: %s".format( count, addr) )
                 if ( !locations.isEmpty )
                 {
                     val l = locations.head
-                    println( "    %s".format( l ) )
+                    //Logger.debug( "    %s".format( l ) )
                     
                     CriticalMassTables.Location insert (
                         id,
@@ -487,7 +487,7 @@ class UserScraper( val db : Database )
             {
                 case e : java.lang.AssertionError =>
                 {
-                    println( "Assertion failed: " + e )
+                    Logger.error( "Assertion failed in user scrape", e )
                 }
             }
             
@@ -502,7 +502,7 @@ class UserScraper( val db : Database )
                 CriticalMassTables.Users leftJoin
                 CriticalMassTables.UserTags on(_.user_id is _.user_id) if (tags.user_id isNull) && user.reputation > 120L ) yield user.user_id ~ user.display_name).list
                 
-            println( "number of untagged users remaining to scrape: ", allUntaggedHighRepUsers.size )
+            Logger.debug( "number of untagged users remaining to scrape: " + allUntaggedHighRepUsers.size )
                      
             for ( (uid, name) <- allUntaggedHighRepUsers )
             {
@@ -520,7 +520,7 @@ class UserScraper( val db : Database )
                     tags = List( new UserTagCounts( "notag", 0, false, false, uid, false ) )
                 }
                 
-                println( "Tags for: %s".format(name) )
+                Logger.debug( "Tags for: %s".format(name) )
                 threadLocalSession withTransaction
                 {
                     for ( tag <- tags )

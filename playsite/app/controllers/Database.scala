@@ -35,6 +35,7 @@ object CriticalMassTables
         def * = id ~ user_id ~ institution_id ~ department ~ url ~ location_name_id ~ modified
     }
     
+    
     object RoleSOTags extends Table[(Long, Long)]("RoleSOTags")
     {
         def role_id             = column[Long]("role_id")
@@ -153,6 +154,17 @@ object CriticalMassTables
         def * = user_id ~ display_name ~ creation_date ~ last_access_date ~ reputation ~
                 age ~ accept_rate ~ website_url ~ location_name_id ~ badge_gold ~ badge_silver ~
                 badge_bronze ~ email ~ lastScanned ~ detailFresh
+    }
+    
+    object NativeUser extends Table[(Long, java.sql.Timestamp, Option[String], java.sql.Timestamp, Int)]("NativeUser")
+    {
+        def userId              = column[Long]("userId")
+        def registrationDate    = column[java.sql.Timestamp]("registrationDate")
+        def email               = column[Option[String]]("email")
+        def lastLogin           = column[java.sql.Timestamp]("lastLogin")
+        def loginCount          = column[Int]("loginCount")
+        
+        def * = userId ~ registrationDate ~ email ~ lastLogin ~ loginCount
     }
     
     // TODO: Add time submitted and completed column

@@ -1,4 +1,4 @@
-@(globalData : controllers.Application.GlobalData, user : Option[controllers.Application.UserData], roles : List[(Long, String, String)], jobs : List[controllers.JobRegistry.JobStatus], flash: Flash)
+@(globalData : controllers.Application.GlobalData, user : Option[controllers.Application.UserData], nativeUsers : List[(Long, String, java.sql.Timestamp, java.sql.Timestamp, Int)], roles : List[(Long, String, String)], jobs : List[controllers.JobRegistry.JobStatus], flash: Flash)
 
 @main("Site admin", globalData, user, flash) {
     <h1>Site admin</h1>
@@ -25,6 +25,19 @@
         <a href="@routes.Application.rebuildLocationsJob">Rebuild locations from Yahoo</a>
         <a href="@routes.Application.backupDbJob">Backup db</a>
     </p>
+    
+    <h4>Native users</h4>
+    <table>
+    <tr><th>User name</th><th>Registration date</th><th>Last login</th><th>Login count</th></tr>
+    @nativeUsers.map( r => {
+        <tr>
+            <td><a href={routes.Application.userPage(r._1).toString}>{r._2}</a></td>
+            <td>{r._3.toString}</td>
+            <td>{r._4.toString}</td>
+            <td>{r._5.toString}</td>
+        </tr>
+    } )
+    </table>
    
     <h4>User added roles</h4>
     <table>

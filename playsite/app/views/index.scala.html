@@ -2,15 +2,19 @@
 
 @import controllers.Application.UserData
 
-@main("StackNative", globalData, user, flash) {
+@main("StackNative: Find where other great coders live and work.", globalData, user, flash) {
 
     <div style="width:100%;height:85%">
-        <h1>StackNative: Find the places where other great coders live and work.</h1>
+        <h1>StackNative: Find where other great coders live and work.<img src="@routes.Assets.at("images/icon-beta.png")"></img></h1>
         
-        <ol>
-            <li>Browse the map now to see where StackOverflow users hang out.</li>
-            <li>Register (with your StackOverflow account) to find great places to work, and to add your own workplace details.</li>
-        </ol>
+        <ul>
+            <li><strong>Browse the map</strong> now to see where StackOverflow users hang out.</li>
+            <li><strong>Register</strong> with your StackOverflow account to find great places to work.</li>
+            <ul>
+                <li><strong>Place alerts</strong> on interesting companies and add your own workplace details.</li>
+                <li><strong>See how you rank</strong> in your company, neighbourhood and country, over time.</li>
+            </ul>
+        </ul>
         
         <br/>
         

@@ -151,10 +151,14 @@ object Application extends Controller
         {
             import org.scalaquery.ql.extended.H2Driver.Implicit._
             
+            val nativeUsers = (for ( Join(nu, u) <-
+                CriticalMassTables.NativeUser innerJoin
+                CriticalMassTables.Users on (_.userId is _.user_id) ) yield u.user_id ~ u.display_name ~ nu.registrationDate ~ nu.lastLogin ~ nu.loginCount ).take(100).list
+            
             val userRoles = (for ( Join(role, user) <-
                 CriticalMassTables.UserRole innerJoin
                 CriticalMassTables.Users on (_.user_id is _.user_id) ) yield user.user_id ~ user.display_name ~ role.url).take(100).list
-            Ok(views.html.admin(globalData, sessionCache.getAs[UserData]("user"), userRoles, jobs, flash))
+            Ok(views.html.admin(globalData, sessionCache.getAs[UserData]("user"), nativeUsers, userRoles, jobs, flash))
         }
     }
     
@@ -262,7 +266,7 @@ object Application extends Controller
             {
                 case (data) =>
                 {
-                    println( "Received user data: " + data.toString )
+                    Logger.info( "Received user data: " + data.toString )
                     
                     WithDbSession
                     {
@@ -427,7 +431,7 @@ object Application extends Controller
         {
             val em = for ( u <- CriticalMassTables.Users if u.user_id === ud.uid.toLong ) yield u.email
             
-            println( "Updating: " + ud.uid + " with " + emailAddress )
+            Logger.info( "Updating: " + ud.uid + " with " + emailAddress )
             em.update( emailAddress )
             
             sessionCache.set("user", ud.copy(email=emailAddress) )
@@ -488,7 +492,7 @@ object Application extends Controller
     def mapData( loc : String ) = Action
     {
         val Array( swlat, swlon, nelat, nelon, zoom ) = loc.split(",").map(_.toDouble)
-        println( swlat, swlon, nelat, nelon, zoom )
+        Logger.debug( "Serving: %f, %f, %f, %f, %f".format(swlat, swlon, nelat, nelon, zoom) )
         
         
         // If logged in, additionally join on the institution table and give
@@ -532,7 +536,7 @@ object Application extends Controller
         
         WithDbSession
         {
-            println( "Marker users for: " + dh_id.toString )
+            Logger.debug( "Marker users for: " + dh_id.toString )
             val users = (for
             {
                 userMap <- CriticalMassTables.UserMap;
@@ -544,7 +548,7 @@ object Application extends Controller
             
             val topN = (users take 100).list
 
-            println( "Got %d users".format(topN.size) )
+            Logger.debug( "Got %d users".format(topN.size) )
             
             // Inefficient - cache in Users tables
             val userTags = for ( u <- topN ) yield
@@ -555,22 +559,16 @@ object Application extends Controller
                     if userTags.user_id === u._3) yield tag.name).take(5).list.mkString(" ")
                 topTags
             }
-
-            println( "Got tags" )
-            
-            
-
             val userTableData = (topN zip userTags).map { case (x, t) =>
                 ("reputation" -> x._1) ~
                 ("name" -> "<a href=\"http://stackoverflow.com/users/%d\">%s</a>".format(x._3, x._2)) ~
                 ("location" -> x._4) ~
                 ("tags" -> t) }
-    
-            println( "Zipped users and tags" )
+                
+            //userTableData.foreach( t => Logger.debug( t.toString ) )
             
             val json = compact(render("aaData" -> userTableData))
-
-            println( "Built json" )
+            
             Ok(json)
         }
     }
@@ -582,6 +580,7 @@ object Application extends Controller
         
         WithDbSession
         {
+            Logger.debug( "Requesting tags for: " + dh_id )
             val topTags = (for (Join(tagMap, tags) <-
                 CriticalMassTables.TagMap innerJoin
                 CriticalMassTables.Tags on (_.tag_id is _.id)
@@ -589,6 +588,8 @@ object Application extends Controller
                 _ <- Query orderBy(Desc(tagMap.count)) ) yield tags.name ~ tagMap.count).take(50).list
 
             val tagData = topTags.sortWith(_._2 > _._2).map( t => ("tag" -> t._1) ~ ("count" -> t._2) )
+            
+            //tagData.foreach( t => Logger.debug( t.toString ) )
 
             Ok(compact(render(tagData)))
         }
@@ -596,7 +597,7 @@ object Application extends Controller
     
     def markerInstitutions( dh_id : Long ) = Action
     {
-        println( "Requesting institutions for: " + dh_id )
+        Logger.debug( "Requesting institutions for: " + dh_id )
         WithDbSession
         {
             val roleData = (for
@@ -666,8 +667,11 @@ object Application extends Controller
                 
                 d.update( url, loc, roleSOTags.map(t => (t, 1)), roleSectorTags )
             }
-
-            Ok(compact(render("aaData" -> instData.toList.sortWith(_._2.userCount > _._2.userCount).map( t =>
+            val instDataList = instData.toList.sortWith(_._2.userCount > _._2.userCount)
+           
+            //instDataList.foreach( t => Logger.debug( t.toString ) )
+           
+            Ok(compact(render("aaData" -> instDataList.map( t =>
                 ("count" -> t._2.userCount) ~
                 ("name" -> "<a href=\"http://%s\">%s</a>".format( t._2.url, t._1 ) ) ~
                 ("location" -> t._2.location) ~
@@ -683,6 +687,8 @@ object Application extends Controller
         
         val ud = sessionCache.getAs[UserData]("user").get
         val uname = ud.name
+        
+        Logger.info( "User: %d %s logout".format( ud.uid, ud.name ) )
         
         sessionCache.remove("user")
         Redirect(routes.Application.index).flashing( "success" -> "Goodbye %s".format(uname) )
@@ -701,10 +707,9 @@ object Application extends Controller
 
         
         val baseUrl = globalData.baseUrl
-        println( "Base url is: " + baseUrl )
         
         // Post the code back to try to get an access token
-        println( "Requesting access token" )
+        Logger.debug( "Requesting access token" )
         val timeout = Timeout(5.seconds)
         val url = WS.url("https://stackexchange.com/oauth/access_token")
         val promiseRes = url.post( Map(
@@ -714,7 +719,7 @@ object Application extends Controller
             "client_secret" -> Seq(stackOverFlowSecretKey) ) )
         val post = promiseRes.await(5000).get.body
         
-        println( post )
+        Logger.debug( post )
 
 
         val fields = post.split("&").map
@@ -727,9 +732,9 @@ object Application extends Controller
         val accessToken = fields("access_token")
         val expires = fields("expires").toInt
         
-        println( "Received access token: %s (expires: %f hours)".format( accessToken, (expires/3600.0) ) )
+        Logger.debug( "Received access token: %s (expires: %f hours)".format( accessToken, (expires/3600.0) ) )
         
-        println( "Getting details for authenticated user" )
+        Logger.debug( "Getting details for authenticated user" )
         val uidurlRes = Dispatch.pullJSON("https://api.stackexchange.com/2.0/me",
             List(
             ("site",            "stackoverflow"),
@@ -741,7 +746,7 @@ object Application extends Controller
         val meuid = (response \ "user_id").extract[Int]
         val mename = (response \ "display_name").extract[String]
 
-	    println( "User authenticated: ", meuid, mename )
+	    Logger.debug( "User authenticated: %d %s".format(meuid, mename) )
 	    val emailOption : Option[Option[String]] = WithDbSession
         {
             ( for ( r <- CriticalMassTables.Users if r.user_id === meuid.toLong ) yield r.email ).list.headOption
@@ -760,13 +765,27 @@ object Application extends Controller
                 // Get user_id and display_name and stick them in the cache
                 sessionCache.set("user", UserData( meuid, mename, Some( new UserAuth(accessToken, expires) ), email ) )
                 
-                println( "User is %s (%d)".format( mename, meuid ) )
-                
-                // TODO: If this is their first login, ask for more details
-                // namely finer location, company name
+                Logger.debug( "User is %s (%d)".format( mename, meuid ) )
                 
                 WithDbSession
                 {
+                    val now = new java.sql.Timestamp( (new java.util.Date()).getTime )
+                    
+                    // Fill in or update the NativeUser table
+                    val nu = CriticalMassTables.NativeUser
+                    val checkFirstLogin = ( for ( r <- nu if r.userId === meuid.toLong ) yield r.loginCount ).list
+                    if ( checkFirstLogin.isEmpty )
+                    {
+                        // userId, registrationDate, email, lastLogin, loginCount
+                        nu.insert( (meuid.toLong, now, None, now, 1) )
+                    }
+                    else
+                    {
+                        val r = for ( r <- nu if r.userId === meuid.toLong ) yield r.lastLogin ~ r.loginCount
+                        r.update( (now, checkFirstLogin.head + 1) )
+                    }
+                
+                    // If they haven't registered any roles, ask for more details
                     val checkRoles = ( for ( r <- CriticalMassTables.UserRole if r.user_id === meuid.toLong ) yield r.id ).list
                     if ( checkRoles.isEmpty )
                     {

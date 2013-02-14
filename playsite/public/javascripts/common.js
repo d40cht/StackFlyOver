@@ -7,6 +7,7 @@
         // Retrieve the new data with $.getJSON. You could use it ajax too
         $.getJSON(source, null, function( json )
         {
+            _gaq.push(['_trackPageview', source]);
             theTable.fnClearTable();
 
             for (var i=0; i<json.aaData.length; i++)
@@ -41,9 +42,11 @@
             var ne = bounds.getNorthEast();
             var sw = bounds.getSouthWest();
             
-            $.getJSON("/mapData?loc="+sw.lat() + "," + sw.lng() + "," + ne.lat() + "," + ne.lng() + "," + zoom,
+            var url = "/mapData?loc="+sw.lat() + "," + sw.lng() + "," + ne.lat() + "," + ne.lng() + "," + zoom;
+            $.getJSON(url,
                 function(data)
                 {
+                    _gaq.push(['_trackPageview', url]);
                     // Clear any existing markers
                     while ( markersArray[0] )
                     {
