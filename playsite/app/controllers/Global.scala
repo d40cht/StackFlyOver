@@ -38,7 +38,7 @@ object Global extends GlobalSettings {
             val userFetch = new processing.UserScraper(db)
             userFetch.run( statusFn )
         } )
-    } ) at "0 15 10 * * ?"
+    } ) at "0 15 23 * * ?"
   }  
   
   override def onStop(app: Application) {
