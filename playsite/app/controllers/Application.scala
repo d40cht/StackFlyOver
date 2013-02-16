@@ -799,11 +799,11 @@ object Application extends Controller
                     val loginEvent = analyticsEvent( category="Action", action="Login", label=mename )
                     if ( checkRoles.isEmpty )
                     {
-                        Redirect(routes.Application.refineUser).flashing( loginEvent )
+                        Redirect(routes.Application.refineUser).flashing( loginEvent, "success" -> "Welcome: " + mename )
                     }
                     else
                     {
-                        Redirect(routes.Application.userHome).flashing( loginEvent )
+                        Redirect(routes.Application.userHome).flashing( loginEvent, "success" -> "Welcome: " + mename )
                     }
                 }
             }
