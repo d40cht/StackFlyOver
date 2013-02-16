@@ -70,6 +70,7 @@ object Application extends Controller
         {
             Action( request =>
             {
+                Logger.debug( "IP: " + request.remoteAddress )
                 val session = request.session
                 val uuid = session.get("uuid") match
                 {
@@ -491,9 +492,10 @@ object Application extends Controller
 
     
     def mapData( loc : String ) = Action
-    {
+    { request =>
+
         val Array( swlat, swlon, nelat, nelon, zoom ) = loc.split(",").map(_.toDouble)
-        Logger.debug( "Serving: %f, %f, %f, %f, %f".format(swlat, swlon, nelat, nelon, zoom) )
+        Logger.debug( "IP %s: %f, %f, %f, %f, %f".format(request.remoteAddress, swlat, swlon, nelat, nelon, zoom) )
         
         
         // If logged in, additionally join on the institution table and give
