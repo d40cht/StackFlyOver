@@ -51,7 +51,7 @@ object Application extends Controller
     val stackOverFlowSecretKey = "aL1DlUG5A7M96N48t2*k0w(("
     val googleMapsKey = "AIzaSyA_F10Lcod9fDputQVMZOtM4cMMaFbJybU"
     
-    private def analyticsEvent( category : String, action : String, label : String ) =
+    private def analyticsEvent( category : String, action : String, label : String ) : (String, String) =
     {
         "script" -> "_gaq.push(['_trackEvent', '%s', '%s', '%s']);".format(category, action, label)
     }
@@ -339,7 +339,8 @@ object Application extends Controller
                                 CriticalMassTables.RoleSectorTags insert ((roleId, tagId))
                             }
                             
-                            Redirect(routes.Application.userHome)
+                            val newRoleEvent = analyticsEvent("Action", "newRole", currUser.name )
+                            Redirect(routes.Application.userPage(currUser.uid)).flashing( newRoleEvent, "success" -> "Thank you very much" )
                         }
                     }
                 }
@@ -444,8 +445,8 @@ object Application extends Controller
             sessionCache.set("user", ud.copy(email=emailAddress) )
         }
         
-        
-        Redirect(routes.Application.userPage(ud.uid))
+        val eventEmail = analyticsEvent("Action", "email", ud.name )
+        Redirect(routes.Application.userPage(ud.uid)).flashing( eventEmail, "success" -> "Thank you very much" )
     }
     
     
@@ -799,11 +800,11 @@ object Application extends Controller
                     val loginEvent = analyticsEvent( category="Action", action="Login", label=mename )
                     if ( checkRoles.isEmpty )
                     {
-                        Redirect(routes.Application.refineUser).flashing( loginEvent, "success" -> "Welcome: " + mename )
+                        Redirect(routes.Application.refineUser).flashing( loginEvent, "success" -> ("Welcome: " + mename) )
                     }
                     else
                     {
-                        Redirect(routes.Application.userHome).flashing( loginEvent, "success" -> "Welcome: " + mename )
+                        Redirect(routes.Application.userPage(meuid)).flashing( loginEvent, "success" -> ("Welcome: " + mename) )
                     }
                 }
             }
