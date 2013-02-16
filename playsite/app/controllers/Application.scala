@@ -51,6 +51,11 @@ object Application extends Controller
     val stackOverFlowSecretKey = "aL1DlUG5A7M96N48t2*k0w(("
     val googleMapsKey = "AIzaSyA_F10Lcod9fDputQVMZOtM4cMMaFbJybU"
     
+    private def analyticsEvent( category : String, action : String, label : String ) =
+    {
+        "script" -> "_gaq.push(['_trackEvent', '%s', '%s', '%s']);".format(category, action, label)
+    }
+    
     class SessionCache( val uuid : String )
     {
         import play.api.cache.CacheAPI
@@ -759,7 +764,7 @@ object Application extends Controller
         {
             case None => Redirect(routes.Application.index).flashing
             {
-                "Log in failed" -> "We're sorry, but we have not yet gleaned your details from Stack Overflow. If you have just registered with SO, please try again tomorrow."
+                "failure" -> "We're sorry, but we have not yet gleaned your details from Stack Overflow. If you have just registered with SO, please try again tomorrow."
             }
                 
             case Some( email ) =>
@@ -792,7 +797,11 @@ object Application extends Controller
                     val checkRoles = ( for ( r <- CriticalMassTables.UserRole if r.user_id === meuid.toLong ) yield r.id ).list
                     if ( checkRoles.isEmpty )
                     {
-                        Redirect(routes.Application.refineUser)
+                        Redirect(routes.Application.refineUser).flashing
+                        {
+                            // Category, Action, Label
+                            analyticsEvent( category="Action", action="Login", label=mename )
+                        }
                     }
                     else
                     {
