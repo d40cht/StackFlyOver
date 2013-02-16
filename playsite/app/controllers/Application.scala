@@ -793,17 +793,15 @@ object Application extends Controller
                 
                     // If they haven't registered any roles, ask for more details
                     val checkRoles = ( for ( r <- CriticalMassTables.UserRole if r.user_id === meuid.toLong ) yield r.id ).list
+                    
+                    val loginEvent = analyticsEvent( category="Action", action="Login", label=mename )
                     if ( checkRoles.isEmpty )
                     {
-                        Redirect(routes.Application.refineUser).flashing
-                        {
-                            // Category, Action, Label
-                            analyticsEvent( category="Action", action="Login", label=mename )
-                        }
+                        Redirect(routes.Application.refineUser).flashing( loginEvent )
                     }
                     else
                     {
-                        Redirect(routes.Application.userHome)
+                        Redirect(routes.Application.userHome).flashing( loginEvent )
                     }
                 }
             }
