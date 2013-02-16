@@ -81,6 +81,15 @@
                     <div class="flashsuccess">{message}</div>
                 }
             }}
+            
+            @{flash.get("script") match {
+                case None => {
+                }
+                case Some(scriptBody) =>
+                {
+                    <script>{scriptBody}</script>
+                }
+            }}
         </div>
 
         <div class="maincontent">
