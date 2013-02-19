@@ -39,11 +39,13 @@ object Application extends Controller
     
     case class UserAuth( val accessToken : String, val expiry : Int )
     
-    case class UserData( val uid : Int, val name : String, val auth : Option[UserAuth], val email : Option[String] )
+    case class UserData( val uid : Int, val name : String, val auth : Option[UserAuth], val email : Option[String], val reputation : Long )
     {
         def isLocallyAuthenticated = !auth.isEmpty
         def isAdmin = isLocallyAuthenticated && (uid == 415313)
     }
+    
+    case class RepLine( name : String, value : Int, localRank : Int, countryRank : Int, totalRank : Int )
 
     case class UserRole( val id : Long, val institutionName : String, val url : String, val department : String, val location : String, val soTags : List[String], val sectorTags : List[String] )
     
@@ -139,6 +141,25 @@ object Application extends Controller
             } )
         }
     }
+    
+    // Closest: select POWER("longitude"-13.5, 2.0) + POWER("latitude"-43.7, 2.0) as "dist", "longitude", "latitude"  from "DataHierarchy" where "level"=10 ORDER BY "dist" ASC limit 10;
+    
+    case class DHPoint( id : Long, dist : Double, lon : Double, lat : Double )
+    
+    def closest( db : Database, lon : Double, lat : Double, scale : Int, limit : Int ) : List[DHPoint] =
+    {
+        db withSession
+        {
+            import org.scalaquery.simple.{StaticQuery}
+            
+            val q = StaticQuery[(Double, Double, Int, Int), (Long, Double, Double, Double)] +
+                "SELECT \"id\", POWER(\"longitude\" - ?, 2.0) + POWER(\"latitude\" - ?, 2.0) as \"dist\", \"longitude\", \"latitude\" " +
+                "FROM \"DataHierarchy\" WHERE \"level\"=? ORDER BY \"dist\" ASC LIMIT ?"
+            
+            val res : List[DHPoint] = q( (lon, lat, scale, limit) ).list.map( r => Function.tupled( DHPoint.apply _ )(r) )
+            res
+        }
+    }
 
     
     def index = SessionCacheAction(requireLogin=false)
@@ -148,7 +169,7 @@ object Application extends Controller
         Ok(views.html.index(globalData, sessionCache.getAs[UserData]("user"), flash))
     }
     
-    def admin = SessionCacheAction(requireLogin=true, requireAdmin=true)
+    def admin = SessionCacheAction(requireLogin=false, requireAdmin=false)
     {
         (request, sessionCache, globalData, flash) =>
         
@@ -421,9 +442,9 @@ object Application extends Controller
             case Some(ud) if ud.uid == user_id => ud
             case _ => WithDbSession
             {
-                val userDetails = (for (u <- CriticalMassTables.Users if u.user_id === user_id) yield u.display_name ~ u.email).first
+                val userDetails = (for (u <- CriticalMassTables.Users if u.user_id === user_id) yield u.display_name ~ u.email ~ u.reputation).first
                 
-                new UserData( user_id.toInt, userDetails._1, None, userDetails._2 )
+                new UserData( user_id.toInt, userDetails._1, None, userDetails._2, userDetails._3 )
             }
         }
     }
@@ -462,10 +483,28 @@ object Application extends Controller
     {
         (request, sessionCache, globalData, flash) =>
         
+        import org.scalaquery.ql.Ordering.Desc
+        import org.scalaquery.ql.extended.H2Driver.Implicit._
+        
+        
         implicit val sc = sessionCache
         WithDbSession
         {
             val user = getUserDetails( user_id )
+            
+            // Get user tags
+            val tags = ( for ( Join(tags, tagNames) <-
+                CriticalMassTables.UserTags innerJoin
+                CriticalMassTables.Tags
+                on (_.tag_id is _.id)
+                if (tags.user_id === user.uid.toLong );
+                _ <- Query orderBy(Desc(tags.count)) )
+                yield tagNames.name ~ tags.count ).take(5).list
+                
+            val repTable =
+                new RepLine( "Total reputation", user.reputation.toInt, localRank=0, countryRank=0, totalRank=0 ) ::
+                tags.map { case (name, count) => new RepLine( name, count.toInt, localRank=0, countryRank=0, totalRank=0 ) }
+                
             
             // Get roles with location and two types of tags
             val roles = ( for ( 
@@ -492,7 +531,7 @@ object Application extends Controller
                 new UserRole( rid, instname, insturl, dept, loc, soTags, sectorTags )   
             }
 
-            Ok(views.html.userhome(globalData, user, res.toList, flash))
+            Ok(views.html.userhome(globalData, user, repTable, res.toList, flash))
         }
     }
 
@@ -756,9 +795,9 @@ object Application extends Controller
         val mename = (response \ "display_name").extract[String]
 
 	    Logger.debug( "User authenticated: %d %s".format(meuid, mename) )
-	    val emailOption : Option[Option[String]] = WithDbSession
+	    val emailOption : Option[(Option[String], Long)] = WithDbSession
         {
-            ( for ( r <- CriticalMassTables.Users if r.user_id === meuid.toLong ) yield r.email ).list.headOption
+            ( for ( r <- CriticalMassTables.Users if r.user_id === meuid.toLong ) yield r.email ~ r.reputation ).list.headOption
         }
         
         emailOption match
@@ -768,11 +807,11 @@ object Application extends Controller
                 "failure" -> "We're sorry, but we have not yet gleaned your details from Stack Overflow. If you have just registered with SO, please try again tomorrow."
             }
                 
-            case Some( email ) =>
+            case Some( (email, reputation) ) =>
             {
 	         
                 // Get user_id and display_name and stick them in the cache
-                sessionCache.set("user", UserData( meuid, mename, Some( new UserAuth(accessToken, expires) ), email ) )
+                sessionCache.set("user", UserData( meuid, mename, Some( new UserAuth(accessToken, expires) ), email, reputation ) )
                 
                 Logger.debug( "User is %s (%d)".format( mename, meuid ) )
                 

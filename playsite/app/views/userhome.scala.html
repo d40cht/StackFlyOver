@@ -1,7 +1,27 @@
-@(globalData : controllers.Application.GlobalData, user : controllers.Application.UserData, roles : List[controllers.Application.UserRole], flash: Flash)
+@(globalData : controllers.Application.GlobalData, user : controllers.Application.UserData, repTable : List[controllers.Application.RepLine], roles : List[controllers.Application.UserRole], flash: Flash)
 
 @main("Home page for: " + user.name, globalData, Some(user), flash) {
     <h1>Home page for: @user.name</h1>
+    
+    <h2>Your reputation</h2>
+    <table>
+        <tr>
+            <th></th>
+            <th>Total</th>
+            <!--<th>Local rank</th>
+            <th>Country rank</th>
+            <th>Total rank</th>-->
+        </tr>
+        @repTable.map { line =>
+            <tr>
+                <th>@{line.name}</th>
+                <td>@{line.value}</td>
+                <!--<td>@{line.localRank}</td>
+                <td>@{line.countryRank}</td>
+                <td>@{line.totalRank}</td>-->
+            </tr>
+        }
+    </table>
     
     <h2>Contact details</h2>
     @if( user.email == None) {

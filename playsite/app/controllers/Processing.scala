@@ -30,13 +30,24 @@ case class FullUser(
     val badge_counts : Badges )
     
 case class UserTagCounts(
-    val name                : String,
-    val count               : Long,
-    val is_required         : Boolean,
-    val is_moderator_only   : Boolean,
-    val user_id             : Long,
-    val has_synonyms        : Boolean
-)
+    val tag_name            : String,
+    val answer_count        : Long,
+    val answer_score        : Long,
+    val question_count      : Long,
+    val question_score      : Long )
+{
+    def combine( other : UserTagCounts ) =
+    {
+        assert( tag_name == other.tag_name )
+        
+        new UserTagCounts(
+            tag_name,
+            answer_count + other.answer_count,
+            answer_score + other.answer_score,
+            question_count + other.question_count,
+            question_score + other.question_score )
+    }
+}
     
 case class YahooLocation(
     latitude    : String,
@@ -394,6 +405,8 @@ class UserScraper( val db : Database )
 {
     val stackOverflowKey = "5FUHVgHRGHWbz9J5bEy)Ng(("
     
+    import org.scalaquery.ql.Ordering.Desc
+    import org.scalaquery.ql.extended.H2Driver.Implicit._
     
     def run( statusFn : (Double, String) => Unit )
     {
@@ -500,43 +513,63 @@ class UserScraper( val db : Database )
             // Now fetch tag stats for each user left without tags
             val allUntaggedHighRepUsers = (for ( Join(user, tags) <-
                 CriticalMassTables.Users leftJoin
-                CriticalMassTables.UserTags on(_.user_id is _.user_id) if (tags.user_id isNull) && user.reputation > 120L ) yield user.user_id ~ user.display_name).list
+                CriticalMassTables.UserTags on(_.user_id is _.user_id) if (tags.user_id isNull) && user.reputation > 120L;
+                _ <- Query orderBy(Desc(user.reputation)) ) yield user.user_id ~ user.display_name).list
                 
             Logger.debug( "number of untagged users remaining to scrape: " + allUntaggedHighRepUsers.size )
                      
             for ( (uid, name) <- allUntaggedHighRepUsers )
             {
-                val json = SODispatch.pullJSON( "http://api.stackexchange.com/2.0/users/%d/tags".format(uid), List(
-                    ("site", "stackoverflow"),
-                    ("pagesize", "100"),
-                    ("order", "desc"),
-                    ("sort", "popular"),
-                    ("key", stackOverflowKey) ) )
-                    
-                var tags = (json \ "items").children.map( _.extract[UserTagCounts] )
+                val answerTags =
+                {
+                    val json = SODispatch.pullJSON( "http://api.stackexchange.com/2.0/users/%d/top-answer-tags".format(uid), List(
+                        ("site", "stackoverflow"),
+                        ("pagesize", "100"),
+                        ("order", "desc"),
+                        ("sort", "answer_score"),
+                        ("key", stackOverflowKey) ) )
+                        
+                    (json \ "items").children.map( _.extract[UserTagCounts] )
+                }
+                
+                val questionTags =
+                {
+                    val json = SODispatch.pullJSON( "http://api.stackexchange.com/2.0/users/%d/top-question-tags".format(uid), List(
+                        ("site", "stackoverflow"),
+                        ("pagesize", "100"),
+                        ("order", "desc"),
+                        ("sort", "answer_score"),
+                        ("key", stackOverflowKey) ) )
+                        
+                    (json \ "items").children.map( _.extract[UserTagCounts] )
+                }
+                
+                var tags = (answerTags ++ questionTags)
+                    .groupBy( _.tag_name )
+                    .map( _._2.reduce(_ combine _) )
                 
                 if ( tags.isEmpty )
                 {
-                    tags = List( new UserTagCounts( "notag", 0, false, false, uid, false ) )
+                    tags = List( new UserTagCounts( "notag", 0, 0, 0, 0 ) )
                 }
                 
-                Logger.debug( "Tags for: %s".format(name) )
+                Logger.debug( "Tags for: %s (%d)".format(name, uid) )
                 threadLocalSession withTransaction
                 {
                     for ( tag <- tags )
                     {
-                        val checkTag = (for ( t <- CriticalMassTables.Tags if t.name === tag.name ) yield t.id).list
+                        val checkTag = (for ( t <- CriticalMassTables.Tags if t.name === tag.tag_name ) yield t.id).list
                         
                         val tagId = if ( checkTag.isEmpty )
                         {
-                            CriticalMassTables.Tags.name insert (tag.name)
+                            CriticalMassTables.Tags.name insert (tag.tag_name)
                             
                             val scopeIdentity = SimpleFunction.nullary[Long]("scope_identity")
                             Query(scopeIdentity).first
                         }
                         else checkTag.head
                         
-                        CriticalMassTables.UserTags insert (tagId, uid, tag.count)
+                        CriticalMassTables.UserTags insert (tagId, uid, tag.answer_score)
                     }
                 }
                 
