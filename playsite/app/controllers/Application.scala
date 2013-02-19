@@ -169,7 +169,7 @@ object Application extends Controller
         Ok(views.html.index(globalData, sessionCache.getAs[UserData]("user"), flash))
     }
     
-    def admin = SessionCacheAction(requireLogin=false, requireAdmin=false)
+    def admin = SessionCacheAction(requireLogin=true, requireAdmin=true)
     {
         (request, sessionCache, globalData, flash) =>
         
