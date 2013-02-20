@@ -1,4 +1,4 @@
-@(globalData : controllers.Application.GlobalData, user : Option[controllers.Application.UserData], nativeUsers : List[(Long, String, java.sql.Timestamp, java.sql.Timestamp, Int)], roles : List[(Long, String, String)], jobs : List[controllers.JobRegistry.JobStatus], flash: Flash)
+@(globalData : controllers.Application.GlobalData, user : Option[controllers.Application.UserData], nativeUsers : List[(Long, String, java.sql.Timestamp, java.sql.Timestamp, Int)], roles : List[(Long, String, String, Long)], jobs : List[controllers.JobRegistry.JobStatus], flash: Flash)
 
 @main("Site admin", globalData, user, flash) {
     <h1>Site admin</h1>
@@ -41,11 +41,12 @@
    
     <h4>User added roles</h4>
     <table>
-    <tr><th>User name</th><th>Role url</th></tr>
+    <tr><th>User name</th><th>Role url</th><th><Company page</th></tr>
     @roles.map( r => {
         <tr>
             <td><a href={routes.Application.userPage(r._1).toString}>{r._2}</a></td>
             <td><a href={r._3}>{r._3}</a></td>
+            <td><a href={routes.Application.companyPage(r._4).toString}>Company page</a></td>
         </tr>
     } )
     </table>

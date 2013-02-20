@@ -7,14 +7,20 @@
         <tr>
             <th>Department</th>
             <th>Url</th>
-            <th>Location<th>
+            <th>Location</th>
+            <th>Work sector</th>
+            <th>Number of users</th>
+            <th>Skills</th>
         </tr>
         
         @companyInstitutions.map { case (dept, url, loc) =>
             <tr>
                 <td>@{dept}</td>
                 <td>@{url}</td>
-                <td>@{loc}</td>
+                <td>@{loc} (link to map page)</td>
+                <td>cleantech</td>
+                <td>1</td>
+                <td>C++</td>
             </tr>
         }
     </table>

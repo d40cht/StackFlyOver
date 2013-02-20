@@ -30,7 +30,7 @@ GET     /markerUsers                controllers.Application.markerUsers( dh_id :
 GET     /markerInstitutions         controllers.Application.markerInstitutions( dh_id : Long )
 GET     /markerTags                 controllers.Application.markerTags( dh_id : Long )
 GET     /userPage                   controllers.Application.userPage( user_id : Long )
-GET     /companyPage                controllers.Application.userPage( company_id : Long )
+GET     /companyPage                controllers.Application.companyPage( company_id : Long )
 GET     /userHome                   controllers.Application.userHome
 
 

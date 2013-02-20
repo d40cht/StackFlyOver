@@ -169,7 +169,8 @@ object Application extends Controller
         Ok(views.html.index(globalData, sessionCache.getAs[UserData]("user"), flash))
     }
     
-    def admin = SessionCacheAction(requireLogin=true, requireAdmin=true)
+    //def admin = SessionCacheAction(requireLogin=true, requireAdmin=true)
+    def admin = SessionCacheAction(requireLogin=false, requireAdmin=false)
     {
         (request, sessionCache, globalData, flash) =>
         
@@ -185,7 +186,7 @@ object Application extends Controller
             
             val userRoles = (for ( Join(role, user) <-
                 CriticalMassTables.UserRole innerJoin
-                CriticalMassTables.Users on (_.user_id is _.user_id) ) yield user.user_id ~ user.display_name ~ role.url).take(100).list
+                CriticalMassTables.Users on (_.user_id is _.user_id) ) yield user.user_id ~ user.display_name ~ role.url ~ role.institution_id).take(100).list
             Ok(views.html.admin(globalData, sessionCache.getAs[UserData]("user"), nativeUsers, userRoles, jobs, flash))
         }
     }
@@ -491,23 +492,26 @@ object Application extends Controller
     {
         (request, sessionCache, globalData, flash) =>
         
-        val companyName =
+        WithDbSession
         {
-            for ( ct <- CriticalMassTables.Institution
-                if ct.id === company_id ) yield ct.name
-        }.first
+            val companyName =
+            {
+                for ( ct <- CriticalMassTables.Institution
+                    if ct.id === company_id ) yield ct.name
+            }.first
+                
+            val companyInstitutions =
+            {
+                for (
+                    ct <- CriticalMassTables.UserRole;
+                    ln <- CriticalMassTables.LocationName;
+                    if ct.location_name_id === ln.id && ct.institution_id === company_id ) yield ct.department ~ ct.url ~ ln.name
+            }.list
             
-        val companyInstitutions =
-        {
-            for (
-                ct <- CriticalMassTables.UserRole;
-                ln <- CriticalMassTables.LocationName;
-                if ct.location_name_id === ln.id && ct.institution_id === company_id ) yield ct.department ~ ct.url ~ ln.name
-        }.list
-        
-        val user = sessionCache.getAs[UserData]("user")
-        
-        Ok(views.html.companyPage(globalData, user, companyName, companyInstitutions, flash))
+            val user = sessionCache.getAs[UserData]("user")
+            
+            Ok(views.html.companyPage(globalData, user, companyName, companyInstitutions, flash))
+        }
     }
     
     def userPage( user_id : Long ) = SessionCacheAction(requireLogin=true, requireUserId=Some(user_id))
