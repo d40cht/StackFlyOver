@@ -1,0 +1,18 @@
+@(globalData : controllers.Application.GlobalData, user : controllers.Application.UserData, flash: Flash)
+
+@import controllers.Application.UserData
+
+@main("Welcome: "+user.name, globalData, Some(user), flash) {
+    <h1>Welcome: @user.name</h1>
+    
+
+    <div>
+        <p>Please enter your email address to complete registration with the site.</p>
+        
+        <form action=@routes.Application.acceptEmail.toString>
+            <p>Email: <input type="text" name="email"/> <input type="submit" value="Submit"/> </p>
+        </form>
+    </div>
+    
+    <div>Or do this <a href=@{routes.Application.userPage(user.uid).toString}>later</a>.</div>
+}

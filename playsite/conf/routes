@@ -7,6 +7,7 @@ GET     /                           controllers.Application.index
 GET     /admin                      controllers.Application.admin
 GET     /refineUser                 controllers.Application.refineUser
 GET     /addEmail                   controllers.Application.addEmail
+GET     /acceptEmail                controllers.Application.acceptEmail
 GET     /editUserRole               controllers.Application.editUserRole( role_id : Long )
 GET     /deleteUserRole             controllers.Application.deleteUserRole( role_id : Long )
 GET     /exampleJob                 controllers.Application.exampleJob
@@ -29,6 +30,7 @@ GET     /markerUsers                controllers.Application.markerUsers( dh_id :
 GET     /markerInstitutions         controllers.Application.markerInstitutions( dh_id : Long )
 GET     /markerTags                 controllers.Application.markerTags( dh_id : Long )
 GET     /userPage                   controllers.Application.userPage( user_id : Long )
+GET     /companyPage                controllers.Application.userPage( company_id : Long )
 GET     /userHome                   controllers.Application.userHome
 
 

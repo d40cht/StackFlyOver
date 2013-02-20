@@ -1,0 +1,21 @@
+@(globalData : controllers.Application.GlobalData, user : Option[controllers.Application.UserData], companyName : String, companyInstitutions : List[(String, String, String)], flash: Flash)
+
+@main("Overview page for: " + companyName, globalData, user, flash) {
+    <h1>Overview page for: @companyName</h1>
+    
+    <table>
+        <tr>
+            <th>Department</th>
+            <th>Url</th>
+            <th>Location<th>
+        </tr>
+        
+        @companyInstitutions.map { case (dept, url, loc) =>
+            <tr>
+                <td>@{dept}</td>
+                <td>@{url}</td>
+                <td>@{loc}</td>
+            </tr>
+        }
+    </table>
+}

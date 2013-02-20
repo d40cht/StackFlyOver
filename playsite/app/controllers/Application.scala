@@ -223,6 +223,14 @@ object Application extends Controller
         
         Ok(compact(render(jobs.map( x => ("name" -> x.name) ~ ("progress" -> x.progress) ~ ("status" -> x.status) ))))
     }
+    
+    def addEmail() = SessionCacheAction(requireLogin=true)
+    {
+        (request, sessionCache, globalData, flash) =>
+        
+        val currUser = sessionCache.getAs[UserData]("user").get
+        Ok(views.html.addEmail(globalData, currUser, flash))
+    }
         
     def refineUser() = SessionCacheAction(requireLogin=true)
     {
@@ -449,7 +457,7 @@ object Application extends Controller
         }
     }
     
-    def addEmail = SessionCacheAction(requireLogin=true)
+    def acceptEmail = SessionCacheAction(requireLogin=true)
     {
         (request, sessionCache, globalData, flash) =>
         
@@ -477,6 +485,29 @@ object Application extends Controller
         
         val ud = sessionCache.getAs[UserData]("user").get
         Redirect(routes.Application.userPage(ud.uid))
+    }
+    
+    def companyPage( company_id : Long ) = SessionCacheAction(requireLogin=false)
+    {
+        (request, sessionCache, globalData, flash) =>
+        
+        val companyName =
+        {
+            for ( ct <- CriticalMassTables.Institution
+                if ct.id === company_id ) yield ct.name
+        }.first
+            
+        val companyInstitutions =
+        {
+            for (
+                ct <- CriticalMassTables.UserRole;
+                ln <- CriticalMassTables.LocationName;
+                if ct.location_name_id === ln.id && ct.institution_id === company_id ) yield ct.department ~ ct.url ~ ln.name
+        }.list
+        
+        val user = sessionCache.getAs[UserData]("user")
+        
+        Ok(views.html.companyPage(globalData, user, companyName, companyInstitutions, flash))
     }
     
     def userPage( user_id : Long ) = SessionCacheAction(requireLogin=true, requireUserId=Some(user_id))
@@ -839,7 +870,12 @@ object Application extends Controller
                     val checkRoles = ( for ( r <- CriticalMassTables.UserRole if r.user_id === meuid.toLong ) yield r.id ).list
                     
                     val loginEvent = analyticsEvent( category="Action", action="Login", label=mename )
-                    if ( checkRoles.isEmpty )
+
+                    if ( email.isEmpty )
+                    {
+                        Redirect(routes.Application.addEmail).flashing( loginEvent, "success" -> ("Welcome: " + mename) )
+                    }
+                    else if ( checkRoles.isEmpty )
                     {
                         Redirect(routes.Application.refineUser).flashing( loginEvent, "success" -> ("Welcome: " + mename) )
                     }
