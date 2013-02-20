@@ -14,7 +14,8 @@ object ApplicationBuild extends Build {
         "org.scalaquery" % "scalaquery_2.9.1" % "0.10.0-M1",
         "net.liftweb" % "lift-json_2.9.1" % "2.4",
         "net.databinder" %% "dispatch-http" % "0.8.5",
-        "mchv" %% "play2-quartz" % "1.1"
+        "mchv" %% "play2-quartz" % "1.1",
+        "org.apache.commons" % "commons-lang3" % "3.1"
     )
 
     val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(

@@ -49,6 +49,8 @@ object SODispatch
             case Some( time ) => Thread.sleep( time * 1000 )
             case None =>
         }
+
+        Thread.sleep( 1000 )
         
         assert( quota_remaining.extract[Int] > 1 )
         j

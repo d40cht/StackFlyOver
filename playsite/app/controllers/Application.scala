@@ -542,6 +542,7 @@ object Application extends Controller
         val Array( swlat, swlon, nelat, nelon, zoom ) = loc.split(",").map(_.toDouble)
         Logger.debug( "IP %s: %f, %f, %f, %f, %f".format(request.remoteAddress, swlat, swlon, nelat, nelon, zoom) )
         
+        val dhTimestamp = org.seacourt.global.Global.getDHTimestamp
         
         // If logged in, additionally join on the institution table and give
         // local insitution summaries, e.g. institution to location, SO rep, SO tags, Sector tags
@@ -553,6 +554,7 @@ object Application extends Controller
                 ( for 
                 {
                     dh <- CriticalMassTables.DataHierarchy if
+                    dh.created === dhTimestamp &&
                     dh.level === (zoom.toInt) &&
                     dh.longitude >= swlon && dh.longitude <= nelon &&
                     dh.latitude >= swlat && dh.latitude <= nelat

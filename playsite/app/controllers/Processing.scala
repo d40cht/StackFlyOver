@@ -99,7 +99,7 @@ class MarkerClusterer( val db : Database )
     {
         Logger.debug( "Deleting old data" )
         
-        DBUtil.clearTable( db, CriticalMassTables.DataHierarchy.tableName )
+        /*DBUtil.clearTable( db, CriticalMassTables.DataHierarchy.tableName )
         DBUtil.clearTable( db, CriticalMassTables.TagMap.tableName )
         DBUtil.clearTable( db, CriticalMassTables.UserMap.tableName )
         DBUtil.clearTable( db, CriticalMassTables.InstitutionMap.tableName )
@@ -116,7 +116,7 @@ class MarkerClusterer( val db : Database )
             assert( rowCount( CriticalMassTables.TagMap ) == 0 )
             assert( rowCount( CriticalMassTables.UserMap ) == 0 )
             assert( rowCount( CriticalMassTables.InstitutionMap ) == 0 )
-        }
+        }*/
         
         case class Cluster( val lon : Double, val lat : Double, val locDatum : LocationData )
         {
@@ -335,6 +335,20 @@ class MarkerClusterer( val db : Database )
             
             //maxMergeDistance *= 2.0
         }
+        
+        // Point to the latest DH hierarchy data
+        org.seacourt.global.Global.setDHTimestamp(updateTimestamp)
+        
+        // Clear out any old data
+        db withSession
+        {
+            import org.scalaquery.simple.{StaticQuery}
+            
+            val q = StaticQuery[java.sql.Timestamp] +
+                "DELETE FROM DataHierarchy WHERE \"created\" <> ?"
+                
+            q( updateTimestamp )
+        }
     }
 }
 
@@ -364,9 +378,12 @@ class LocationUpdater( val db : Database )
             
             for ( ((id, addr), count) <- uniques.toList.zipWithIndex )
             {
+                // TODO: This should really be done after pulling data from StackExchange. But why
+                // is this data XML encoded anyway?
+                val decodedAddr = org.apache.commons.lang3.StringEscapeUtils.unescapeXml( addr )
                 val locationJ = Dispatch.pullJSON( "http://where.yahooapis.com/geocode", List(
                     ("flags", "J"),
-                    ("q", addr),
+                    ("q", decodedAddr),
                     ("appid", yahooAPIKey) ) )
                     
                 val locations = (locationJ \ "ResultSet" \ "Results").children.map( _.extract[YahooLocation] ).sortWith( _.quality.toDouble > _.quality.toDouble )
