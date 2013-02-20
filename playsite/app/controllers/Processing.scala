@@ -340,6 +340,7 @@ class MarkerClusterer( val db : Database )
         org.seacourt.global.Global.setDHTimestamp(updateTimestamp)
         
         // Clear out any old data
+        Logger.info("Clearing out previous hierarchy data.")
         db withSession
         {
             import org.scalaquery.simple.{StaticQuery}
@@ -349,6 +350,7 @@ class MarkerClusterer( val db : Database )
                 
             q( updateTimestamp )
         }
+        Logger.info("Clearout complete.")
     }
 }
 

@@ -17,6 +17,7 @@ object Global extends GlobalSettings
     
     def setDHTimestamp( newTs : java.sql.Timestamp ) = this.synchronized
     {
+        Logger.info( "Setting DH timestamp to: " + newTs )
         dhTimestamp = Some(newTs)
     }
     def getDHTimestamp = dhTimestamp
