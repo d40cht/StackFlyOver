@@ -49,17 +49,7 @@ case class UserTagCounts(
     }
 }
     
-case class YahooLocation(
-    latitude        : String,
-    longitude       : String,
-    radius          : String,
-    quality	        : String,
-    // New
-    neighborhood    : String,
-    city            : String,
-    county          : String,
-    state           : String,
-    country         : String )
+
     
 import play.api.Logger
 
@@ -67,6 +57,65 @@ object MarkerClusterer
 {
     val endRange = 13
     val startRange = 0
+    
+    // http://www.movable-type.co.uk/scripts/latlong.html
+    def distfn( lon1 : Double, lat1 : Double, lon2 : Double, lat2 : Double ) : Double =
+    {
+        def toRad( v : Double ) : Double = 2.0 * math.Pi * (v / 360.0)
+        
+        val R = 6371.0; // Radius of the Earth in km
+        val dLat = toRad(lat2-lat1)
+        val dLon = toRad(lon2-lon1)
+        val dlat1 = toRad(lat1)
+        val dlat2 = toRad(lat2)
+
+        val a = math.sin(dLat/2.0) * math.sin(dLat/2.0) +
+                math.sin(dLon/2.0) * math.sin(dLon/2.0) * math.cos(dlat1) * math.cos(dlat2)
+        val c = 2.0 * math.atan2(math.sqrt(a), math.sqrt(1.0-a))
+        val d = R * c;
+        
+        d
+    }
+}
+
+
+object HierarchyVisitor
+{
+    // Closest: select POWER("longitude"-13.5, 2.0) + POWER("latitude"-43.7, 2.0) as "dist", "longitude", "latitude"  from "DataHierarchy" where "level"=10 ORDER BY "dist" ASC limit 10;
+    
+    case class DHPoint( id : Long, dist : Double, lon : Double, lat : Double )
+    {
+        def dist( lonOther : Double, latOther : Double ) = MarkerClusterer.distfn( lon, lat, lonOther, latOther )
+    }
+    
+    def apply( db : Database, longitude : Double, latitude : Double, visitFn : (Int, Double, DHPoint) => Unit )
+    {
+        val dhTimestamp = org.seacourt.global.Instance().getDHTimestamp.get
+        
+        def closest( scale : Int, limit : Int ) : List[DHPoint] =
+        {
+            db withSession
+            {
+                import org.scalaquery.simple.{StaticQuery}
+                
+                val q = StaticQuery[(Double, Double, Int, java.sql.Timestamp, Int), (Long, Double, Double, Double)] +
+                    "SELECT \"id\", POWER(\"longitude\" - ?, 2.0) + POWER(\"latitude\" - ?, 2.0) as \"dist\", \"longitude\", \"latitude\" " +
+                    "FROM \"DataHierarchy\" WHERE \"level\"=? AND \"created\"=? ORDER BY \"dist\" ASC LIMIT ?"
+                
+                val res : List[DHPoint] = q( (longitude, latitude, scale, dhTimestamp, limit) ).list.map( r => Function.tupled( DHPoint.apply _ )(r) )
+                res
+            }
+        }
+        
+        for ( level <- MarkerClusterer.endRange to MarkerClusterer.startRange by -1)
+        {
+            def nearestFew = closest( level, 20 )
+            
+            val (ndist, nobj) = nearestFew.map( p => (p.dist( longitude, latitude), p) ).sortBy( _._1 ).head
+            
+            visitFn( level, ndist, nobj )
+        }
+    }
 }
 
 class MarkerClusterer( val db : Database )
@@ -88,51 +137,11 @@ class MarkerClusterer( val db : Database )
         }
     }
     
-    // http://www.movable-type.co.uk/scripts/latlong.html
-    private def distfn( lon1 : Double, lat1 : Double, lon2 : Double, lat2 : Double ) : Double =
-    {
-        def toRad( v : Double ) : Double = 2.0 * math.Pi * (v / 360.0)
-        
-        val R = 6371.0; // Radius of the Earth in km
-        val dLat = toRad(lat2-lat1)
-        val dLon = toRad(lon2-lon1)
-        val dlat1 = toRad(lat1)
-        val dlat2 = toRad(lat2)
-
-        val a = math.sin(dLat/2.0) * math.sin(dLat/2.0) +
-                math.sin(dLon/2.0) * math.sin(dLon/2.0) * math.cos(dlat1) * math.cos(dlat2)
-        val c = 2.0 * math.atan2(math.sqrt(a), math.sqrt(1.0-a))
-        val d = R * c;
-        
-        d
-    }
-    
     def run( statusFn : (Double, String) => Unit ) =
-    {
-        Logger.debug( "Deleting old data" )
-        
-        /*DBUtil.clearTable( db, CriticalMassTables.DataHierarchy.tableName )
-        DBUtil.clearTable( db, CriticalMassTables.TagMap.tableName )
-        DBUtil.clearTable( db, CriticalMassTables.UserMap.tableName )
-        DBUtil.clearTable( db, CriticalMassTables.InstitutionMap.tableName )
-        
-        db withSession
-        {
-            import org.scalaquery.ql.extended.{ExtendedTable => Table}
-            
-            def rowCount[T]( table : Table[T] ) = Query( ( for ( r <- table ) yield r ).count ).first
-
-            //delete from "DataHierarchy"; delete from "InstitutionMap"; delete from "TagMap"; delete from "UserMap";
-            // The foreign key constraint should clear these out. But currently don't. Why?
-            assert( rowCount( CriticalMassTables.DataHierarchy ) == 0 )
-            assert( rowCount( CriticalMassTables.TagMap ) == 0 )
-            assert( rowCount( CriticalMassTables.UserMap ) == 0 )
-            assert( rowCount( CriticalMassTables.InstitutionMap ) == 0 )
-        }*/
-        
+    {        
         case class Cluster( val lon : Double, val lat : Double, val locDatum : LocationData )
         {
-            def dist( other : Cluster ) = distfn( lon, lat, other.lon, other.lat )
+            def dist( other : Cluster ) = MarkerClusterer.distfn( lon, lat, other.lon, other.lat )
             def merge( other : Cluster) : Cluster =
             {
                 val size = locDatum.userData.size.toDouble
@@ -368,12 +377,9 @@ class MarkerClusterer( val db : Database )
 
 class LocationUpdater( val db : Database )
 {
-    val yahooAPIKey = "50EgoNvV34HOEN8sYfWvUqVqpOfapxOSGBiRb7VjwbdsfYwolMb4XdFPhuuz"
     
     def run( statusFn : (Double, String) => Unit )
     {
-        implicit val formats = DefaultFormats
-        
         // Get most recent user from StackOverflow
         db withSession
         {
@@ -395,12 +401,7 @@ class LocationUpdater( val db : Database )
                 // TODO: This should really be done after pulling data from StackExchange. But why
                 // is this data XML encoded anyway?
                 val decodedAddr = org.apache.commons.lang3.StringEscapeUtils.unescapeXml( addr )
-                val locationJ = Dispatch.pullJSON( "http://where.yahooapis.com/geocode", List(
-                    ("flags", "J"),
-                    ("q", decodedAddr),
-                    ("appid", yahooAPIKey) ) )
-                    
-                val locations = (locationJ \ "ResultSet" \ "Results").children.map( _.extract[YahooLocation] ).sortWith( _.quality.toDouble > _.quality.toDouble )
+                val locations = controllers.YahooGeocoder( decodedAddr )
                 
                 //Logger.debug( "%d: %s".format( count, addr) )
                 if ( !locations.isEmpty )
@@ -433,7 +434,7 @@ class LocationUpdater( val db : Database )
                 }
                 
                 statusFn( count.toDouble / uniques.size.toDouble, "New location: %s".format( decodedAddr ) )
-                Thread.sleep(500)
+                Thread.sleep(4000)
             }
         }
     }
@@ -547,11 +548,11 @@ class UserScraper( val db : Database )
             val allUntaggedHighRepUsers = (for ( Join(user, tags) <-
                 CriticalMassTables.Users leftJoin
                 CriticalMassTables.UserTags on(_.user_id is _.user_id) if (tags.user_id isNull) && user.reputation > 120L;
-                _ <- Query orderBy(Desc(user.reputation)) ) yield user.user_id ~ user.display_name).list
+                _ <- Query orderBy(Desc(user.reputation)) ) yield user.user_id ~ user.display_name ~ user.reputation).list
                 
             Logger.debug( "number of untagged users remaining to scrape: " + allUntaggedHighRepUsers.size )
                      
-            for ( (uid, name) <- allUntaggedHighRepUsers )
+            for ( (uid, name, reputation) <- allUntaggedHighRepUsers )
             {
                 val answerTags =
                 {
@@ -586,7 +587,7 @@ class UserScraper( val db : Database )
                     tags = List( new UserTagCounts( "notag", 0, 0, 0, 0 ) )
                 }
                 
-                Logger.debug( "Tags for: %s (%d)".format(name, uid) )
+                Logger.debug( "Tags for: %s (%d), rep: %d".format(name, uid, reputation) )
                 threadLocalSession withTransaction
                 {
                     for ( tag <- tags )

@@ -142,24 +142,7 @@ object Application extends Controller
         }
     }
     
-    // Closest: select POWER("longitude"-13.5, 2.0) + POWER("latitude"-43.7, 2.0) as "dist", "longitude", "latitude"  from "DataHierarchy" where "level"=10 ORDER BY "dist" ASC limit 10;
     
-    case class DHPoint( id : Long, dist : Double, lon : Double, lat : Double )
-    
-    def closest( db : Database, lon : Double, lat : Double, scale : Int, limit : Int ) : List[DHPoint] =
-    {
-        db withSession
-        {
-            import org.scalaquery.simple.{StaticQuery}
-            
-            val q = StaticQuery[(Double, Double, Int, Int), (Long, Double, Double, Double)] +
-                "SELECT \"id\", POWER(\"longitude\" - ?, 2.0) + POWER(\"latitude\" - ?, 2.0) as \"dist\", \"longitude\", \"latitude\" " +
-                "FROM \"DataHierarchy\" WHERE \"level\"=? ORDER BY \"dist\" ASC LIMIT ?"
-            
-            val res : List[DHPoint] = q( (lon, lat, scale, limit) ).list.map( r => Function.tupled( DHPoint.apply _ )(r) )
-            res
-        }
-    }
 
     
     def index = SessionCacheAction(requireLogin=false)
@@ -368,6 +351,27 @@ object Application extends Controller
                                 
                                 CriticalMassTables.RoleSectorTags insert ((roleId, tagId))
                             }
+                            
+                            // Add a job to add this role to the hierarchy table
+                            val uuid = JobRegistry.submit( "Location hierarchy rebuild",
+                            { statusFn =>
+                                
+                                val db = Database.forDataSource(DB.getDataSource())
+                                
+                                val yahooLocation = controllers.YahooGeocoder( data.workLocation ).head
+                            
+                                processing.HierarchyVisitor( db, yahooLocation.longitude.toDouble, yahooLocation.latitude.toDouble,
+                                { case (level, dist, dhPoint) =>
+                                
+                                    Logger.debug( "Adding %d to %d (%f, %f, %d)".format( institutionId, dhPoint.id, dhPoint.lon, dhPoint.lat, level ) )
+                                    db withSession
+                                    {
+                                        CriticalMassTables.InstitutionMap.insert( (dhPoint.id, institutionId) )
+                                    }
+                                } )
+                            } )
+                            
+                            
                             
                             val newRoleEvent = analyticsEvent("Action", "newRole", currUser.name )
                             Redirect(routes.Application.userPage(currUser.uid)).flashing( newRoleEvent, "success" -> "Thank you very much" )
@@ -687,14 +691,26 @@ object Application extends Controller
         Logger.debug( "Requesting institutions for: " + dh_id )
         WithDbSession
         {
-            val roleData = (for
+            /*val roleData = (for
             {
                 userMap <- CriticalMassTables.UserMap;
                 userRole <- CriticalMassTables.UserRole if userMap.user_id === userRole.user_id;
                 locationName <- CriticalMassTables.LocationName if userRole.location_name_id === locationName.id;
                 institution <- CriticalMassTables.Institution if userRole.institution_id === institution.id
                 if userMap.dh_id === dh_id
+            } yield institution.name ~ userRole.url ~ locationName.name ~ userRole.id ~ userRole.user_id ).list*/
+            
+            
+            val roleData = (for
+            {
+                institutionMap <- CriticalMassTables.InstitutionMap;
+                institution <- CriticalMassTables.Institution if institution.id === institutionMap.institution_id;
+                userRole <- CriticalMassTables.UserRole if userRole.institution_id === institutionMap.institution_id;
+                locationName <- CriticalMassTables.LocationName if userRole.location_name_id === locationName.id;
+                if institutionMap.dh_id === dh_id
             } yield institution.name ~ userRole.url ~ locationName.name ~ userRole.id ~ userRole.user_id ).list
+            
+            Logger.debug( "Role data retrieved" )
             
             class InstData
             {
@@ -725,6 +741,7 @@ object Application extends Controller
                 def sectorTags = sectorTagMap.toList.sortWith(_._2 > _._2).take(5).map(_._1).mkString( " " )
             }
             
+            Logger.debug( "Building statistics from user details" )
             var instData = Map[String, InstData]()
             for ( (name, url, loc, role_id, user_id) <- roleData )
             {
@@ -757,6 +774,8 @@ object Application extends Controller
             val instDataList = instData.toList.sortWith(_._2.userCount > _._2.userCount)
            
             //instDataList.foreach( t => Logger.debug( t.toString ) )
+            
+            Logger.debug( "Rendering to JSON" )
            
             Ok(compact(render("aaData" -> instDataList.map( t =>
                 ("count" -> t._2.userCount) ~

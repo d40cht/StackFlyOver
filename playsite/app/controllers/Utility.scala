@@ -80,6 +80,38 @@ object DBUtil
     }
 }
 
+case class YahooLocation(
+    latitude        : String,
+    longitude       : String,
+    radius          : String,
+    quality	        : String,
+    // New
+    neighborhood    : String,
+    city            : String,
+    county          : String,
+    state           : String,
+    country         : String )
+
+object YahooGeocoder
+{
+    import net.liftweb.json.{JsonParser, DefaultFormats}
+    implicit val formats = DefaultFormats
+    
+    val yahooAPIKey = "50EgoNvV34HOEN8sYfWvUqVqpOfapxOSGBiRb7VjwbdsfYwolMb4XdFPhuuz"
+    
+    def apply( addr : String ) =
+    {
+        val locationJ = Dispatch.pullJSON( "http://where.yahooapis.com/geocode", List(
+            ("flags", "J"),
+            ("q", addr),
+            ("appid", yahooAPIKey) ) )
+            
+        val locations = (locationJ \ "ResultSet" \ "Results").children.map( _.extract[YahooLocation] ).sortWith( _.quality.toDouble > _.quality.toDouble )
+        
+        locations
+    }
+}
+
 object JobRegistry
 {
     class JobStatus(
