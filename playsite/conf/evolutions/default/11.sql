@@ -1,0 +1,3 @@
+# --- !Ups
+
+DELETE FROM "UserTags";
