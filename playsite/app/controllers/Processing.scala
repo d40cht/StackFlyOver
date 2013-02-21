@@ -57,9 +57,15 @@ case class YahooLocation(
     
 import play.api.Logger
 
+object MarkerClusterer
+{
+    val endRange = 13
+    val startRange = 0
+}
+
 class MarkerClusterer( val db : Database )
 {
-    val levelRange : List[(Int, Double)] = (13 to 0 by -1).zipWithIndex.map
+    val levelRange : List[(Int, Double)] = (MarkerClusterer.endRange to MarkerClusterer.startRange by -1).zipWithIndex.map
     { case (l, i) =>
         (l, 1.6 * math.pow(2.0, i.toDouble))
     }.toList
@@ -337,7 +343,7 @@ class MarkerClusterer( val db : Database )
         }
         
         // Point to the latest DH hierarchy data
-        org.seacourt.global.Global.setDHTimestamp(updateTimestamp)
+        org.seacourt.global.Instance().setDHTimestamp(updateTimestamp)
         
         // Clear out any old data
         Logger.info("Clearing out previous hierarchy data.")
@@ -412,7 +418,7 @@ class LocationUpdater( val db : Database )
                         -1.0 )
                 }
                 
-                statusFn( count.toDouble / uniques.size.toDouble, "New location: %s".format( addr ) )
+                statusFn( count.toDouble / uniques.size.toDouble, "New location: %s".format( decodedAddr ) )
                 Thread.sleep(500)
             }
         }

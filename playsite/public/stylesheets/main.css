@@ -13,8 +13,8 @@ html, body
     width: 100%;
     min-height: 100%;
     margin: 0 auto -4em;
-    
 }
+
 
 .footer, .push {
     clear: both;
@@ -38,6 +38,12 @@ div
 
 .footercontent, .headercontent, .maincontent, .flashcontent
 {
+    padding: 0px 20px;
+}
+
+.flashcontent
+{
+    clear:both;
 }
 
 .flashsuccess, .flashfailure
@@ -62,27 +68,34 @@ div
 .footercontent, .headercontent
 {
     font-size: small;
-    padding: 6px;
+    padding-top: 6px;
+    padding-bottom: 6px;
 }
 
 .headercontent
 {
     background: #f0f0ff;
-    text-align: right;
 }
 
 .maincontent
 {
     background: #ffffff;
     height: 100%;
-    padding: 10px 20px;
+    
 }
 
 .footercontent
 {
     background: #f0f0ff;
     text-align: center;
-    width: 100%;
+}
+
+a.logo
+{
+    color: #003d5d;
+    font-size: 137.5%;
+    text-decoration:none;
+    font-weight:bold;
 }
 
 h1, h2, h3, h4, h5, h6

@@ -49,6 +49,12 @@
     
     <div class="wrapper">
         <div class="headercontent">
+        
+            <div style="float: left; text-align: left">
+                <a class="logo" href="@routes.Application.index">StackNative</a>
+            </div>
+        
+           <div style="float:right; text-align: right">
            @user match {
                 case None => {
                     <span>
@@ -56,12 +62,15 @@
                            Sign in 
                         </a>
                         with your SO account for more features.
-                    <span>
+                    </span>
                 }
                 case Some(u) => {
                     <span> <a href="@routes.Application.userHome">@u.name</a>: <a href="@routes.Application.logout">Logout</a> </span>
                 }
             }
+            </div>
+            
+            <div style="clear: both"></div>
        
         </div>
         
@@ -106,7 +115,7 @@
                     <li>
                         <!-- Twitter -->
                         <a href="https://twitter.com/share" class="twitter-share-button" data-count="none">Tweet</a>
-        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+                        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
                     <li>
 
                     <li>
@@ -160,9 +169,6 @@
                 
             </div>
         </div>
-    </div>
-        
-        
     </div>
     
     

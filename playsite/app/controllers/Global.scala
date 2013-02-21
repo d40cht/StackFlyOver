@@ -1,4 +1,4 @@
-package org.seacourt.global
+
 
 import play.api._
 import play.api.db._
@@ -9,6 +9,8 @@ import org.scalaquery.ql.basic.BasicDriver.Implicit._
 import org.scalaquery.ql.{Join, SimpleFunction, Query}
 
 import utils.QuartzScheduler
+
+
 
 
 object Global extends GlobalSettings
@@ -30,7 +32,7 @@ object Global extends GlobalSettings
 
         implicit val ipapp = app
 
-        // Clear out any jobs from a previous run...
+        Logger.info("Clearing out any jobs from a previous run")
         val db = Database.forDataSource(DB.getDataSource())
         db.withSession
         {
@@ -38,15 +40,19 @@ object Global extends GlobalSettings
         }
         
         // Find the current oldest data hierarchy
-        setDHTimestamp( db withSession
+        db withSession
         {
             import org.scalaquery.simple.{StaticQuery}
             
             val q = StaticQuery[java.sql.Timestamp] +
-                "SELECT DISTINCT \"created\" FROM ORDER BY \"created\" ASC LIMIT 1"
+                "SELECT DISTINCT \"created\" FROM \"DataHierarchy\" ORDER BY \"created\" ASC LIMIT 1"
             
-            q.first
-        } )
+            q.firstOption match
+            {
+                case Some(t)    => setDHTimestamp(t)
+                case None       =>
+            }
+        }
         
         // Start the Quartz job scheduler
         Logger.info( "Starting the Quartz scheduler" )
@@ -75,5 +81,13 @@ object Global extends GlobalSettings
         Logger.info( "Application shutdown..." )
     }  
     
+}
+
+package org.seacourt.global
+{
+    object Instance
+    {
+        def apply() = Global
+    }
 }
 
