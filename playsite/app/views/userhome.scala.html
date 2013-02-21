@@ -1,99 +1,125 @@
-@(globalData : controllers.Application.GlobalData, user : controllers.Application.UserData, repTable : List[controllers.Application.RepLine], roles : List[controllers.Application.UserRole], flash: Flash)
+@(globalData : controllers.Application.GlobalData, user : controllers.Application.UserData, repTable : List[controllers.Application.RepLine], watches : List[(Long, String, String)], roles : List[controllers.Application.UserRole], flash: Flash)
 
 @main("Home page for: " + user.name, globalData, Some(user), flash) {
-    <h1>Home page for: @user.name</h1>
-    
-    <h2>Your reputation</h2>
-    <table>
-        <tr>
-            <th></th>
-            <th>Total</th>
-            <!--<th>Local rank</th>
-            <th>Country rank</th>
-            <th>Total rank</th>-->
-        </tr>
-        @repTable.map { line =>
+
+    <div style="width:100%;height:85%">
+        <h1>Home page for: @user.name</h1>
+        
+        <h2>Your reputation</h2>
+        <table>
             <tr>
-                <th>@{line.name}</th>
-                <td>@{line.value}</td>
-                <!--<td>@{line.localRank}</td>
-                <td>@{line.countryRank}</td>
-                <td>@{line.totalRank}</td>-->
+                <th></th>
+                <th>Total</th>
+                <!--<th>Local rank</th>
+                <th>Country rank</th>
+                <th>Total rank</th>-->
             </tr>
+            @repTable.map { line =>
+                <tr>
+                    <th>@{line.name}</th>
+                    <td>@{line.value}</td>
+                    <!--<td>@{line.localRank}</td>
+                    <td>@{line.countryRank}</td>
+                    <td>@{line.totalRank}</td>-->
+                </tr>
+            }
+        </table>
+        
+        <h2>Contact details</h2>
+        @if( user.email == None) {
+            <div>
+                <p>Please enter your email address to complete registration with the site.</p>
+                
+                <form action=@routes.Application.acceptEmail.toString>
+                    <p>Email: <input type="text" name="email"/> <input type="submit" value="Submit"/> </p>
+                </form>
+            </div>
+        } else {    
+            <p>Your registered email address: @user.email.get</p>
         }
-    </table>
-    
-    <h2>Contact details</h2>
-    @if( user.email == None) {
-        <div>
-            <p>Please enter your email address to complete registration with the site.</p>
-            
-            <form action=@routes.Application.acceptEmail.toString>
-                <p>Email: <input type="text" name="email"/> <input type="submit" value="Submit"/> </p>
-            </form>
-        </div>
-    } else {    
-        <p>Your registered email address: @user.email.get</p>
-    }
-    <br/>
-   
-    <h2>Roles</h2>
-    
-    <table>
-    <tr><th>Institution</th><th>Department</th><th>Location</th><th>Stack overflow tags</th><th>Institution sector tags</th><th>Actions</th></tr>
-    @roles.map( r => {
-        <tr>
-            <td>
-            	<a href={"http://" + r.url}>{r.institutionName}</a>
-            </td>
-            <td>
-                {r.department}
-            </td>
-            <td>{r.location}</td>
-            <td>
-                <ul class="token-input-list-facebook">
-                {
-                    r.soTags.map( tag => <li class="token-input-token-facebook"><p>{tag}</p></li> )
-                }
-                </ul>
-            </td>
-            <td>
-                <ul class="token-input-list-facebook">
-                {
-                    r.sectorTags.map( tag => <li class="token-input-token-facebook"><p>{tag}</p></li> )
-                }
-                </ul>
-            </td>
-            <td>
-                <a href={routes.Application.deleteUserRole(r.id).toString}>delete</a>
-                <!--<a href={routes.Application.editUserRole(r.id).toString}>edit</a>-->
-            </td>
-        </tr>
-    } )
-    </table>
+        <br/>
+        
+        <h2>Watched companies</h2>
+        <table>
+            <tr>
+                <th>Action</th>
+                <th>Company name</th>
+                <th>Company location</th>
+            </tr>
+            @watches.map { case (watchId, name, location) =>
+                <tr>
+                    <td><a href=@{routes.Application.removeWatch(watchId).toString}>Unwatch</a></td>
+                    <td>@{name}</td>
+                    <td>@{location}</td>
+                </tr>
+            }
+        </table>
+       
+        <h2>Roles</h2>
+        
+        <table>
+            <tr>
+                <th>Institution</th>
+                <th>Department</th>
+                <th>Location</th>
+                <th>Stack overflow tags</th>
+                <th>Institution sector tags</th>
+                <th>Actions</th>
+            </tr>
+        @roles.map( r => {
+            <tr>
+                <td>
+                	<a href={"http://" + r.url}>{r.institutionName}</a>
+                </td>
+                <td>
+                    {r.department}
+                </td>
+                <td>{r.location}</td>
+                <td>
+                    <ul class="token-input-list-facebook">
+                    {
+                        r.soTags.map( tag => <li class="token-input-token-facebook"><p>{tag}</p></li> )
+                    }
+                    </ul>
+                </td>
+                <td>
+                    <ul class="token-input-list-facebook">
+                    {
+                        r.sectorTags.map( tag => <li class="token-input-token-facebook"><p>{tag}</p></li> )
+                    }
+                    </ul>
+                </td>
+                <td>
+                    <a href={routes.Application.deleteUserRole(r.id).toString}>delete</a>
+                    <!--<a href={routes.Application.editUserRole(r.id).toString}>edit</a>-->
+                </td>
+            </tr>
+        } )
+        </table>
 
-    <a href="/refineUser">Add new role</a>
+        <a href="/refineUser">Add new role</a>
 
-    <br/>
+        <br/>
 
-    <a href="/">Home</a>
-    
-    <!-- Google Code for Sign in Conversion Page -->
-    <script type="text/javascript">
-        /* <![CDATA[ */
-        var google_conversion_id = 988089989;
-        var google_conversion_language = "en";
-        var google_conversion_format = "3";
-        var google_conversion_color = "ffffff";
-        var google_conversion_label = "sgsiCPP5ngQQhZ2U1wM";
-        var google_conversion_value = 0;
-        /* ]]> */
-    </script>
-    <script type="text/javascript" src="http://www.googleadservices.com/pagead/conversion.js">
-    </script>
-    <noscript>
-    <div style="display:inline;">
-        <img height="1" width="1" style="border-style:none;" alt="" src="http://www.googleadservices.com/pagead/conversion/988089989/?value=0&amp;label=sgsiCPP5ngQQhZ2U1wM&amp;guid=ON&amp;script=0"/>
+        <a href="/">Home</a>
+        
+        <!-- Google Code for Sign in Conversion Page -->
+        <script type="text/javascript">
+            /* <![CDATA[ */
+            var google_conversion_id = 988089989;
+            var google_conversion_language = "en";
+            var google_conversion_format = "3";
+            var google_conversion_color = "ffffff";
+            var google_conversion_label = "sgsiCPP5ngQQhZ2U1wM";
+            var google_conversion_value = 0;
+            /* ]]> */
+        </script>
+        <script type="text/javascript" src="http://www.googleadservices.com/pagead/conversion.js">
+        </script>
+        <noscript>
+            <div style="display:inline;">
+                <img height="1" width="1" style="border-style:none;" alt="" src="http://www.googleadservices.com/pagead/conversion/988089989/?value=0&amp;label=sgsiCPP5ngQQhZ2U1wM&amp;guid=ON&amp;script=0"/>
+            </div>
+        </noscript>
     </div>
-    </noscript>
 }

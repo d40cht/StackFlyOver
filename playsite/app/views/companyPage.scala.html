@@ -1,10 +1,11 @@
-@(globalData : controllers.Application.GlobalData, user : Option[controllers.Application.UserData], companyName : String, companyInstitutions : List[(String, String, String)], flash: Flash)
+@(globalData : controllers.Application.GlobalData, user : Option[controllers.Application.UserData], companyId : Long, companyName : String, companyInstitutions : List[(String, String, String, Long, Boolean)], flash: Flash)
 
 @main("Overview page for: " + companyName, globalData, user, flash) {
     <h1>Overview page for: @companyName</h1>
     
     <table>
         <tr>
+            <th>Action</th>
             <th>Department</th>
             <th>Url</th>
             <th>Location</th>
@@ -13,8 +14,14 @@
             <th>Skills</th>
         </tr>
         
-        @companyInstitutions.map { case (dept, url, loc) =>
+        @companyInstitutions.map { case (dept, url, loc, locid, addWatch) =>
             <tr>
+                <td>
+                    @if(addWatch) {
+                        <a href=@{routes.Application.addWatch(companyId, locid).toString}>Watch company</a>
+                    }
+                </td>
+                </td>
                 <td>@{dept}</td>
                 <td>@{url}</td>
                 <td>@{loc} (link to map page)</td>

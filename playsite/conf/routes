@@ -7,6 +7,8 @@ GET     /                           controllers.Application.index
 GET     /admin                      controllers.Application.admin
 GET     /refineUser                 controllers.Application.refineUser
 GET     /addEmail                   controllers.Application.addEmail
+GET     /addWatch                   controllers.Application.addWatch( companyId : Long, locId : Long )
+GET     /removeWatch                controllers.Application.removeWatch( watchId : Long )
 GET     /acceptEmail                controllers.Application.acceptEmail
 GET     /editUserRole               controllers.Application.editUserRole( role_id : Long )
 GET     /deleteUserRole             controllers.Application.deleteUserRole( role_id : Long )

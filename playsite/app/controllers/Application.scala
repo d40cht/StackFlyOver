@@ -215,6 +215,38 @@ object Application extends Controller
         val currUser = sessionCache.getAs[UserData]("user").get
         Ok(views.html.addEmail(globalData, currUser, flash))
     }
+    
+    def addWatch( companyId : Long, locId : Long ) = SessionCacheAction(requireLogin=true)
+    {
+        (request, sessionCache, globalData, flash) =>
+        
+        val currUser = sessionCache.getAs[UserData]("user").get
+        
+        WithDbSession
+        {
+            val ci = CriticalMassTables.CompanyWatch
+            
+            (ci.user_id ~ ci.institution_id ~ ci.location_name_id).insert( (currUser.uid.toLong, companyId, locId) )
+        }
+        
+        Redirect(routes.Application.companyPage( companyId )).flashing( "success" -> "Watch added" )
+    }
+    
+    def removeWatch( watchId : Long ) = SessionCacheAction(requireLogin=true)
+    {
+        (request, sessionCache, globalData, flash) =>
+        
+        val currUser = sessionCache.getAs[UserData]("user").get
+        
+        // TODO: Fix so authenticated users can't delete other users watches
+        WithDbSession
+        {
+            ( for ( cw <- CriticalMassTables.CompanyWatch if cw.id === watchId ) yield cw ).mutate( _.delete )
+            
+        }
+        
+        Redirect(routes.Application.userPage( currUser.uid )).flashing( "success" -> "Watch removed" )
+    }
         
     def refineUser() = SessionCacheAction(requireLogin=true)
     {
@@ -492,7 +524,7 @@ object Application extends Controller
         Redirect(routes.Application.userPage(ud.uid))
     }
     
-    def companyPage( company_id : Long ) = SessionCacheAction(requireLogin=false)
+    def companyPage( companyId : Long ) = SessionCacheAction(requireLogin=false)
     {
         (request, sessionCache, globalData, flash) =>
         
@@ -501,7 +533,7 @@ object Application extends Controller
             val companyName =
             {
                 for ( ct <- CriticalMassTables.Institution
-                    if ct.id === company_id ) yield ct.name
+                    if ct.id === companyId ) yield ct.name
             }.first
                 
             val companyInstitutions =
@@ -509,12 +541,12 @@ object Application extends Controller
                 for (
                     ct <- CriticalMassTables.UserRole;
                     ln <- CriticalMassTables.LocationName;
-                    if ct.location_name_id === ln.id && ct.institution_id === company_id ) yield ct.department ~ ct.url ~ ln.name
+                    if ct.location_name_id === ln.id && ct.institution_id === companyId ) yield ct.department ~ ct.url ~ ln.name ~ ln.id ~ true
             }.list
             
             val user = sessionCache.getAs[UserData]("user")
             
-            Ok(views.html.companyPage(globalData, user, companyName, companyInstitutions, flash))
+            Ok(views.html.companyPage(globalData, user, companyId, companyName, companyInstitutions, flash))
         }
     }
     
@@ -544,6 +576,13 @@ object Application extends Controller
                 new RepLine( "Total reputation", user.reputation.toInt, localRank=0, countryRank=0, totalRank=0 ) ::
                 tags.map { case (name, count) => new RepLine( name, count.toInt, localRank=0, countryRank=0, totalRank=0 ) }
                 
+            // Get company watches with locations
+            val watches = ( for (
+                watch <- CriticalMassTables.CompanyWatch;
+                institution <- CriticalMassTables.Institution if watch.institution_id === institution.id;
+                location <- CriticalMassTables.LocationName if watch.location_name_id === location.id;
+                if watch.user_id === user.uid.toLong )
+                yield watch.id ~ institution.name ~ location.name ).list
             
             // Get roles with location and two types of tags
             val roles = ( for ( 
@@ -553,7 +592,7 @@ object Application extends Controller
                 if role.user_id === user.uid.toLong )
                 yield role.id ~ institution.name ~ role.department ~ role.url ~ location.name ).list
 
-            val res = for ( (rid, instname, dept, insturl, loc) <- roles ) yield
+            val roleData = ( for ( (rid, instname, dept, insturl, loc) <- roles ) yield
             {
                 val soTags = ( for ( Join(roleTags, tags) <-
                     CriticalMassTables.RoleSOTags innerJoin
@@ -568,9 +607,9 @@ object Application extends Controller
                     if roleTags.role_id === rid ) yield tags.name ).list
                 
                 new UserRole( rid, instname, insturl, dept, loc, soTags, sectorTags )   
-            }
+            } ).toList
 
-            Ok(views.html.userhome(globalData, user, repTable, res.toList, flash))
+            Ok(views.html.userhome(globalData, user, repTable, watches, roleData, flash))
         }
     }
 
@@ -687,20 +726,10 @@ object Application extends Controller
     }
     
     def markerInstitutions( dh_id : Long ) = Action
-    {
+    { implicit request =>
         Logger.debug( "Requesting institutions for: " + dh_id )
         WithDbSession
         {
-            /*val roleData = (for
-            {
-                userMap <- CriticalMassTables.UserMap;
-                userRole <- CriticalMassTables.UserRole if userMap.user_id === userRole.user_id;
-                locationName <- CriticalMassTables.LocationName if userRole.location_name_id === locationName.id;
-                institution <- CriticalMassTables.Institution if userRole.institution_id === institution.id
-                if userMap.dh_id === dh_id
-            } yield institution.name ~ userRole.url ~ locationName.name ~ userRole.id ~ userRole.user_id ).list*/
-            
-            
             val roleData = (for
             {
                 institutionMap <- CriticalMassTables.InstitutionMap;
@@ -708,7 +737,7 @@ object Application extends Controller
                 userRole <- CriticalMassTables.UserRole if userRole.institution_id === institutionMap.institution_id;
                 locationName <- CriticalMassTables.LocationName if userRole.location_name_id === locationName.id;
                 if institutionMap.dh_id === dh_id
-            } yield institution.name ~ userRole.url ~ locationName.name ~ userRole.id ~ userRole.user_id ).list
+            } yield institution.id ~ institution.name ~ userRole.url ~ locationName.name ~ userRole.id ~ userRole.user_id ).list
             
             Logger.debug( "Role data retrieved" )
             
@@ -743,8 +772,9 @@ object Application extends Controller
             
             Logger.debug( "Building statistics from user details" )
             var instData = Map[String, InstData]()
-            for ( (name, url, loc, role_id, user_id) <- roleData )
+            for ( (inst_id, name, urlIgnore, loc, role_id, user_id) <- roleData )
             {
+                val url = routes.Application.companyPage(inst_id).absoluteURL()
                 val d = if ( instData contains name )
                 {
                     instData(name)
@@ -779,7 +809,7 @@ object Application extends Controller
            
             Ok(compact(render("aaData" -> instDataList.map( t =>
                 ("count" -> t._2.userCount) ~
-                ("name" -> "<a href=\"http://%s\">%s</a>".format( t._2.url, t._1 ) ) ~
+                ("name" -> "<a href=\"%s\">%s</a>".format( t._2.url, t._1 ) ) ~
                 ("location" -> t._2.location) ~
                 ("SOTags" -> t._2.soTags) ~
                 ("SectorTags" -> t._2.sectorTags)

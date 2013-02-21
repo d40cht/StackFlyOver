@@ -134,10 +134,21 @@ object CriticalMassTables
     
     object LocationName extends Table[(Long, String)]("LocationName")
     {
+        
         def id                  = column[Long]("id", O PrimaryKey)
         def name                = column[String]("name")
         
         def * = id ~ name
+    }
+     
+    object CompanyWatch extends Table[(Long, Long, Long)]("CompanyWatch")
+    {
+        def id                      = column[Long]("id", O PrimaryKey)
+        def user_id                 = column[Long]("user_id")
+        def institution_id          = column[Long]("institution_id")
+        def location_name_id        = column[Long]("location_name_id")
+        
+        def * = user_id ~ institution_id ~ location_name_id
     }
     
     object Users extends Table[(Long, String, Long, Long, Long, Int, Int, String, Long, Int, Int, Int, Option[String], java.sql.Timestamp, Boolean)]("Users")
