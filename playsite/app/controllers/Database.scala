@@ -115,14 +115,21 @@ object CriticalMassTables
     
     
     // A sensible radius threshold seems to be 40km (40,000)
-    object Location extends Table[(Long, Double, Double, Double)]("Location")
+    object Location extends Table[(Long, Double, Double, Double, Double, String, String, String, String, String)]("Location")
     {
         def name_id             = column[Long]("name_id", O PrimaryKey)
         def longitude           = column[Double]("longitude")
         def latitude            = column[Double]("latitude")
         def radius              = column[Double]("radius")
         
-        def * = name_id ~ longitude ~ latitude ~ radius
+        def quality             = column[Double]("quality")
+        def neighborhood        = column[String]("neighborhood")
+        def city                = column[String]("city")
+        def county              = column[String]("county")
+        def state               = column[String]("state")
+        def country             = column[String]("country")
+        
+        def * = name_id ~ longitude ~ latitude ~ radius ~ quality ~ neighborhood ~ city ~ county ~ state ~ country
     }
     
     object LocationName extends Table[(Long, String)]("LocationName")

@@ -36,14 +36,15 @@ div
     padding:0px;
 }
 
-.footercontent, .headercontent, .maincontent, .flashcontent
+.footercontent, .headercontent, .maincontent
 {
-    padding: 0px 20px;
+    padding: 6px 20px;
 }
 
 .flashcontent
 {
     clear:both;
+    padding: 0px 0px;
 }
 
 .flashsuccess, .flashfailure
@@ -51,7 +52,7 @@ div
     font-weight: bold;
     text-align: center;
     color: #fff;
-    padding: 6px;
+    padding: 6px 0px;
 }
 
 .flashsuccess
@@ -68,8 +69,7 @@ div
 .footercontent, .headercontent
 {
     font-size: small;
-    padding-top: 6px;
-    padding-bottom: 6px;
+    
 }
 
 .headercontent
@@ -81,7 +81,6 @@ div
 {
     background: #ffffff;
     height: 100%;
-    
 }
 
 .footercontent
@@ -255,6 +254,7 @@ div.dataTables_info {
 
 .smnav {
     width: 100%;
+    text-align:center;
 }
 
 .social-media-list {

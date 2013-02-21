@@ -50,10 +50,16 @@ case class UserTagCounts(
 }
     
 case class YahooLocation(
-    latitude    : String,
-    longitude   : String,
-    radius      : String,
-    quality	: String )
+    latitude        : String,
+    longitude       : String,
+    radius          : String,
+    quality	        : String,
+    // New
+    neighborhood    : String,
+    city            : String,
+    county          : String,
+    state           : String,
+    country         : String )
     
 import play.api.Logger
 
@@ -402,20 +408,28 @@ class LocationUpdater( val db : Database )
                     val l = locations.head
                     //Logger.debug( "    %s".format( l ) )
                     
-                    CriticalMassTables.Location insert (
+                    CriticalMassTables.Location.insert( (
                         id,
                         l.longitude.toDouble,
                         l.latitude.toDouble,
-                        l.radius.toDouble )
+                        l.radius.toDouble,
+                        l.quality.toDouble,
+                        l.neighborhood,
+                        l.city,
+                        l.county,
+                        l.state,
+                        l.country ) )
                 }
                 else
                 {
                     // Enter a null location
-                    CriticalMassTables.Location insert (
+                    CriticalMassTables.Location.insert( (
                         id,
                         0.0,
                         0.0,
-                        -1.0 )
+                        -1.0,
+                        -1.0,
+                        "", "", "", "", "" ) )
                 }
                 
                 statusFn( count.toDouble / uniques.size.toDouble, "New location: %s".format( decodedAddr ) )
@@ -528,12 +542,6 @@ class UserScraper( val db : Database )
                     Logger.error( "Assertion failed in user scrape", e )
                 }
             }
-            
-            if ( true )
-            {
-                val l = new LocationUpdater( db )
-                l.run( statusFn )
-            }
                 
             // Now fetch tag stats for each user left without tags
             val allUntaggedHighRepUsers = (for ( Join(user, tags) <-
@@ -600,6 +608,12 @@ class UserScraper( val db : Database )
                 
                 statusFn( 0.0, "Tags for user: %s".format( name ) )
                 Thread.sleep(200)
+            }
+            
+            if ( true )
+            {
+                val l = new LocationUpdater( db )
+                l.run( statusFn )
             }
         }
     }
