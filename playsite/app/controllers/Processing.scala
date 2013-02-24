@@ -12,6 +12,12 @@ import scala.collection.{mutable, immutable}
 
 import controllers.{CriticalMassTables, Dispatch, SODispatch, DBUtil}
 
+object Parameters
+{
+    val minUserRepForDetail = 60L
+}
+
+
 case class Badges(
     val gold : Int,
     val silver : Int,
@@ -27,6 +33,7 @@ case class FullUser(
     val accept_rate : Option[Int],
     val website_url : Option[String],
     val location : Option[String],
+    val profile_image : String,
     val badge_counts : Badges )
     
 case class UserTagCounts(
@@ -547,7 +554,7 @@ class UserScraper( val db : Database )
             // Now fetch tag stats for each user left without tags
             val allUntaggedHighRepUsers = (for ( Join(user, tags) <-
                 CriticalMassTables.Users leftJoin
-                CriticalMassTables.UserTags on(_.user_id is _.user_id) if (tags.user_id isNull) && user.reputation > 120L;
+                CriticalMassTables.UserTags on(_.user_id is _.user_id) if (tags.user_id isNull) && user.reputation > Parameters.minUserRepForDetail;
                 _ <- Query orderBy(Desc(user.reputation)) ) yield user.user_id ~ user.display_name ~ user.reputation).list
                 
             Logger.debug( "number of untagged users remaining to scrape: " + allUntaggedHighRepUsers.size )
