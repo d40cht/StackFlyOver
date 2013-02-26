@@ -125,6 +125,95 @@ object HierarchyVisitor
     }
 }
 
+
+case class RankRow( val name : String, val rankings : List[(Int, Int)] )
+case class UserRankings( headings : List[String], rankings : List[RankRow] )
+{
+    override def toString =
+        rankings.map( r => r.name + ": " + (headings zip r.rankings).mkString(",") ).mkString("\n")
+}
+
+class UserRankingsGenerator( val db : Database )
+{
+    import org.scalaquery.ql.Ordering.Desc
+    import org.scalaquery.ql.extended.H2Driver.Implicit._
+    import org.scalaquery.ql.{Query, ColumnBase}
+    
+    // TODO: This should be done in the DB. Assumes data is ordered
+    private def getRank[Long]( query : Query[ColumnBase[Long], Long], id : Long ) : (Int, Int) =
+    {
+        var rank = -1
+        var counter = 0
+        for ( (row, i) <- query.elements.zipWithIndex )
+        {
+            if ( row == id ) rank = i+1
+            counter += 1
+        }
+        
+        (rank, counter)
+    }
+    
+    
+    
+    def run( userId : Long ) : UserRankings =
+    {
+        
+        
+        // Calculate overall reputation
+        Logger.debug( "Here1" )
+        val (myCity, myCounty, myState, myCountry) = ( for (
+            u <- CriticalMassTables.Users;
+            l <- CriticalMassTables.Location;
+            if u.location_name_id === l.name_id && u.user_id === userId ) yield l.city ~ l.county ~ l.state ~ l.country ).first
+            
+        val rankings = mutable.ArrayBuffer[RankRow]()
+
+        Logger.debug( "Here2" )
+        val baseQuery = for (
+            u <- CriticalMassTables.Users;
+            l <- CriticalMassTables.Location if u.location_name_id === l.name_id;
+            _ <- Query orderBy(Desc(u.reputation)) ) yield u.user_id ~ l.city ~ l.county ~ l.state ~ l.country
+        
+        
+        Logger.debug( "Here3" )
+        val worldRank   = getRank( baseQuery.map(_._1), userId )
+        val cityRank    = getRank( baseQuery.filter( _._2 === myCity ).map(_._1), userId )
+        val stateRank   = getRank( baseQuery.filter( _._4 === myState ).map(_._1), userId )
+        val countryRank = getRank( baseQuery.filter( _._5 === myCountry ).map(_._1), userId )
+        
+        Logger.debug( "Here4" )
+        rankings.append( RankRow( "Reputation", List( worldRank, cityRank, stateRank, countryRank ) ) )
+            
+        val myTopTags = ( for ( Join(tags, tagNames) <-
+            CriticalMassTables.UserTags innerJoin
+            CriticalMassTables.Tags
+            on (_.tag_id is _.id)
+            if (tags.user_id === userId );
+            _ <- Query orderBy(Desc(tags.count)) )
+            yield tags.tag_id ~ tagNames.name ~ tags.count ).take(5).list
+ 
+        for ( (id, name, count) <- myTopTags )
+        {
+            Logger.debug( "Here5 " + name )
+            val baseTagQuery = for (
+                u <- CriticalMassTables.Users;
+                l <- CriticalMassTables.Location if u.location_name_id === l.name_id;
+                t <- CriticalMassTables.UserTags if t.user_id === u.user_id && t.tag_id === id;
+                _ <- Query orderBy(Desc(t.count)) ) yield u.user_id ~ l.city ~ l.county ~ l.state ~ l.country
+                
+            val worldRank   = getRank( baseTagQuery.map(_._1), userId )
+            val cityRank    = getRank( baseTagQuery.filter( _._2 === myCity ).map(_._1), userId )
+            val stateRank   = getRank( baseTagQuery.filter( _._4 === myState ).map(_._1), userId )
+            val countryRank = getRank( baseTagQuery.filter( _._5 === myCountry ).map(_._1), userId )
+            
+            rankings.append( RankRow( name, List(worldRank, cityRank, stateRank, countryRank) ) )
+        }
+          
+          
+        new UserRankings( List("Overall", myCity, myState, myCountry), rankings.toList )
+    }
+}
+
 class MarkerClusterer( val db : Database )
 {
     val levelRange : List[(Int, Double)] = (MarkerClusterer.endRange to MarkerClusterer.startRange by -1).zipWithIndex.map
@@ -554,7 +643,7 @@ class UserScraper( val db : Database )
             // Now fetch tag stats for each user left without tags
             val allUntaggedHighRepUsers = (for ( Join(user, tags) <-
                 CriticalMassTables.Users leftJoin
-                CriticalMassTables.UserTags on(_.user_id is _.user_id) if (tags.user_id isNull) && user.reputation > Parameters.minUserRepForDetail;
+                CriticalMassTables.UserTags on(_.user_id is _.user_id) if (tags.user_id isNull) && user.reputation >= Parameters.minUserRepForDetail;
                 _ <- Query orderBy(Desc(user.reputation)) ) yield user.user_id ~ user.display_name ~ user.reputation).list
                 
             Logger.debug( "number of untagged users remaining to scrape: " + allUntaggedHighRepUsers.size )

@@ -5,7 +5,7 @@
     <div style="width:100%;height:85%">
         <h1>Home page for: @user.name</h1>
         
-        <h2>Your reputation</h2>
+        <h2>Leaderboard</h2>
         <table>
             <tr>
                 <th></th>
@@ -25,7 +25,8 @@
             }
         </table>
         
-        <h2>Contact details</h2>
+        <h2>Your details</h2>
+        
         @if( user.email == None) {
             <div>
                 <p>Please enter your email address to complete registration with the site.</p>
@@ -35,8 +36,13 @@
                 </form>
             </div>
         } else {    
-            <p>Your registered email address: @user.email.get. <a href=@{routes.Application.addEmail().toString}>edit</a></p>
+            Your registered email address: @user.email.get. <a href=@{routes.Application.addEmail().toString}>edit</a>
         }
+        <br/>
+        Your location: @{user.location}
+        <br/>
+        Data last updated from Stackoverflow: @{user.lastScanned}
+        <br/>
         <br/>
         
         <h2>Watched companies</h2>

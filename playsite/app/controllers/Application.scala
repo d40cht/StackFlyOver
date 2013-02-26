@@ -39,7 +39,14 @@ object Application extends Controller
     
     case class UserAuth( val accessToken : String, val expiry : Int )
     
-    case class UserData( val uid : Int, val name : String, val auth : Option[UserAuth], val email : Option[String], val reputation : Long )
+    case class UserData(
+        val uid : Int,
+        val name : String,
+        val auth : Option[UserAuth],
+        val email : Option[String],
+        val reputation : Long,
+        val lastScanned : java.sql.Timestamp,
+        val location : String )
     {
         def isLocallyAuthenticated = !auth.isEmpty
         def isAdmin = isLocallyAuthenticated && (uid == 415313)
@@ -478,7 +485,7 @@ object Application extends Controller
         Ok( "Submitted: " + uuid )
     }
     
-    private def getUserDetails( user_id : Long )( implicit sessionCache : SessionCache, dbSession : org.scalaquery.session.Session ) =
+    private def getUserDetails( user_id : Long, userAuth : Option[UserAuth] = None )( implicit sessionCache : SessionCache, dbSession : org.scalaquery.session.Session ) =
     {
         val inSession = sessionCache.getAs[UserData]("user")
         
@@ -487,9 +494,13 @@ object Application extends Controller
             case Some(ud) if ud.uid == user_id => ud
             case _ => WithDbSession
             {
-                val userDetails = (for (u <- CriticalMassTables.Users if u.user_id === user_id) yield u.display_name ~ u.email ~ u.reputation).first
+                val userDetails = (for (
+                    u <- CriticalMassTables.Users;
+                    ln <- CriticalMassTables.LocationName if ln.id === u.location_name_id
+                    if u.user_id === user_id
+                    ) yield u.display_name ~ u.email ~ u.reputation ~ u.lastScanned ~ ln.name).first
                 
-                new UserData( user_id.toInt, userDetails._1, None, userDetails._2, userDetails._3 )
+                new UserData( user_id.toInt, userDetails._1, userAuth, userDetails._2, userDetails._3, userDetails._4, userDetails._5 )
             }
         }
     }
@@ -557,11 +568,19 @@ object Application extends Controller
         import org.scalaquery.ql.Ordering.Desc
         import org.scalaquery.ql.extended.H2Driver.Implicit._
         
-        
         implicit val sc = sessionCache
+        
         WithDbSession
         {
+        
             val user = getUserDetails( user_id )
+            
+            val ur = new processing.UserRankingsGenerator( Database.forDataSource(DB.getDataSource()) )
+        
+            Logger.info( "Collecting rankings data" )
+            val rankResults = ur.run( user_id )
+            println( rankResults )
+            Logger.info( "Complete" )
             
             // Get user tags
             val tags = ( for ( Join(tags, tagNames) <-
@@ -834,6 +853,8 @@ object Application extends Controller
     {
         (request, sessionCache, globalData, flash) =>
         
+        implicit val sc = sessionCache
+        
         import akka.util.Timeout
         import akka.dispatch.Await
         import play.api.libs.ws.WS
@@ -897,14 +918,16 @@ object Application extends Controller
                 
             case Some( (email, reputation) ) =>
             {
-	         
-                // Get user_id and display_name and stick them in the cache
-                sessionCache.set("user", UserData( meuid, mename, Some( new UserAuth(accessToken, expires) ), email, reputation ) )
-                
-                Logger.debug( "User is %s (%d)".format( mename, meuid ) )
-                
                 WithDbSession
                 {
+                    // Get user_id and display_name and stick them in the cache
+                    sessionCache.remove("user")
+                    val auth = new UserAuth( accessToken, expires )
+                    val userDetails = getUserDetails( meuid, Some(auth) )
+                    sessionCache.set("user", userDetails )
+                    
+                    Logger.debug( "User is %s (%d)".format( mename, meuid ) )
+                    
                     val now = new java.sql.Timestamp( (new java.util.Date()).getTime )
                     
                     // Fill in or update the NativeUser table
