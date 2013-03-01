@@ -14,8 +14,10 @@ GET     /editUserRole               controllers.Application.editUserRole( role_i
 GET     /deleteUserRole             controllers.Application.deleteUserRole( role_id : Long )
 GET     /exampleJob                 controllers.Application.exampleJob
 GET     /pullUsersJob               controllers.Application.pullUsersJob
+GET     /rebuildRanksJob            controllers.Application.rebuildRanksJob
 GET     /rebuildHierarchyJob        controllers.Application.rebuildHierarchyJob
 GET     /rebuildLocationsJob        controllers.Application.rebuildLocationsJob
+GET     /getProfileImagesJob        controllers.Application.getProfileImagesJob
 GET     /backupDbJob                controllers.Application.backupDbJob
 GET     /listJobs                   controllers.Application.listJobs
 POST    /refineUserAccept           controllers.Application.refineUserAccept
@@ -32,6 +34,7 @@ GET     /markerUsers                controllers.Application.markerUsers( dh_id :
 GET     /markerInstitutions         controllers.Application.markerInstitutions( dh_id : Long )
 GET     /markerTags                 controllers.Application.markerTags( dh_id : Long )
 GET     /userPage                   controllers.Application.userPage( user_id : Long )
+GET     /rankingsPage               controllers.Application.rankingsPage( tagId : Long, ylhId : Long, startRank : Int )
 GET     /companyPage                controllers.Application.companyPage( company_id : Long )
 GET     /userHome                   controllers.Application.userHome
 

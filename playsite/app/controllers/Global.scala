@@ -45,7 +45,7 @@ object Global extends GlobalSettings
             import org.scalaquery.simple.{StaticQuery}
             
             val q = StaticQuery[java.sql.Timestamp] +
-                "SELECT DISTINCT \"created\" FROM \"DataHierarchy\" ORDER BY \"created\" ASC LIMIT 1"
+                "SELECT DISTINCT \"created\" FROM \"DataHierarchy\" ORDER BY \"created\" DESC LIMIT 1"
             
             q.firstOption match
             {

@@ -1,65 +1,76 @@
-@(globalData : controllers.Application.GlobalData, user : controllers.Application.UserData, repTable : List[controllers.Application.RepLine], watches : List[(Long, String, String)], roles : List[controllers.Application.UserRole], flash: Flash)
+@(globalData : controllers.Application.GlobalData, meUser : Option[controllers.Application.UserData], viewUser : controllers.Application.UserData, isOwner : Boolean, repTable : controllers.Application.RepTable, watches : List[(Long, String, String)], roles : List[controllers.Application.UserRole], flash: Flash)
 
-@main("Home page for: " + user.name, globalData, Some(user), flash) {
+@main("Home page for: " + viewUser.name, globalData, meUser, flash) {
 
     <div style="width:100%;height:85%">
-        <h1>Home page for: @user.name</h1>
+        <h1>Home page for: @viewUser.name</h1>
+        
+        @if(viewUser.profileImage.isDefined) {
+            <img src=@{viewUser.profileImage.get}></img>
+        }
         
         <h2>Leaderboard</h2>
         <table>
             <tr>
                 <th></th>
-                <th>Total</th>
-                <!--<th>Local rank</th>
-                <th>Country rank</th>
-                <th>Total rank</th>-->
+                @repTable.headings.map { h => <th>@{h.name}</th> }
             </tr>
-            @repTable.map { line =>
+            @repTable.rankings.map { case (tagNameId, rankings) =>
                 <tr>
-                    <th>@{line.name}</th>
-                    <td>@{line.value}</td>
-                    <!--<td>@{line.localRank}</td>
-                    <td>@{line.countryRank}</td>
-                    <td>@{line.totalRank}</td>-->
+                    <th>@{tagNameId.name}</th>
+
+                    @rankings.zip( repTable.headings ).map { case (r, h) =>
+                        <td><a href=@{routes.Application.rankingsPage(tagNameId.id, h.id, r)}>@{r.toString}</a></td>
+                    }
                 </tr>
             }
         </table>
         
-        <h2>Your details</h2>
+        <h2>Details</h2>
         
-        @if( user.email == None) {
-            <div>
-                <p>Please enter your email address to complete registration with the site.</p>
-                
-                <form action=@routes.Application.acceptEmail.toString>
-                    <p>Email: <input type="text" name="email"/> <input type="submit" value="Submit"/> </p>
-                </form>
-            </div>
-        } else {    
-            Your registered email address: @user.email.get. <a href=@{routes.Application.addEmail().toString}>edit</a>
-        }
-        <br/>
-        Your location: @{user.location}
-        <br/>
-        Data last updated from Stackoverflow: @{user.lastScanned}
-        <br/>
-        <br/>
-        
-        <h2>Watched companies</h2>
         <table>
-            <tr>
-                <th>Action</th>
-                <th>Company name</th>
-                <th>Company location</th>
-            </tr>
-            @watches.map { case (watchId, name, location) =>
+            @if( isOwner ) {
                 <tr>
-                    <td><a href=@{routes.Application.removeWatch(watchId).toString}>Unwatch</a></td>
-                    <td>@{name}</td>
-                    <td>@{location}</td>
+                @if( viewUser.email == None) {
+                    <div>
+                        <th>Please enter your email address to complete registration with the site:</th>
+                        
+                        <td>
+                            <form action=@routes.Application.acceptEmail.toString>
+                                Email: <input type="text" name="email"/> <input type="submit" value="Submit"/> </td>
+                            </form>
+                        </td>
+                    </div>
+                } else {
+                    <th>Your registered email address:</th> <td>@viewUser.email.get. <a href=@{routes.Application.addEmail().toString}>edit</a></td>
+                }
                 </tr>
             }
+            <tr><th>StackOverflow profile:</th> <td><a href=@{"http://stackoverflow.com/users/" + viewUser.uid}>@{viewUser.name}</a></td>
+            <tr><th>Website:</th> <td><a href=@{viewUser.url}>@{viewUser.url}</a></td>
+            <tr><th>Location:</th> <td>@{viewUser.location}</td>
+            <tr><th>Data last updated from Stackoverflow:</th> <td>@{viewUser.lastScanned}</td>
         </table>
+
+        <br/>
+        
+        @if( isOwner ) {
+            <h2>Watched companies</h2>
+            <table>
+                <tr>
+                    <th>Action</th>
+                    <th>Company name</th>
+                    <th>Company location</th>
+                </tr>
+                @watches.map { case (watchId, name, location) =>
+                    <tr>
+                        <td><a href=@{routes.Application.removeWatch(watchId).toString}>Unwatch</a></td>
+                        <td>@{name}</td>
+                        <td>@{location}</td>
+                    </tr>
+                }
+            </table>
+        }
        
         <h2>Roles</h2>
         
@@ -103,9 +114,10 @@
         } )
         </table>
 
-        <a href="/refineUser">Add new role</a>
-
-        <br/>
+        @if( isOwner ) {
+            <a href="/refineUser">Add new role</a>
+            <br/>
+        }
 
         <a href="/">Home</a>
         

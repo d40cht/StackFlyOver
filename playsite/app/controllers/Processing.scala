@@ -5,6 +5,7 @@ import org.scalaquery.session._
 import org.scalaquery.session.Database.threadLocalSession
 import org.scalaquery.ql.extended.H2Driver.Implicit._
 import org.scalaquery.ql.{Join, SimpleFunction, Query}
+import org.scalaquery.ql.Ordering._
 
 import net.liftweb.json.{JsonParser, DefaultFormats}
 
@@ -14,7 +15,16 @@ import controllers.{CriticalMassTables, Dispatch, SODispatch, DBUtil}
 
 object Parameters
 {
-    val minUserRepForDetail = 60L
+    val minUserRepForDetail     = 60L
+    val reputationTagId         = -1L
+    val itemScoreId             = -2L
+    val overallLocationId       = -1L
+    
+    val numTagsToInclude        = 400
+    val numTopTagsPerUser       = 8
+    
+    
+    val stackOverflowKey        = "5FUHVgHRGHWbz9J5bEy)Ng(("
 }
 
 
@@ -33,8 +43,8 @@ case class FullUser(
     val accept_rate : Option[Int],
     val website_url : Option[String],
     val location : Option[String],
-    val profile_image : String,
-    val badge_counts : Badges )
+    val badge_counts : Badges,
+    val profile_image : String )
     
 case class UserTagCounts(
     val tag_name            : String,
@@ -60,6 +70,14 @@ case class UserTagCounts(
     
 import play.api.Logger
 
+case class RankRow( val name : String, val rankings : List[(Int, Int)] )
+case class UserRankings( headings : List[String], rankings : List[RankRow] )
+{
+    override def toString =
+        rankings.map( r => r.name + ": " + (headings zip r.rankings).mkString(",") ).mkString("\n")
+}
+
+
 object MarkerClusterer
 {
     val endRange = 13
@@ -82,6 +100,221 @@ object MarkerClusterer
         val d = R * c;
         
         d
+    }
+}
+
+object RankGenerator
+{
+    def hexDigest( v : String ) : String =
+    {
+        val sh = org.apache.commons.codec.digest.DigestUtils.getSha1Digest()
+        sh.update( v.getBytes )
+        
+        org.apache.commons.codec.binary.Hex.encodeHex( sh.digest() ).mkString("")
+    }
+    
+    def recalculateRanks( db : Database ) =
+    {
+        val calculateTime = new java.sql.Timestamp( (new java.util.Date()).getTime )
+     
+        db withSession
+        {   
+            // Cache the results of this query in the Tags table using a trigger?
+            Logger.debug( "Fetching top %d tags".format( Parameters.numTagsToInclude ) )
+            val topTags = (for (
+                tn <- CriticalMassTables.Tags;
+                t <- CriticalMassTables.UserTags if tn.id === t.tag_id;
+                _ <- Query groupBy tn.id ) yield tn.name ~ tn.id ~ t.count.sum ).elements.filter( _._3.isDefined ).map( x => (x._1, x._2, x._3.get) ).toList.sortWith( _._3 > _._3 ).take( Parameters.numTagsToInclude )
+                
+            topTags.foreach( println(_) )
+            
+            var dbWrites = 0
+            
+            def getYHLocation( baseName : String, fullyQualifiedName : String, extent : Int ) : Option[Long] =
+            {
+                import org.apache.commons.codec.digest.DigestUtils
+                
+                def scopeIdentity = SimpleFunction.nullary[Long]("scope_identity")
+                
+                if ( baseName == "" ) None
+                else
+                {
+                    val placeHash = hexDigest( fullyQualifiedName )
+                    
+                    val already = ( for (ylh <- CriticalMassTables.YahooLocationHierarchyIdentifier if ylh.placeHash === placeHash) yield ylh.id).list
+                    if ( !already.isEmpty )
+                    {
+                        Some(already.head)
+                    }
+                    else
+                    {
+                        val ylhT = CriticalMassTables.YahooLocationHierarchyIdentifier
+                        
+                        (ylhT.name ~ ylhT.placeHash ~ ylhT.extent).insert( (baseName + " rank", placeHash, extent) )
+                        
+                        Some(Query(scopeIdentity).first)
+                    }
+                }
+            }
+            
+            
+            // Get the top tags per user
+            val allUsers = (for ( u <- CriticalMassTables.Users ) yield u.user_id).elements
+            
+            val reputationTag = -1L
+            
+            Logger.debug( "Fetching top %d tags per user".format(Parameters.numTopTagsPerUser) )
+            val userTopTags = allUsers.map
+            { uid =>
+            
+                val topTags = (for ( t <- CriticalMassTables.UserTags if t.user_id === uid; _ <- Query orderBy(Desc(t.count)) ) yield t.tag_id).elements.take(Parameters.numTopTagsPerUser).toSet
+                
+                (uid, topTags + reputationTag)
+            }.toMap
+            
+            
+            def uniqueCountMap( s : Set[Long] ) = s.toList.map( n => (n, 0) ).toMap
+            
+            case class RankResult( val count : Long, val user_id : Long, val cityIdO : Option[Long], val stateIdO : Option[Long], val countryIdO : Option[Long] )
+            
+            class LocationRankTracker( val userTopTags : Map[Long, Set[Long]], val tagId : Long, locationIds : Set[Long] )
+            {
+                var overallRank = 0
+                var locationRankings = uniqueCountMap( locationIds )
+                
+                def update( rr : RankResult ) =
+                {
+                    def updateRankMap( locId : Long, m : Map[Long, Int] ) : Map[Long, Int] =
+                    {
+                        val next = m(locId) + 1
+                        
+                        (m + (locId->next))
+                    }
+                    
+                    overallRank += 1
+                    rr.cityIdO.foreach( id => locationRankings = updateRankMap( id, locationRankings ) )
+                    rr.stateIdO.foreach( id => locationRankings = updateRankMap( id, locationRankings ) )
+                    rr.countryIdO.foreach( id => locationRankings = updateRankMap( id, locationRankings ) )
+                    
+                    if ( userTopTags(rr.user_id) contains tagId )
+                    {
+                        CriticalMassTables.UserRanks.insert( (
+                            rr.user_id,
+                            tagId,
+                            Parameters.itemScoreId,
+                            rr.count.toInt,
+                            calculateTime ) )
+                            
+                        CriticalMassTables.UserRanks.insert( (
+                            rr.user_id,
+                            tagId,
+                            Parameters.overallLocationId,
+                            overallRank,
+                            calculateTime ) )
+                        
+                        rr.cityIdO.foreach
+                        { id =>
+                            CriticalMassTables.UserRanks.insert( (
+                                rr.user_id,
+                                tagId,
+                                id,
+                                locationRankings(id),
+                                calculateTime ) )
+                        }
+                        
+                        rr.stateIdO.foreach
+                        { id =>
+                            CriticalMassTables.UserRanks.insert( (
+                                rr.user_id,
+                                tagId,
+                                id,
+                                locationRankings(id),
+                                calculateTime ) )
+                        }
+                        
+                        rr.countryIdO.foreach
+                        { id =>
+                            CriticalMassTables.UserRanks.insert( (
+                                rr.user_id,
+                                tagId,
+                                id,
+                                locationRankings(id),
+                                calculateTime ) )
+                        }
+                            
+                        dbWrites += 1
+                    }
+                }
+            }
+            
+            // Calculate reputation ranks
+            {
+                Logger.debug( "Calculating ranks for reputation" )
+                val reputationRanks = ( for (
+                    u <- CriticalMassTables.Users;
+                    l <- CriticalMassTables.Location if u.location_name_id === l.name_id )
+                    yield u.reputation ~ u.user_id ~ l.city ~ l.state ~ l.country )
+                    .list
+                    .map
+                    { case( rep, uid, city, state, country) =>
+                    
+                        val cityId = getYHLocation( city, city + state + country, 1 )
+                        val stateId = getYHLocation( state, state + country, 2 )
+                        val countryId = getYHLocation( country, country, 3 )
+                        RankResult( rep, uid, cityId, stateId, countryId )
+                        
+                    }.sortWith( _.count > _.count )
+                    
+                    
+                val allLocationIds =
+                    reputationRanks.flatMap( _.cityIdO ).toSet ++
+                    reputationRanks.flatMap( _.stateIdO ).toSet ++
+                    reputationRanks.flatMap( _.countryIdO ).toSet
+                
+                val ltm = new LocationRankTracker( userTopTags, Parameters.reputationTagId, allLocationIds )
+                
+                reputationRanks.foreach( ltm.update(_) )
+                
+                Logger.info( "  db writes: " + dbWrites )
+            }
+            
+            // Calculate tag ranks
+            for ( ((name, tagId, count), i) <- topTags.zipWithIndex )
+            {
+                val scoresByTag = ( for (
+                    u <- CriticalMassTables.Users;
+                    l <- CriticalMassTables.Location if u.location_name_id === l.name_id;
+                    t <- CriticalMassTables.UserTags if u.user_id === t.user_id && t.tag_id === tagId )
+                    yield t.count ~ u.user_id ~ l.city ~ l.state ~ l.country )
+                    .list
+                    .map
+                    { case( rep, uid, city, state, country) =>
+                    
+                        val cityId = getYHLocation( city, city + state + country, 1 )
+                        val stateId = getYHLocation( state, state + country, 2 )
+                        val countryId = getYHLocation( country, country, 3 )
+                        RankResult( rep, uid, cityId, stateId, countryId )
+                        
+                    }.sortWith( _.count > _.count )
+                    
+                val allLocationIds =
+                    scoresByTag.flatMap( _.cityIdO ).toSet ++
+                    scoresByTag.flatMap( _.stateIdO ).toSet ++
+                    scoresByTag.flatMap( _.countryIdO ).toSet
+                
+                val ltm = new LocationRankTracker( userTopTags, tagId, allLocationIds )
+                Logger.debug( "Calculating ranks for " + name + " - " + scoresByTag.size + " (" + i + ")" )                
+                
+                scoresByTag.foreach
+                {
+                    // TODO: Only update if this tag is within the users' top N
+                    ltm.update(_)
+                }
+                Logger.info( "  db writes: " + dbWrites )
+            }
+            
+            
+        }
     }
 }
 
@@ -126,93 +359,6 @@ object HierarchyVisitor
 }
 
 
-case class RankRow( val name : String, val rankings : List[(Int, Int)] )
-case class UserRankings( headings : List[String], rankings : List[RankRow] )
-{
-    override def toString =
-        rankings.map( r => r.name + ": " + (headings zip r.rankings).mkString(",") ).mkString("\n")
-}
-
-class UserRankingsGenerator( val db : Database )
-{
-    import org.scalaquery.ql.Ordering.Desc
-    import org.scalaquery.ql.extended.H2Driver.Implicit._
-    import org.scalaquery.ql.{Query, ColumnBase}
-    
-    // TODO: This should be done in the DB. Assumes data is ordered
-    private def getRank[Long]( query : Query[ColumnBase[Long], Long], id : Long ) : (Int, Int) =
-    {
-        var rank = -1
-        var counter = 0
-        for ( (row, i) <- query.elements.zipWithIndex )
-        {
-            if ( row == id ) rank = i+1
-            counter += 1
-        }
-        
-        (rank, counter)
-    }
-    
-    
-    
-    def run( userId : Long ) : UserRankings =
-    {
-        
-        
-        // Calculate overall reputation
-        Logger.debug( "Here1" )
-        val (myCity, myCounty, myState, myCountry) = ( for (
-            u <- CriticalMassTables.Users;
-            l <- CriticalMassTables.Location;
-            if u.location_name_id === l.name_id && u.user_id === userId ) yield l.city ~ l.county ~ l.state ~ l.country ).first
-            
-        val rankings = mutable.ArrayBuffer[RankRow]()
-
-        Logger.debug( "Here2" )
-        val baseQuery = for (
-            u <- CriticalMassTables.Users;
-            l <- CriticalMassTables.Location if u.location_name_id === l.name_id;
-            _ <- Query orderBy(Desc(u.reputation)) ) yield u.user_id ~ l.city ~ l.county ~ l.state ~ l.country
-        
-        
-        Logger.debug( "Here3" )
-        val worldRank   = getRank( baseQuery.map(_._1), userId )
-        val cityRank    = getRank( baseQuery.filter( _._2 === myCity ).map(_._1), userId )
-        val stateRank   = getRank( baseQuery.filter( _._4 === myState ).map(_._1), userId )
-        val countryRank = getRank( baseQuery.filter( _._5 === myCountry ).map(_._1), userId )
-        
-        Logger.debug( "Here4" )
-        rankings.append( RankRow( "Reputation", List( worldRank, cityRank, stateRank, countryRank ) ) )
-            
-        val myTopTags = ( for ( Join(tags, tagNames) <-
-            CriticalMassTables.UserTags innerJoin
-            CriticalMassTables.Tags
-            on (_.tag_id is _.id)
-            if (tags.user_id === userId );
-            _ <- Query orderBy(Desc(tags.count)) )
-            yield tags.tag_id ~ tagNames.name ~ tags.count ).take(5).list
- 
-        for ( (id, name, count) <- myTopTags )
-        {
-            Logger.debug( "Here5 " + name )
-            val baseTagQuery = for (
-                u <- CriticalMassTables.Users;
-                l <- CriticalMassTables.Location if u.location_name_id === l.name_id;
-                t <- CriticalMassTables.UserTags if t.user_id === u.user_id && t.tag_id === id;
-                _ <- Query orderBy(Desc(t.count)) ) yield u.user_id ~ l.city ~ l.county ~ l.state ~ l.country
-                
-            val worldRank   = getRank( baseTagQuery.map(_._1), userId )
-            val cityRank    = getRank( baseTagQuery.filter( _._2 === myCity ).map(_._1), userId )
-            val stateRank   = getRank( baseTagQuery.filter( _._4 === myState ).map(_._1), userId )
-            val countryRank = getRank( baseTagQuery.filter( _._5 === myCountry ).map(_._1), userId )
-            
-            rankings.append( RankRow( name, List(worldRank, cityRank, stateRank, countryRank) ) )
-        }
-          
-          
-        new UserRankings( List("Overall", myCity, myState, myCountry), rankings.toList )
-    }
-}
 
 class MarkerClusterer( val db : Database )
 {
@@ -536,10 +682,45 @@ class LocationUpdater( val db : Database )
     }
 }
 
+object FetchProfileImages
+{
+    implicit val formats = DefaultFormats
+    
+    def run( db : Database )
+    {
+        db withSession
+        {
+            // Now fetch tag stats for each user left without tags
+            val allUntaggedHighRepUsers = ( for (
+                u <- CriticalMassTables.Users if (u.profileImage isNull);
+                _ <- Query orderBy(Desc(u.reputation)) ) yield u.user_id ).take( 900000 ).list
+                
+            val groups = allUntaggedHighRepUsers.grouped(100)
+            
+            for ( userGroup <- groups )
+            {
+                val json = SODispatch.pullJSON( "http://api.stackexchange.com/2.0/users/%s".format(userGroup.mkString(";")), List(
+                    ("site", "stackoverflow"),
+                    ("pagesize", "100"),
+                    ("key", Parameters.stackOverflowKey) ) )
+
+                val users = (json \ "items").children.map( _.extract[FullUser] )
+                
+                for ( u <- users )
+                {
+                    val uru = ( for ( ur <- CriticalMassTables.Users if ur.user_id === u.user_id ) yield ur.profileImage )
+                    
+                    uru.update( Some(u.profile_image) )
+                }
+            }
+        }
+    }
+}
+
 
 class UserScraper( val db : Database )
 {
-    val stackOverflowKey = "5FUHVgHRGHWbz9J5bEy)Ng(("
+    
     
     import org.scalaquery.ql.Ordering.Desc
     import org.scalaquery.ql.extended.H2Driver.Implicit._
@@ -561,7 +742,7 @@ class UserScraper( val db : Database )
                         ("sort", "creation"),
                         ("site", "stackoverflow"),
                         ("pagesize","1"),
-                        ("key", stackOverflowKey) ) )
+                        ("key", Parameters.stackOverflowKey) ) )
                         
                     val mostRecentUser = (userPull \ "items").children.head.extract[FullUser]
                 
@@ -584,7 +765,7 @@ class UserScraper( val db : Database )
                     val json = SODispatch.pullJSON( "http://api.stackexchange.com/2.0/users/%s".format(j.mkString(";")), List(
                         ("site", "stackoverflow"),
                         ("pagesize", "100"),
-                        ("key", stackOverflowKey) ) )
+                        ("key", Parameters.stackOverflowKey) ) )
 
                     val users = (json \ "items").children.map( _.extract[FullUser] )
                     
@@ -623,7 +804,8 @@ class UserScraper( val db : Database )
                             u.badge_counts.bronze,
                             None,
                             now,
-                            false
+                            false,
+                            Some(u.profile_image)
                         )
                         count += 1
                     }
@@ -657,7 +839,7 @@ class UserScraper( val db : Database )
                         ("pagesize", "100"),
                         ("order", "desc"),
                         ("sort", "answer_score"),
-                        ("key", stackOverflowKey) ) )
+                        ("key", Parameters.stackOverflowKey) ) )
                         
                     (json \ "items").children.map( _.extract[UserTagCounts] )
                 }
@@ -669,7 +851,7 @@ class UserScraper( val db : Database )
                         ("pagesize", "100"),
                         ("order", "desc"),
                         ("sort", "answer_score"),
-                        ("key", stackOverflowKey) ) )
+                        ("key", Parameters.stackOverflowKey) ) )
                         
                     (json \ "items").children.map( _.extract[UserTagCounts] )
                 }

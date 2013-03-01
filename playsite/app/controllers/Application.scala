@@ -10,6 +10,7 @@ import org.scalaquery.session._
 import org.scalaquery.session.Database.threadLocalSession
 import org.scalaquery.ql.basic.BasicDriver.Implicit._
 import org.scalaquery.ql.{Join, SimpleFunction, Query}
+import org.scalaquery.ql.Ordering._
 
 import net.liftweb.json._
 import net.liftweb.json.JsonDSL._
@@ -35,7 +36,7 @@ object Application extends Controller
 
     case class Pos( val name : String, val lon : Double, val lat : Double )
     
-    case class GlobalData( val baseUrl : String, val numUsers : Int, val numLocations : Int, val numRoles : Int, numInstitutions : Int )
+    case class GlobalData( val baseUrl : String, val numUsers : Int, val numLocations : Int, val numRoles : Int, numInstitutions : Int, numTags : Int )
     
     case class UserAuth( val accessToken : String, val expiry : Int )
     
@@ -46,13 +47,20 @@ object Application extends Controller
         val email : Option[String],
         val reputation : Long,
         val lastScanned : java.sql.Timestamp,
-        val location : String )
+        val location : String,
+        val city : String,
+        val state : String,
+        val country : String,
+        val url : String,
+        val profileImage : Option[String] )
     {
         def isLocallyAuthenticated = !auth.isEmpty
         def isAdmin = isLocallyAuthenticated && (uid == 415313)
     }
     
-    case class RepLine( name : String, value : Int, localRank : Int, countryRank : Int, totalRank : Int )
+    case class NameAndId( name : String, id : Long )
+    
+    case class RepTable( headings : List[NameAndId], rankings : List[(NameAndId, List[Int])] )
 
     case class UserRole( val id : Long, val institutionName : String, val url : String, val department : String, val location : String, val soTags : List[String], val sectorTags : List[String] )
     
@@ -113,8 +121,9 @@ object Application extends Controller
                                 val numRoles = rowCount(CriticalMassTables.UserRole)
                                 val numInstitutions = rowCount(CriticalMassTables.Institution)
                                 val numLocations = rowCount(CriticalMassTables.Location)
+                                val numTags = rowCount(CriticalMassTables.Tags)
                                 
-                                val newSD = GlobalData( baseUrl, numUsers, numLocations, numRoles, numInstitutions )
+                                val newSD = GlobalData( baseUrl, numUsers, numLocations, numRoles, numInstitutions, numTags )
                                 sessionCache.set("globalData", newSD )
                                 newSD
                             }
@@ -159,8 +168,8 @@ object Application extends Controller
         Ok(views.html.index(globalData, sessionCache.getAs[UserData]("user"), flash))
     }
     
-    def admin = SessionCacheAction(requireLogin=true, requireAdmin=true)
-    //def admin = SessionCacheAction(requireLogin=false, requireAdmin=false)
+    //def admin = SessionCacheAction(requireLogin=true, requireAdmin=true)
+    def admin = SessionCacheAction(requireLogin=false, requireAdmin=false)
     {
         (request, sessionCache, globalData, flash) =>
         
@@ -348,7 +357,7 @@ object Application extends Controller
                             
                             val locationNameId =
                             {
-                                val already = ( for (loc <- CriticalMassTables.LocationName if loc.name == data.workLocation) yield loc.id).list
+                                val already = ( for (loc <- CriticalMassTables.LocationName if loc.name === data.workLocation) yield loc.id).list
                                 if ( !already.isEmpty )
                                 {
                                     already.head
@@ -465,6 +474,38 @@ object Application extends Controller
         Ok( "Submitted: " + uuid )
     }
     
+    def getProfileImagesJob = Action
+    {
+        val uuid = JobRegistry.submit( "Get profile images",
+        { statusFn =>
+            
+            val db = Database.forDataSource(DB.getDataSource())
+            
+            statusFn( 0.0, "Getting profile images" )
+            processing.FetchProfileImages.run(db)
+        } )
+        Ok( "Submitted: " + uuid )
+    }
+    
+    
+    def rebuildRanksJob = Action
+    {
+        val uuid = JobRegistry.submit( "Ranks rebuild",
+        { statusFn =>
+            
+            val db = Database.forDataSource(DB.getDataSource())
+            
+            //statusFn( 0.0, "Deleting existing ranks" )
+            
+            statusFn( 0.0, "Recalculating ranks" )
+            processing.RankGenerator.recalculateRanks( db )
+            
+            statusFn( 100.0, "Complete." )
+        } )
+        Ok( "Submitted: " + uuid )
+    }
+    
+    
     
     def backupDbJob = Action
     {
@@ -496,11 +537,26 @@ object Application extends Controller
             {
                 val userDetails = (for (
                     u <- CriticalMassTables.Users;
-                    ln <- CriticalMassTables.LocationName if ln.id === u.location_name_id
+                    ln <- CriticalMassTables.LocationName if ln.id === u.location_name_id;
+                    l <- CriticalMassTables.Location if ln.id === l.name_id
                     if u.user_id === user_id
-                    ) yield u.display_name ~ u.email ~ u.reputation ~ u.lastScanned ~ ln.name).first
+                    ) yield
+                        u.display_name ~ u.email ~ u.reputation ~ u.lastScanned ~
+                        ln.name ~ l.city ~ l.state ~ l.country ~ u.website_url ~ u.profileImage).first
                 
-                new UserData( user_id.toInt, userDetails._1, userAuth, userDetails._2, userDetails._3, userDetails._4, userDetails._5 )
+                new UserData(
+                    user_id.toInt,
+                    userDetails._1,
+                    userAuth,
+                    userDetails._2,
+                    userDetails._3,
+                    userDetails._4,
+                    userDetails._5,
+                    userDetails._6,
+                    userDetails._7,
+                    userDetails._8,
+                    userDetails._9,
+                    userDetails._10 )
             }
         }
     }
@@ -535,6 +591,29 @@ object Application extends Controller
         Redirect(routes.Application.userPage(ud.uid))
     }
     
+    def rankingsPage( tagId : Long, ylhId : Long, startRank : Int ) = SessionCacheAction(requireLogin=false)
+    {
+        (request, sessionCache, globalData, flash) =>
+        
+        WithDbSession
+        {
+            val nearby =
+            {
+                for (
+                    r <- CriticalMassTables.UserRanks;
+                    u <- CriticalMassTables.Users if r.user_id === u.user_id;
+                    if r.tag_id === tagId &&
+                    r.yahoo_location_hierarchy_id === ylhId &&
+                    r.rank > startRank - 20 && r.rank < startRank + 20;
+                    _ <- Query orderBy(Desc(r.rank)) ) yield r.rank ~ u.display_name ~ u.user_id
+            }
+            
+            nearby.foreach( println(_) )
+        }
+        
+        Redirect(routes.Application.index).flashing( "failure" -> "This page is not yet implemented" )
+    }
+    
     def companyPage( companyId : Long ) = SessionCacheAction(requireLogin=false)
     {
         (request, sessionCache, globalData, flash) =>
@@ -561,46 +640,61 @@ object Application extends Controller
         }
     }
     
-    def userPage( user_id : Long ) = SessionCacheAction(requireLogin=true, requireUserId=Some(user_id))
+    def userPage( user_id : Long ) = SessionCacheAction(requireLogin=false)
     {
         (request, sessionCache, globalData, flash) =>
         
-        import org.scalaquery.ql.Ordering.Desc
+        import org.scalaquery.ql.Ordering._
         import org.scalaquery.ql.extended.H2Driver.Implicit._
         
         implicit val sc = sessionCache
         
         WithDbSession
         {
-        
-            val user = getUserDetails( user_id )
-            
-            val ur = new processing.UserRankingsGenerator( Database.forDataSource(DB.getDataSource()) )
-        
-            Logger.info( "Collecting rankings data" )
-            val rankResults = ur.run( user_id )
-            println( rankResults )
-            Logger.info( "Complete" )
+            val meUser = sessionCache.getAs[UserData]("user")
+            val viewUser = getUserDetails( user_id )
             
             // Get user tags
             val tags = ( for ( Join(tags, tagNames) <-
                 CriticalMassTables.UserTags innerJoin
                 CriticalMassTables.Tags
                 on (_.tag_id is _.id)
-                if (tags.user_id === user.uid.toLong );
+                if (tags.user_id === viewUser.uid.toLong );
                 _ <- Query orderBy(Desc(tags.count)) )
                 yield tagNames.name ~ tags.count ).take(5).list
+            
+            val repRes = ( for (
+                r <- CriticalMassTables.UserRanks;
+                t <- CriticalMassTables.Tags if r.tag_id === t.id;
+                yhl <- CriticalMassTables.YahooLocationHierarchyIdentifier if r.yahoo_location_hierarchy_id === yhl.id
+                if r.user_id === viewUser.uid.toLong )
+                yield t.name ~ t.id ~ yhl.extent ~ yhl.name ~ yhl.id ~ r.rank )
+                .list
+            
+            // (Tag name, Seq(LocationName, Rank))
+            val repGrouped : List[(NameAndId, List[(NameAndId, Int)])] = repRes
+                // Group by tag name
+                .groupBy( r => NameAndId(r._1, r._2) ).toList
+                // Within each tag, sort by region extent
+                .map( r => (r._1, r._2.sortBy( _._3 ).map( r => (NameAndId(r._4, r._5), r._6) ) ) )
                 
-            val repTable =
-                new RepLine( "Total reputation", user.reputation.toInt, localRank=0, countryRank=0, totalRank=0 ) ::
-                tags.map { case (name, count) => new RepLine( name, count.toInt, localRank=0, countryRank=0, totalRank=0 ) }
+            //case class RepTable( headings : List[String], rankings : List[(String, List[Int])] )
+            val repTable = if ( !repGrouped.isEmpty )
+            {
+                // Check that all tags have the same locations set
+                val headings = repGrouped.head._2.map( _._1 )
+                assert( repGrouped.forall( r => r._2.map( _._1 ) sameElements headings ) )
+                
+                RepTable( headings, repGrouped.map( r => (r._1, r._2.map(_._2)) ) )
+            }
+            else RepTable( List(), List() )
                 
             // Get company watches with locations
             val watches = ( for (
                 watch <- CriticalMassTables.CompanyWatch;
                 institution <- CriticalMassTables.Institution if watch.institution_id === institution.id;
                 location <- CriticalMassTables.LocationName if watch.location_name_id === location.id;
-                if watch.user_id === user.uid.toLong )
+                if watch.user_id === viewUser.uid.toLong )
                 yield watch.id ~ institution.name ~ location.name ).list
             
             // Get roles with location and two types of tags
@@ -608,7 +702,7 @@ object Application extends Controller
                 role <- CriticalMassTables.UserRole;
                 institution <- CriticalMassTables.Institution if role.institution_id === institution.id;
                 location <- CriticalMassTables.LocationName if role.location_name_id === location.id;
-                if role.user_id === user.uid.toLong )
+                if role.user_id === viewUser.uid.toLong )
                 yield role.id ~ institution.name ~ role.department ~ role.url ~ location.name ).list
 
             val roleData = ( for ( (rid, instname, dept, insturl, loc) <- roles ) yield
@@ -628,7 +722,7 @@ object Application extends Controller
                 new UserRole( rid, instname, insturl, dept, loc, soTags, sectorTags )   
             } ).toList
 
-            Ok(views.html.userhome(globalData, user, repTable, watches, roleData, flash))
+            Ok(views.html.userhome(globalData, meUser, viewUser, meUser.isDefined && meUser.get.uid==viewUser.uid, repTable, watches, roleData, flash))
         }
     }
 
@@ -702,15 +796,15 @@ object Application extends Controller
             // Inefficient - cache in Users tables
             val userTags = for ( u <- topN ) yield
             {
-                val topTags = (for (Join(userTags, tag) <-
-                    CriticalMassTables.UserTags innerJoin
-                    CriticalMassTables.Tags on (_.tag_id is _.id)
-                    if userTags.user_id === u._3) yield tag.name).take(5).list.mkString(" ")
+                val topTags = (for (
+                    ut <- CriticalMassTables.UserTags;
+                    tag <- CriticalMassTables.Tags if ut.tag_id === tag.id && ut.user_id === u._3;
+                    _ <- Query orderBy(Desc(ut.count)) ) yield tag.name).take(5).list.mkString(" ")
                 topTags
             }
             val userTableData = (topN zip userTags).map { case (x, t) =>
                 ("reputation" -> x._1) ~
-                ("name" -> "<a href=\"http://stackoverflow.com/users/%d\">%s</a>".format(x._3, x._2)) ~
+                ("name" -> "<a href=\"/userPage?user_id=%d\">%s</a>".format(x._3, x._2)) ~
                 ("location" -> x._4) ~
                 ("tags" -> t) }
                 
@@ -724,7 +818,6 @@ object Application extends Controller
     
     def markerTags( dh_id : Long ) = Action
     {
-        import org.scalaquery.ql.Ordering.Desc
         import org.scalaquery.ql.extended.H2Driver.Implicit._
         
         WithDbSession

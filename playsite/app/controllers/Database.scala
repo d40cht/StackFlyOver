@@ -131,7 +131,7 @@ object CriticalMassTables
         
         def * = name_id ~ longitude ~ latitude ~ radius ~ quality ~ neighborhood ~ city ~ county ~ state ~ country
     }
-    
+
     object LocationName extends Table[(Long, String)]("LocationName")
     {
         
@@ -151,7 +151,7 @@ object CriticalMassTables
         def * = id ~ user_id ~ institution_id ~ location_name_id
     }
     
-    object Users extends Table[(Long, String, Long, Long, Long, Int, Int, String, Long, Int, Int, Int, Option[String], java.sql.Timestamp, Boolean)]("Users")
+    object Users extends Table[(Long, String, Long, Long, Long, Int, Int, String, Long, Int, Int, Int, Option[String], java.sql.Timestamp, Boolean, Option[String])]("Users")
     {
         def user_id             = column[Long]("user_id", O PrimaryKey)
         def display_name        = column[String]("display_name")
@@ -168,10 +168,11 @@ object CriticalMassTables
         def email               = column[Option[String]]("email")
         def lastScanned         = column[java.sql.Timestamp]("lastScanned")
         def detailFresh         = column[Boolean]("detailFresh")
+        def profileImage        = column[Option[String]]("profileImage")
         
         def * = user_id ~ display_name ~ creation_date ~ last_access_date ~ reputation ~
                 age ~ accept_rate ~ website_url ~ location_name_id ~ badge_gold ~ badge_silver ~
-                badge_bronze ~ email ~ lastScanned ~ detailFresh
+                badge_bronze ~ email ~ lastScanned ~ detailFresh ~ profileImage
     }
     
     object NativeUser extends Table[(Long, java.sql.Timestamp, Option[String], java.sql.Timestamp, Int)]("NativeUser")
@@ -197,5 +198,30 @@ object CriticalMassTables
         
         def * = job_id ~ name ~ progress ~ status ~ start_time ~ end_time
     }
+    
+    
+    // To get a unique city id, concatenate city, county, state, country together then hash and lookup id below
+    // to get a unique state, concatenate state, country and follow as above
+    object YahooLocationHierarchyIdentifier extends Table[(Long, String, String, Int)]("YahooLocationHierarchyIdentifier")
+    {
+        def id                  = column[Long]("id", O PrimaryKey)
+        def name                = column[String]("name")
+        def placeHash           = column[String]("hash")
+        def extent              = column[Int]("extent")
+        
+        def * = id ~ name ~ placeHash ~ extent
+    }
+    
+    object UserRanks extends Table[(Long, Long, Long, Int, java.sql.Timestamp)]("UserRanks")
+    {
+        def user_id                     = column[Long]("user_id")
+        def tag_id                      = column[Long]("tag_id")
+        def yahoo_location_hierarchy_id = column[Long]("yahoo_location_hierarchy_id")
+        def rank                        = column[Int]("rank")
+        def created                     = column[java.sql.Timestamp]("created")
+        
+        def * = user_id ~ tag_id ~ yahoo_location_hierarchy_id ~ rank ~ created
+    }
 }
+
 
