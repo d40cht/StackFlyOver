@@ -67,8 +67,18 @@ object Global extends GlobalSettings
             { statusFn =>
                 
                 val db = Database.forDataSource(DB.getDataSource())
-                val userFetch = new processing.UserScraper(db)
-                userFetch.run( statusFn )
+                
+                processing.FetchProfileImages.run(db)
+                
+                {
+                    val l = new processing.LocationUpdater( db )
+                    l.run( statusFn )
+                }
+                
+                {
+                    val userFetch = new processing.UserScraper(db)
+                    userFetch.run( statusFn )
+                }
             } )
         } ) at "0 15 23 * * ?"
     }  

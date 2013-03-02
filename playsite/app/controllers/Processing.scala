@@ -44,7 +44,7 @@ case class FullUser(
     val website_url : Option[String],
     val location : Option[String],
     val badge_counts : Badges,
-    val profile_image : String )
+    val profile_image : Option[String] )
     
 case class UserTagCounts(
     val tag_name            : String,
@@ -710,7 +710,7 @@ object FetchProfileImages
                 {
                     val uru = ( for ( ur <- CriticalMassTables.Users if ur.user_id === u.user_id ) yield ur.profileImage )
                     
-                    uru.update( Some(u.profile_image) )
+                    uru.update( Some(u.profile_image.getOrElse("")) )
                 }
             }
         }
@@ -805,7 +805,7 @@ class UserScraper( val db : Database )
                             None,
                             now,
                             false,
-                            Some(u.profile_image)
+                            Some(u.profile_image.getOrElse(""))
                         )
                         count += 1
                     }
