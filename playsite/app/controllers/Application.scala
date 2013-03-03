@@ -86,6 +86,8 @@ object Application extends Controller
         val city : String,
         val state : String,
         val country : String,
+        val longitude : Double,
+        val latitude : Double,
         val url : String,
         val profileImage : Option[String] )
     {
@@ -108,7 +110,11 @@ object Application extends Controller
 
     case class UserRole( val id : Long, val institutionName : String, val url : String, val department : String, val location : String, val soTags : List[String], val sectorTags : List[String] )
     
-    case class CloseUser( id : Long, name : String, distance : Double, locationName : String, locationExtent : Int )
+    case class CloseUser( id : Long, name : String, fullLocation : String, longitude : Double, latitude : Double, similarity : Double, ylhLocationName : String, ylhLocationExtent : Int )
+    {
+        def distance (oLongitude : Double, oLatitude : Double ) =
+            processing.MarkerClusterer.distfn( longitude, latitude, oLongitude, oLatitude )
+    }
     
     val stackOverFlowKey = "5FUHVgHRGHWbz9J5bEy)Ng(("
     val stackOverFlowSecretKey = "aL1DlUG5A7M96N48t2*k0w(("
@@ -602,7 +608,7 @@ object Application extends Controller
                     if u.user_id === user_id
                     ) yield
                         u.display_name ~ u.email ~ u.reputation ~ u.lastScanned ~
-                        ln.name ~ l.city ~ l.state ~ l.country ~ u.website_url ~ u.profileImage).first
+                        ln.name ~ l.city ~ l.state ~ l.country ~ l.longitude ~ l.latitude ~ u.website_url ~ u.profileImage).first
                 
                 new UserData(
                     user_id.toInt,
@@ -616,7 +622,9 @@ object Application extends Controller
                     userDetails._7,
                     userDetails._8,
                     userDetails._9,
-                    userDetails._10 )
+                    userDetails._10,
+                    userDetails._11,
+                    userDetails._12 )
             }
         }
     }
@@ -786,10 +794,12 @@ object Application extends Controller
             val closestUsers = ( for (
                 cu <- CriticalMassTables.ClosestUsers if cu.user_id === user_id;
                 ylh <- CriticalMassTables.YahooLocationHierarchyIdentifier if cu.ylh_id === ylh.id;
-                u <- CriticalMassTables.Users if u.user_id === cu.other_user_id )
-                yield cu.other_user_id  ~ u.display_name ~ cu.distance ~ ylh.name ~ ylh.extent ).list
+                u <- CriticalMassTables.Users if u.user_id === cu.other_user_id;
+                ln <- CriticalMassTables.LocationName if u.location_name_id === ln.id;
+                l <- CriticalMassTables.Location if u.location_name_id === l.name_id )
+                yield cu.other_user_id  ~ u.display_name ~ ln.name ~ l.longitude ~ l.latitude ~ cu.distance ~ ylh.name ~ ylh.extent ).list
                 .map( CloseUser.tupled(_) )
-                .sortBy( x => (x.locationExtent, -x.distance) )
+                .sortBy( x => (x.ylhLocationExtent, -x.similarity) )
 
             Ok(views.html.userhome(globalData, meUser, viewUser, meUser.isDefined && meUser.get.uid==viewUser.uid, repTable, watches, roleData, closestUsers, flash))
         }

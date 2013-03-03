@@ -55,14 +55,21 @@
             }
         </table>
         
-        <h2>Close users</h2>
+        <h2>Similar users</h2>
         <table>
-            <tr><th>Location</th><th>Other user</th><th>Distance</th></tr>
+            <tr>
+                <th>Location</th>
+                <th>Name</th>
+                <th>Location</th>
+                @meUser.map{ mu => <th>Distance (km)</th> }
+                <th>Similarity</th></tr>
             @closeUsers.map { cu =>
                 <tr>
-                    <td>@{cu.locationName}</td>
+                    <td>@{cu.ylhLocationName}</td>
                     <td><a href=@{routes.Application.userPage(cu.id).toString}>@{cu.name}<a/></td>
-                    <td>@{cu.distance}</td>
+                    <td>@{cu.fullLocation}</td>
+                    @meUser.map{ mu => <td>@{cu.distance( mu.longitude, mu.latitude )}</td> }
+                    <td>@{cu.similarity}</td>
                 </tr>
             }
         </table>

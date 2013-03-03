@@ -402,9 +402,9 @@ object ClosestByTag
             Logger.debug( "Fetching all users" )
             val allUsers = (for (
                 u <- CriticalMassTables.Users;
-                l <- CriticalMassTables.Location if u.location_name_id === l.name_id;
+                l <- CriticalMassTables.Location if u.location_name_id === l.name_id && u.reputation > Parameters.minUserRepForDetail;
                 _ <- Query orderBy(Desc(u.reputation)) ) yield u.user_id ~ u.display_name ~ u.reputation ~ l.city ~ l.state ~ l.country
-                 ).elements.take(10000).toList
+                 ).list
             
             Logger.debug( "Fetching all tags for all users" )
             val allUserTags = allUsers.map
