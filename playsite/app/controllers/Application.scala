@@ -40,6 +40,41 @@ object Application extends Controller
     
     case class UserAuth( val accessToken : String, val expiry : Int )
     
+    private def hexDigest( v : String ) : String =
+    {
+        val sh = org.apache.commons.codec.digest.DigestUtils.getSha1Digest()
+        sh.update( v.getBytes )
+        
+        org.apache.commons.codec.binary.Hex.encodeHex( sh.digest() ).mkString("")
+    }
+    
+    private def getYHLocation( baseName : String, fullyQualifiedName : String, extent : Int ) : Option[Long] =
+    {
+        import org.apache.commons.codec.digest.DigestUtils
+        
+        def scopeIdentity = SimpleFunction.nullary[Long]("scope_identity")
+        
+        if ( baseName == "" ) None
+        else
+        {
+            val placeHash = hexDigest( fullyQualifiedName )
+            
+            val already = ( for (ylh <- CriticalMassTables.YahooLocationHierarchyIdentifier if ylh.placeHash === placeHash) yield ylh.id).list
+            if ( !already.isEmpty )
+            {
+                Some(already.head)
+            }
+            else
+            {
+                val ylhT = CriticalMassTables.YahooLocationHierarchyIdentifier
+                
+                (ylhT.name ~ ylhT.placeHash ~ ylhT.extent).insert( (baseName + " rank", placeHash, extent) )
+                
+                Some(Query(scopeIdentity).first)
+            }
+        }
+    }
+    
     case class UserData(
         val uid : Int,
         val name : String,
@@ -56,6 +91,15 @@ object Application extends Controller
     {
         def isLocallyAuthenticated = !auth.isEmpty
         def isAdmin = isLocallyAuthenticated && (uid == 415313)
+        
+        val ylhRegions =
+        {
+            val cityId = getYHLocation( city, city + state + country, 1 )
+            val stateId = getYHLocation( state, state + country, 2 )
+            val countryId = getYHLocation( country, country, 3 )
+            
+            Seq( cityId, stateId, countryId )
+        }
     }
     
     case class NameAndId( name : String, id : Long )
@@ -63,6 +107,8 @@ object Application extends Controller
     case class RepTable( headings : List[NameAndId], rankings : List[(NameAndId, List[Int])] )
 
     case class UserRole( val id : Long, val institutionName : String, val url : String, val department : String, val location : String, val soTags : List[String], val sectorTags : List[String] )
+    
+    case class CloseUser( id : Long, name : String, distance : Double, locationName : String, locationExtent : Int )
     
     val stackOverFlowKey = "5FUHVgHRGHWbz9J5bEy)Ng(("
     val stackOverFlowSecretKey = "aL1DlUG5A7M96N48t2*k0w(("
@@ -168,8 +214,8 @@ object Application extends Controller
         Ok(views.html.index(globalData, sessionCache.getAs[UserData]("user"), flash))
     }
     
-    def admin = SessionCacheAction(requireLogin=true, requireAdmin=true)
-    //def admin = SessionCacheAction(requireLogin=false, requireAdmin=false)
+    //def admin = SessionCacheAction(requireLogin=true, requireAdmin=true)
+    def admin = SessionCacheAction(requireLogin=false, requireAdmin=false)
     {
         (request, sessionCache, globalData, flash) =>
         
@@ -487,6 +533,20 @@ object Application extends Controller
         Ok( "Submitted: " + uuid )
     }
     
+    def calculateClosestJob = Action
+    {
+        val uuid = JobRegistry.submit( "Calculate closest job",
+        { statusFn =>
+            
+            val db = Database.forDataSource(DB.getDataSource())
+            
+            statusFn( 0.0, "Calculate closest in progress" )
+            processing.ClosestByTag.calculateClosest(db)
+        } )
+        Ok( "Submitted: " + uuid )
+    }
+    
+    
     
     def rebuildRanksJob = Action
     {
@@ -721,8 +781,17 @@ object Application extends Controller
                 
                 new UserRole( rid, instname, insturl, dept, loc, soTags, sectorTags )   
             } ).toList
+            
+            
+            val closestUsers = ( for (
+                cu <- CriticalMassTables.ClosestUsers if cu.user_id === user_id;
+                ylh <- CriticalMassTables.YahooLocationHierarchyIdentifier if cu.ylh_id === ylh.id;
+                u <- CriticalMassTables.Users if u.user_id === cu.other_user_id )
+                yield cu.other_user_id  ~ u.display_name ~ cu.distance ~ ylh.name ~ ylh.extent ).list
+                .map( CloseUser.tupled(_) )
+                .sortBy( x => (x.locationExtent, -x.distance) )
 
-            Ok(views.html.userhome(globalData, meUser, viewUser, meUser.isDefined && meUser.get.uid==viewUser.uid, repTable, watches, roleData, flash))
+            Ok(views.html.userhome(globalData, meUser, viewUser, meUser.isDefined && meUser.get.uid==viewUser.uid, repTable, watches, roleData, closestUsers, flash))
         }
     }
 

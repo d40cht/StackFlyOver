@@ -1,4 +1,4 @@
-@(globalData : controllers.Application.GlobalData, meUser : Option[controllers.Application.UserData], viewUser : controllers.Application.UserData, isOwner : Boolean, repTable : controllers.Application.RepTable, watches : List[(Long, String, String)], roles : List[controllers.Application.UserRole], flash: Flash)
+@(globalData : controllers.Application.GlobalData, meUser : Option[controllers.Application.UserData], viewUser : controllers.Application.UserData, isOwner : Boolean, repTable : controllers.Application.RepTable, watches : List[(Long, String, String)], roles : List[controllers.Application.UserRole], closeUsers : List[controllers.Application.CloseUser], flash: Flash)
 
 @main("Home page for: " + viewUser.name, globalData, meUser, flash) {
 
@@ -8,23 +8,6 @@
         @if(viewUser.profileImage.isDefined) {
             <img src=@{viewUser.profileImage.get}></img>
         }
-        
-        <h2>Leaderboard</h2>
-        <table>
-            <tr>
-                <th></th>
-                @repTable.headings.map { h => <th>@{h.name}</th> }
-            </tr>
-            @repTable.rankings.map { case (tagNameId, rankings) =>
-                <tr>
-                    <th>@{tagNameId.name}</th>
-
-                    @rankings.zip( repTable.headings ).map { case (r, h) =>
-                        <td><a href=@{routes.Application.rankingsPage(tagNameId.id, h.id, r)}>@{r.toString}</a></td>
-                    }
-                </tr>
-            }
-        </table>
         
         <h2>Details</h2>
         
@@ -47,12 +30,44 @@
                 </tr>
             }
             <tr><th>StackOverflow profile:</th> <td><a href=@{"http://stackoverflow.com/users/" + viewUser.uid}>@{viewUser.name}</a></td>
-            <tr><th>Website:</th> <td><a href=@{viewUser.url}>@{viewUser.url}</a></td>
+            <tr><th>Reputation</th><td>@{viewUser.reputation}</td></tr>
             <tr><th>Location:</th> <td>@{viewUser.location}</td>
+            <tr><th>Website:</th> <td><a href=@{viewUser.url}>@{viewUser.url}</a></td>
             <tr><th>Data last updated from Stackoverflow:</th> <td>@{viewUser.lastScanned}</td>
         </table>
 
         <br/>
+        
+        <h2>Leaderboard</h2>
+        <table>
+            <tr>
+                <th></th>
+                @repTable.headings.map { h => <th>@{h.name}</th> }
+            </tr>
+            @repTable.rankings.map { case (tagNameId, rankings) =>
+                <tr>
+                    <th>@{tagNameId.name}</th>
+
+                    @rankings.zip( repTable.headings ).map { case (r, h) =>
+                        <td><a href=@{routes.Application.rankingsPage(tagNameId.id, h.id, r)}>@{r.toString}</a></td>
+                    }
+                </tr>
+            }
+        </table>
+        
+        <h2>Close users</h2>
+        <table>
+            <tr><th>Location</th><th>Other user</th><th>Distance</th></tr>
+            @closeUsers.map { cu =>
+                <tr>
+                    <td>@{cu.locationName}</td>
+                    <td><a href=@{routes.Application.userPage(cu.id).toString}>@{cu.name}<a/></td>
+                    <td>@{cu.distance}</td>
+                </tr>
+            }
+        </table>
+        
+        
         
         @if( isOwner ) {
             <h2>Watched companies</h2>

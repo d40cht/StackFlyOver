@@ -23,6 +23,8 @@ object Parameters
     val numTagsToInclude        = 400
     val numTopTagsPerUser       = 8
     
+    val minCosineSimilarity     = 0.6
+    
     
     val stackOverflowKey        = "5FUHVgHRGHWbz9J5bEy)Ng(("
 }
@@ -103,15 +105,54 @@ object MarkerClusterer
     }
 }
 
-object RankGenerator
+object ylhLocations
 {
-    def hexDigest( v : String ) : String =
+    private def hexDigest( v : String ) : String =
     {
         val sh = org.apache.commons.codec.digest.DigestUtils.getSha1Digest()
         sh.update( v.getBytes )
         
         org.apache.commons.codec.binary.Hex.encodeHex( sh.digest() ).mkString("")
     }
+    
+    private def getYHLocation( baseName : String, fullyQualifiedName : String, extent : Int ) : Long =
+    {
+        import org.apache.commons.codec.digest.DigestUtils
+        
+        def scopeIdentity = SimpleFunction.nullary[Long]("scope_identity")
+        
+        val placeHash = hexDigest( fullyQualifiedName )
+        
+        val already = ( for (ylh <- CriticalMassTables.YahooLocationHierarchyIdentifier if ylh.placeHash === placeHash) yield ylh.id).list
+        if ( !already.isEmpty )
+        {
+            already.head
+        }
+        else
+        {
+            val ylhT = CriticalMassTables.YahooLocationHierarchyIdentifier
+            
+            (ylhT.name ~ ylhT.placeHash ~ ylhT.extent).insert( (baseName + " rank", placeHash, extent) )
+            
+            Query(scopeIdentity).first
+        }
+    }
+    
+    def getLocations( city : String, state : String, country : String ) =
+    {
+        val ids = mutable.ArrayBuffer[Long]()
+        
+        if ( city != "" ) ids.append( getYHLocation( city, city + state + country, 1 ) )
+        if ( state != "" ) ids.append( getYHLocation( state, state + country, 2 ) )
+        if ( country != "" ) ids.append( getYHLocation( country, country, 3 ) )
+        
+        ids.toArray
+    }
+}
+
+object RankGenerator
+{
+    
     
     def recalculateRanks( db : Database ) =
     {
@@ -130,32 +171,7 @@ object RankGenerator
             
             var dbWrites = 0
             
-            def getYHLocation( baseName : String, fullyQualifiedName : String, extent : Int ) : Option[Long] =
-            {
-                import org.apache.commons.codec.digest.DigestUtils
-                
-                def scopeIdentity = SimpleFunction.nullary[Long]("scope_identity")
-                
-                if ( baseName == "" ) None
-                else
-                {
-                    val placeHash = hexDigest( fullyQualifiedName )
-                    
-                    val already = ( for (ylh <- CriticalMassTables.YahooLocationHierarchyIdentifier if ylh.placeHash === placeHash) yield ylh.id).list
-                    if ( !already.isEmpty )
-                    {
-                        Some(already.head)
-                    }
-                    else
-                    {
-                        val ylhT = CriticalMassTables.YahooLocationHierarchyIdentifier
-                        
-                        (ylhT.name ~ ylhT.placeHash ~ ylhT.extent).insert( (baseName + " rank", placeHash, extent) )
-                        
-                        Some(Query(scopeIdentity).first)
-                    }
-                }
-            }
+            
             
             
             // Get the top tags per user
@@ -175,7 +191,7 @@ object RankGenerator
             
             def uniqueCountMap( s : Set[Long] ) = s.toList.map( n => (n, 0) ).toMap
             
-            case class RankResult( val count : Long, val user_id : Long, val cityIdO : Option[Long], val stateIdO : Option[Long], val countryIdO : Option[Long] )
+            case class RankResult( val count : Long, val user_id : Long, val ylhIds : Seq[Long] )
             
             class LocationRankTracker( val userTopTags : Map[Long, Set[Long]], val tagId : Long, locationIds : Set[Long] )
             {
@@ -192,9 +208,8 @@ object RankGenerator
                     }
                     
                     overallRank += 1
-                    rr.cityIdO.foreach( id => locationRankings = updateRankMap( id, locationRankings ) )
-                    rr.stateIdO.foreach( id => locationRankings = updateRankMap( id, locationRankings ) )
-                    rr.countryIdO.foreach( id => locationRankings = updateRankMap( id, locationRankings ) )
+                    
+                    rr.ylhIds.foreach( id => locationRankings = updateRankMap( id, locationRankings ) )
                     
                     if ( userTopTags(rr.user_id) contains tagId )
                     {
@@ -212,27 +227,7 @@ object RankGenerator
                             overallRank,
                             calculateTime ) )
                         
-                        rr.cityIdO.foreach
-                        { id =>
-                            CriticalMassTables.UserRanks.insert( (
-                                rr.user_id,
-                                tagId,
-                                id,
-                                locationRankings(id),
-                                calculateTime ) )
-                        }
-                        
-                        rr.stateIdO.foreach
-                        { id =>
-                            CriticalMassTables.UserRanks.insert( (
-                                rr.user_id,
-                                tagId,
-                                id,
-                                locationRankings(id),
-                                calculateTime ) )
-                        }
-                        
-                        rr.countryIdO.foreach
+                        rr.ylhIds.foreach
                         { id =>
                             CriticalMassTables.UserRanks.insert( (
                                 rr.user_id,
@@ -258,18 +253,13 @@ object RankGenerator
                     .map
                     { case( rep, uid, city, state, country) =>
                     
-                        val cityId = getYHLocation( city, city + state + country, 1 )
-                        val stateId = getYHLocation( state, state + country, 2 )
-                        val countryId = getYHLocation( country, country, 3 )
-                        RankResult( rep, uid, cityId, stateId, countryId )
+                        val ylhIds = ylhLocations.getLocations( city, state, country )
+                        RankResult( rep, uid, ylhIds )
                         
                     }.sortWith( _.count > _.count )
                     
                     
-                val allLocationIds =
-                    reputationRanks.flatMap( _.cityIdO ).toSet ++
-                    reputationRanks.flatMap( _.stateIdO ).toSet ++
-                    reputationRanks.flatMap( _.countryIdO ).toSet
+                val allLocationIds = reputationRanks.flatMap( _.ylhIds ).toSet
                 
                 val ltm = new LocationRankTracker( userTopTags, Parameters.reputationTagId, allLocationIds )
                 
@@ -290,17 +280,11 @@ object RankGenerator
                     .map
                     { case( rep, uid, city, state, country) =>
                     
-                        val cityId = getYHLocation( city, city + state + country, 1 )
-                        val stateId = getYHLocation( state, state + country, 2 )
-                        val countryId = getYHLocation( country, country, 3 )
-                        RankResult( rep, uid, cityId, stateId, countryId )
+                        RankResult( rep, uid, ylhLocations.getLocations( city, state, country ) )
                         
                     }.sortWith( _.count > _.count )
                     
-                val allLocationIds =
-                    scoresByTag.flatMap( _.cityIdO ).toSet ++
-                    scoresByTag.flatMap( _.stateIdO ).toSet ++
-                    scoresByTag.flatMap( _.countryIdO ).toSet
+                val allLocationIds = scoresByTag.flatMap( _.ylhIds ).toSet
                 
                 val ltm = new LocationRankTracker( userTopTags, tagId, allLocationIds )
                 Logger.debug( "Calculating ranks for " + name + " - " + scoresByTag.size + " (" + i + ")" )                
@@ -354,6 +338,111 @@ object HierarchyVisitor
             val (ndist, nobj) = nearestFew.map( p => (p.dist( longitude, latitude), p) ).sortBy( _._1 ).head
             
             visitFn( level, ndist, nobj )
+        }
+    }
+}
+
+object ClosestByTag
+{
+    import controllers.CriticalMassTables
+    
+    private def cosineSimilarity( features1 : Map[Long, Long], features2 : Map[Long, Long] ) : Double =
+    {
+        if ( features1.isEmpty || features2.isEmpty || features1.values.sum == 0 || features2.values.sum == 0 ) 0.0
+        else
+        {
+            //val maxValue = (features1.values.max max features2.values.max).toDouble
+            val maxValue = (features1.values ++ features2.values).map(v => math.abs(v.toDouble)).max
+            
+            //def fscale( v : Double ) = math.tanh(v/maxValue)
+            //def fscale( v : Double ) = math.signum(v) * math.log(math.abs(v) + 1.0)
+            //def fscale( v : Double ) = math.signum(v) * math.sqrt(math.abs(v))
+            
+            // Seems to give a good balance between taking max tags into account whilst not ignoring
+            // lower tags.
+            def fscale( v : Double ) = math.signum(v) * math.log(math.abs((v/maxValue)) + 1.0)
+            
+            val mod1 = math.sqrt(features1.toList.map( x => math.pow(fscale(x._2.toDouble), 2.0) ).sum)
+            val mod2 = math.sqrt(features2.toList.map( x => math.pow(fscale(x._2.toDouble), 2.0) ).sum)
+            
+            val commonTags = features1.keySet intersect features2.keySet
+            
+            val dotProduct = commonTags.toList.map( id => (
+                fscale(features1(id).toDouble) * fscale(features2(id).toDouble) ) ).sum
+                
+            assert( !mod1.isNaN, mod1.toString + ": " + features1.toList )
+            assert( !mod2.isNaN, mod2.toString + ": " + features2.toList )
+            assert( !dotProduct.isNaN, dotProduct.toString )
+            
+            if ( mod1 == 0.0 || mod2 == 0.0 ) 0.0
+            else dotProduct / (mod1 * mod2)
+        }
+    }
+    
+    private def topTagsForId( userId : Long, numTags : Int ) : Map[Long, Long] =
+    {
+        val q = for (
+            tags <- CriticalMassTables.UserTags if tags.user_id === userId;
+            _ <- Query orderBy(Desc(tags.count)) ) yield tags.tag_id ~ tags.count
+        
+        q.elements.take( numTags ).toMap
+    }
+    
+    def calculateClosest( db : Database ) =
+    {
+        case class UserDetails(
+            val userId : Int,
+            val name : String,
+            val reputation : Int,
+            val ylhIds : Seq[Long],
+            val tags : Map[Long, Long] )
+        
+        db withSession
+        {
+            Logger.debug( "Fetching all users" )
+            val allUsers = (for (
+                u <- CriticalMassTables.Users;
+                l <- CriticalMassTables.Location if u.location_name_id === l.name_id;
+                _ <- Query orderBy(Desc(u.reputation)) ) yield u.user_id ~ u.display_name ~ u.reputation ~ l.city ~ l.state ~ l.country
+                 ).elements.take(10000).toList
+            
+            Logger.debug( "Fetching all tags for all users" )
+            val allUserTags = allUsers.map
+            { case ( uid, uname, reputation, city, state, country ) =>
+            
+                UserDetails( uid.toInt, uname, reputation.toInt, processing.ylhLocations.getLocations( city, state, country ), topTagsForId( uid, 10 ) )
+            }
+            
+            def calculateClosest( ylhId : Long, userTagSet : List[UserDetails] )
+            {
+                val topUsers = userTagSet.sortBy( -_.reputation ).take( 10000 )
+                
+                for ( u <- userTagSet )
+                {
+                    val closest = topUsers
+                        .filter( _.userId != u.userId )
+                        .map( o => (o, cosineSimilarity( u.tags, o.tags )) )
+                        .filter( _._2 > Parameters.minCosineSimilarity )
+                        .sortBy( -_._2 )
+                        .take(10)
+                    
+                    closest.foreach( c => CriticalMassTables.ClosestUsers.insert( (u.userId.toLong, c._1.userId.toLong, ylhId, c._2) ) )
+                }
+            }
+            
+            Logger.debug( "Calculating user tags globally" )
+            calculateClosest( Parameters.overallLocationId, allUserTags )
+            Logger.debug( "complete" )
+            
+            // Now do it per ylh region
+            val allLocations = allUserTags.flatMap( _.ylhIds ).toSet
+            for ( locId <- allLocations )
+            {
+                Logger.debug( "Calculating for: " + locId )
+                calculateClosest( locId, allUserTags.filter( _.ylhIds contains locId ) )
+                Logger.debug( "complete" )  
+            }
+            
         }
     }
 }

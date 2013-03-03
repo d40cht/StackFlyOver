@@ -18,6 +18,7 @@ GET     /rebuildRanksJob            controllers.Application.rebuildRanksJob
 GET     /rebuildHierarchyJob        controllers.Application.rebuildHierarchyJob
 GET     /rebuildLocationsJob        controllers.Application.rebuildLocationsJob
 GET     /getProfileImagesJob        controllers.Application.getProfileImagesJob
+GET     /calculateClosestJob        controllers.Application.calculateClosestJob
 GET     /backupDbJob                controllers.Application.backupDbJob
 GET     /listJobs                   controllers.Application.listJobs
 POST    /refineUserAccept           controllers.Application.refineUserAccept

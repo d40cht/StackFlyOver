@@ -222,6 +222,16 @@ object CriticalMassTables
         
         def * = user_id ~ tag_id ~ yahoo_location_hierarchy_id ~ rank ~ created
     }
+    
+    object ClosestUsers extends Table[(Long, Long, Long, Double)]("ClosestUsers")
+    {
+        def user_id         = column[Long]("user_id")
+        def other_user_id   = column[Long]("other_user_id")
+        def ylh_id          = column[Long]("ylh_id")
+        def distance        = column[Double]("distance")
+        
+        def * = user_id ~ other_user_id ~ ylh_id ~ distance
+    }
 }
 
 

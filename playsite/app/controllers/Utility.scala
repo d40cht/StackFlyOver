@@ -214,128 +214,15 @@ object Testing
 {
     import controllers.CriticalMassTables
     
-    
-    
-    private def cosineSimilarity( features1 : Map[Long, Long], features2 : Map[Long, Long] ) : Double =
-    {
-        if ( features1.isEmpty || features2.isEmpty || features1.values.sum == 0 || features2.values.sum == 0 ) 0.0
-        else
-        {
-            val maxValue = (features1.values.max max features2.values.max).toDouble
-            
-            //def fscale( v : Double ) = math.tanh(v/maxValue)
-            //def fscale( v : Double ) = math.signum(v) * math.log(math.abs(v) + 1.0)
-            //def fscale( v : Double ) = math.signum(v) * math.sqrt(math.abs(v))
-            
-            // Seems to give a good balance between taking max tags into account whilst not ignoring
-            // lower tags.
-            def fscale( v : Double ) = math.signum(v) * math.log(math.abs((v/maxValue)) + 1.0)
-            
-            val mod1 = math.sqrt(features1.toList.map( x => math.pow(fscale(x._2.toDouble), 2.0) ).sum)
-            val mod2 = math.sqrt(features2.toList.map( x => math.pow(fscale(x._2.toDouble), 2.0) ).sum)
-            
-            val commonTags = features1.keySet intersect features2.keySet
-            
-            val dotProduct = commonTags.toList.map( id => (
-                fscale(features1(id).toDouble) * fscale(features2(id).toDouble) ) ).sum
-                
-            assert( !mod1.isNaN, mod1.toString + ": " + features1.toList )
-            assert( !mod2.isNaN, mod2.toString + ": " + features2.toList )
-            assert( !dotProduct.isNaN, dotProduct.toString )
-            
-            if ( mod1 == 0.0 || mod2 == 0.0 ) 0.0
-            else dotProduct / (mod1 * mod2)
-        }
-    }
-    
-    private def tagsForId( userId : Long, numTags : Int ) : Map[Long, Long] =
-    {
-        val q = for (
-            tags <- CriticalMassTables.UserTags if tags.user_id === userId;
-            _ <- Query orderBy(Desc(tags.count)) ) yield tags.tag_id ~ tags.count
-        
-        q.elements.take( numTags ).toMap
-    }
-    
     private lazy val db =
     {
         val dbName = "stack_users"
         Database.forURL("jdbc:h2:file:./%s;DB_CLOSE_DELAY=-1;TRACE_LEVEL_FILE=3;TRACE_MAX_FILE_SIZE=50".format(dbName), driver = "org.h2.Driver")
     }
     
-    def calculateClosest() =
-    {
-        case class UserDetails(
-            val userId : Int,
-            val name : String,
-            val reputation : Int,
-            val tags : Map[Long, Long] )
-        
-        db withSession
-        {
-            Logger.debug( "Fetching all users" )
-            val allUsers = (for ( u <- CriticalMassTables.Users ) yield u.user_id ~ u.display_name ~ u.reputation).list
-            
-            Logger.debug( "Fetching all tags for all users" )
-            val allUserTags = allUsers.map
-            { case ( uid, uname, reputation ) =>
-            
-                UserDetails( uid.toInt, uname, reputation.toInt, tagsForId( uid, 10 ) )
-            }
-            
-            val topUsers = allUserTags.sortBy( -_.reputation ).take( 10000 )
-            
-            for ( u <- allUserTags )
-            {
-                Logger.debug( "Comparing: " + u.userId )
-                val closest = topUsers.map( o => (o, cosineSimilarity( u.tags, o.tags )) ).sortBy( -_._2 ).take(10)
-            }
-        }
-    }
-    
     
     def recalculateRanks = processing.RankGenerator.recalculateRanks( db )
     
-    def closestUsers( userId : Long, minRep : Long, count : Int ) =
-    {
-        Logger.debug( "Starting" )
-        db withSession
-        {
-            import org.scalaquery.simple.{StaticQuery}
-            
-            /*val q = StaticQuery[(String, Long)] +
-                "SELECT t.\"name\", SUM(ut.\"count\") AS c FROM \"Tags\" AS t INNER JOIN \"UserTags\" AS ut ON t.\"id\" = ut.\"tag_id\" INNER JOIN \"Location\" AS l on t.\"location_name_id\"= l.\"name_id\" WHERE l.\"state\"='England' GROUP BY t.\"id\" ORDER BY c DESC"
-                
-            println( q.elements.take(1000).mkString("\n") )*/
-            
-            
-            //val meTags = tagsForId( 200166L )
-            //val meTags = tagsForId( 415313L )
-            val meTags = tagsForId( userId, 50 )
-            
-            val allUserIds = (for (
-                user <- CriticalMassTables.Users;
-                location <- CriticalMassTables.Location if user.location_name_id === location.name_id;
-                if user.reputation > minRep /*&& location.state==="California"*/ ) yield user.user_id).list
-                
-            val allTags = allUserIds.map( otherId => (otherId, tagsForId(otherId, 50)) )
-            
-            Logger.debug( "Num users with tags: " + allTags.filter( !_._2.isEmpty ).size )
-            
-            Logger.debug( "Data retrieved from db. Calculating cosine distances" )
-            //val res = allUserIds.map( otherId => (otherId, cosineSimilarity( meTags, tagsForId(otherId, 50) ) ) ).toList.sortWith( _._2 > _._2 ).take(count)
-            val res = allTags.map { case(otherId, otherTags) => (otherId, cosineSimilarity( meTags, otherTags ) ) }.toList.sortWith( _._2 > _._2 ).take(count)
-            
-            Logger.debug( "Complete" )
-            res.foreach
-            { case (userId, sim) =>
-                println( "http://stackoverflow.com/users/" + userId + " : " + sim )
-            }
-                
-        }
-        
-        Logger.debug( "finished" )
-    }
     
     /*def userRanking( userId : Long ) =
     {
